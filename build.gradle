@@ -1,0 +1,111 @@
+buildscript {
+	ext {
+		springBootVersion = '2.1.2.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.webank'
+version = '0.4.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+[compileJava, javadoc]*.options*.encoding = 'UTF-8'
+
+repositories {
+	maven {       
+        url "http://maven.aliyun.com/nexus/content/groups/public/"
+    }
+    mavenLocal()
+    mavenCentral()
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src/main/java'
+		}
+
+		resources {
+			srcDir 'src/main/resources'
+		}
+	}
+}
+
+dependencies {
+   	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	// sharding-jdbc
+    compile('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0')
+   
+   	
+   	//compile("net.sf.ehcache:ehcache")
+   	compile 'mysql:mysql-connector-java'
+    
+    // swagger 
+    compile "io.springfox:springfox-swagger2:2.9.2" 
+    compile "io.springfox:springfox-swagger-ui:2.9.2" 
+    
+    compile ('org.apache.commons:commons-lang3:3.8.1')
+    compile 'commons-io:commons-io:2.6'
+    compile 'cn.hutool:hutool-all:4.1.19'
+    compile "com.alibaba:fastjson:1.2.29"
+    compile "com.google.guava:guava:20.0"
+    compile ('org.projectlombok:lombok:1.16.18')
+    compile('com.ibeetl:beetl:2.9.3')
+
+    // elastic-job
+    compile('com.dangdang:elastic-job-lite-core:2.1.5')
+    {
+		exclude group: 'log4j'
+	}
+    compile('com.dangdang:elastic-job-lite-spring:2.1.5')
+    {
+		exclude group: 'log4j'
+	}
+	
+    // web3j依赖
+    compile 'org.fisco-bcos:web3sdk:1.2.5'
+}
+
+
+bootJar {
+	destinationDir file('dist')
+	archiveName project.name + version + '.jar'
+
+    doLast {
+        copy {
+            from file('config/contract/')
+            into 'dist/config/contract'
+        }
+		copy {
+			from configurations.runtime
+			into 'dist/lib'
+		}
+		copy {
+            from file('src/main/resources/')
+            into 'dist/config'
+        }
+		copy {
+			from file('.').listFiles().findAll{File f -> (f.name.endsWith('.crt') || f.name.endsWith('.keystore'))}
+			into 'dist/config'
+		}
+	}
+}
+clean {
+	println "delete ${projectDir}/dist"
+    delete "${projectDir}/dist"
+}
