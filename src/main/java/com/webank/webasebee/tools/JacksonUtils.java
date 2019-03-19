@@ -156,10 +156,6 @@ public class JacksonUtils {
 
     public static <T> List<T> strToList(String str, Class<T> clazz) {
         JSONArray jsonArray = JSONArray.parseArray(str);
-        for (int i = 0; i < jsonArray.size(); i++) {
-            System.out.println(jsonArray.get(i));
-        }
-
         T t = null;
         List<T> list = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
