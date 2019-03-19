@@ -1,5 +1,5 @@
 
-## 组件介绍
+## 1. 组件介绍
 
 ### 1.1 组件介绍
 WEBASE-BEE 是一个基于[FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS)平台的数据导出工具。
