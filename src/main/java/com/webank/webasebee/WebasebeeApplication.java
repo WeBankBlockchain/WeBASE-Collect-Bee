@@ -18,11 +18,6 @@ package com.webank.webasebee;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.alibaba.druid.util.StringUtils;
-import com.webank.webasebee.tools.PropertiesUtils;
-
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * webasebeeApplication connect to fisco-bcos, and depot its datas.
  *
@@ -33,18 +28,9 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @SpringBootApplication
-@Slf4j
 public class WebasebeeApplication {
 
     public static void main(String[] args) {
-        String maxThreadNo = PropertiesUtils.getProperty("system.maxScheduleThreadNo");
-        if (StringUtils.isNumber(maxThreadNo)) {
-            int no = Integer.parseInt(maxThreadNo);
-            if (no > 0) {
-                System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", no + "");
-                log.info("parallelism: {}", System.getProperty("java.util.concurrent.ForkJoinPool.common.parallelism"));
-            }
-        }
         SpringApplication.run(WebasebeeApplication.class, args);
     }
 }

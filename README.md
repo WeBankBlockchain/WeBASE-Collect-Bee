@@ -1,5 +1,9 @@
+# webase-bee
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![Gitter](https://badges.gitter.im/webase-bee/webase-bee.svg)](https://gitter.im/webase-bee/community)
+[![Stargazers over time](https://starcharts.herokuapp.com/WeBankFinTech/webase-bee.svg)](https://starcharts.herokuapp.com/WeBankFinTech/webase-bee)
 
-## 组件介绍
+## 1. 组件介绍
 
 ### 1.1 组件介绍
 WEBASE-BEE 是一个基于[FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS)平台的数据导出工具。
@@ -103,8 +107,6 @@ webase-bee的工程使用gradle进行构建，是一个SpringBoot工程。
 #### 当此参数为false时，进入单节点任务模式
 system.multiLiving=false
 
-#### 系统执行的最大线程数，默认为CPU的核数
-system.maxScheduleThreadNo = 20
 #### 开启多线程下载的区块阈值，如果当前已完成导出的区块高度小于当前区块总高度减去该阈值，则启动多线程下载
 system.maxBlockHeightThreshold=50
 #### 多线程下载的分片数量，当完成该分片所有的下载任务后，才会统一更新下载进度。
@@ -156,14 +158,14 @@ sharding.jdbc.datasource.names=ds0,ds1
 sharding.jdbc.datasource.ds0.type=com.zaxxer.hikari.HikariDataSource
 sharding.jdbc.datasource.ds0.driver-class-name=com.mysql.cj.jdbc.Driver
 sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
-sharding.jdbc.datasource.ds0.username=root
+sharding.jdbc.datasource.ds0.username=
 sharding.jdbc.datasource.ds0.password=
 
 #### 数据源ds1的默认配置
 sharding.jdbc.datasource.ds1.type=com.zaxxer.hikari.HikariDataSource
 sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.cj.jdbc.Driver
 sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
-sharding.jdbc.datasource.ds1.username=root
+sharding.jdbc.datasource.ds1.username=
 sharding.jdbc.datasource.ds1.password=
 
 #### 数据库默认分库分表的列字段
@@ -194,24 +196,54 @@ sharding.jdbc.datasource.names=master,slave0,slave1
 sharding.jdbc.datasource.master.type=org.apache.commons.dbcp.BasicDataSource
 sharding.jdbc.datasource.master.driver-class-name=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.master.url=jdbc:mysql://localhost:3306/master
-sharding.jdbc.datasource.master.username=root
+sharding.jdbc.datasource.master.username=
 sharding.jdbc.datasource.master.password=
 
 sharding.jdbc.datasource.slave0.type=org.apache.commons.dbcp.BasicDataSource
 sharding.jdbc.datasource.slave0.driver-class-name=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.slave0.url=jdbc:mysql://localhost:3306/slave0
-sharding.jdbc.datasource.slave0.username=root
+sharding.jdbc.datasource.slave0.username=
 sharding.jdbc.datasource.slave0.password=
 
 sharding.jdbc.datasource.slave1.type=org.apache.commons.dbcp.BasicDataSource
 sharding.jdbc.datasource.slave1.driver-class-name=com.mysql.jdbc.Driver
 sharding.jdbc.datasource.slave1.url=jdbc:mysql://localhost:3306/slave1
-sharding.jdbc.datasource.slave1.username=root
+sharding.jdbc.datasource.slave1.username=
 sharding.jdbc.datasource.slave1.password=
 
 sharding.jdbc.config.masterslave.name=ms
 sharding.jdbc.config.masterslave.master-data-source-name=master
 sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
+
+sharding.jdbc.config.props.sql.show=true
+
+```
+
+##### 数据库读写分离+分库分表的配置：
+
+
+```
+
+sharding.jdbc.datasource.names=master,slave0
+        
+sharding.jdbc.datasource.master.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.master.driver-class-name=com.mysql.cj.jdbc.Driver
+sharding.jdbc.datasource.master.jdbc-url=jdbc:mysql://106.12.31.94:3306/test0?characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2b8
+sharding.jdbc.datasource.master.username=
+sharding.jdbc.datasource.master.password=
+
+sharding.jdbc.datasource.slave0.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.slave0.driver-class-name=com.mysql.cj.jdbc.Driver
+sharding.jdbc.datasource.slave0.jdbc-url=jdbc:mysql://106.12.31.94:3306/test1?characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2b8
+sharding.jdbc.datasource.slave0.username=
+sharding.jdbc.datasource.slave0.password=
+
+sharding.jdbc.config.sharding.master-slave-rules.ds0.master-data-source-name=master
+sharding.jdbc.config.sharding.master-slave-rules.ds0.slave-data-source-names=slave0
+
+sharding.jdbc.config.sharding.tables.activity_activity.actual-data-nodes=ds0.block_tx_detail_info$->{0..1}
+sharding.jdbc.config.sharding.tables.activity_activity.table-strategy.inline.sharding-column=block_height
+sharding.jdbc.config.sharding.tables.activity_activity.table-strategy.inline.algorithm-expression=block_tx_detail_info$->{block_height % 2}
 
 sharding.jdbc.config.props.sql.show=true
 

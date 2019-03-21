@@ -20,6 +20,7 @@ import org.bcos.web3j.abi.datatypes.Address;
 import org.bcos.web3j.abi.datatypes.Bool;
 import org.bcos.web3j.abi.datatypes.DynamicArray;
 import org.bcos.web3j.abi.datatypes.DynamicBytes;
+import org.bcos.web3j.abi.datatypes.StaticArray;
 import org.bcos.web3j.abi.datatypes.Uint;
 import org.bcos.web3j.abi.datatypes.Utf8String;
 import org.bcos.web3j.abi.datatypes.generated.*;
@@ -366,38 +367,39 @@ public final class AbiTypeRefUtils{
           return (TypeReference) new TypeReference<Bytes31>() {};
       case "bytes32":
           return (TypeReference) new TypeReference<Bytes32>() {};
+      /* StaticArray should be dealed in a different way */
       case "bytes32[1]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(1) {};
       case "bytes32[2]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(2) {};
       case "bytes32[3]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(3) {};
       case "bytes32[4]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(4) {};
       case "bytes32[5]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(5) {};
       case "bytes32[6]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(6) {};
       case "bytes32[7]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(7) {};
       case "bytes32[8]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(8) {};
       case "bytes32[9]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(9) {};
       case "bytes32[10]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(10) {};
       case "bytes32[11]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(11) {};
       case "bytes32[12]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(12) {};
       case "bytes32[13]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(13) {};
       case "bytes32[14]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(14) {};
       case "bytes32[15]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(15) {};
       case "bytes32[16]":
-          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
+          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(16) {};
       default:
           throw new UnsupportedOperationException("Unsupported type encountered: " + type);
     }

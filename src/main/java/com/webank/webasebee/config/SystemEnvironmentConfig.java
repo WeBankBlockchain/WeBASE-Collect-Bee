@@ -39,7 +39,6 @@ public class SystemEnvironmentConfig {
     private String keystorePassword;
     private String clientCertPassword;
 
-    private int maxScheduleThreadNo;
     private String privateKey;
     private int maxBlockHeightThreshold;
     private int crawlBatchUnit;

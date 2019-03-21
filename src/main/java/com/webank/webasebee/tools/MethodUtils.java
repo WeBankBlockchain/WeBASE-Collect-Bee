@@ -53,9 +53,8 @@ public class MethodUtils {
     public static List<TypeReference<Type>> getMethodTypeReferenceList(List<NamedType> list) {
         List<TypeReference<Type>> referencesTypeList = Lists.newArrayList();
         for (NamedType type : list) {
-            log.debug("type string : {}", type.getType().split(" ")[0]);
             TypeReference reference = AbiTypeRefUtils.getTypeRef(type.getType().split(" ")[0]);
-            log.debug(JacksonUtils.toJson(reference));
+            log.debug("type: {} TypeReference converted: {}", type.getType(), JacksonUtils.toJson(reference));
             referencesTypeList.add(reference);
         }
         return referencesTypeList;
@@ -109,7 +108,7 @@ public class MethodUtils {
         } catch (IOException e) {
             log.error("Read ABI definition error: {}", e.getMessage());
         }
-        log.info(abiDefinition.toString());
+        log.debug("class: {} {}", clazz.getSimpleName(), JacksonUtils.toJson(abiDefinition));
         return abiDefinition;
     }
 
@@ -127,6 +126,7 @@ public class MethodUtils {
         String params = parameters.stream().map(NamedType::getType).collect(Collectors.joining(","));
         result.append(params);
         result.append(")");
+        log.debug("methodName: {}, joint method paras: {}", methodName, result);
         return result.toString();
     }
 
@@ -139,6 +139,7 @@ public class MethodUtils {
     public static String buildMethodId(String methodSignature) {
         byte[] input = methodSignature.getBytes();
         byte[] hash = Hash.sha3(input);
+        log.debug("methodId is {}", Numeric.toHexString(hash).substring(0, 10));
         return Numeric.toHexString(hash).substring(0, 10);
     }
 }

@@ -63,12 +63,6 @@ public class CommonCrawlerService {
      */
     public void handle() {
         try {
-            if (systemEnvironmentConfig.getMaxScheduleThreadNo() > 0) {
-                log.info("MaxScheduleThreadNo {}", systemEnvironmentConfig.getMaxScheduleThreadNo());
-                System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism",
-                        systemEnvironmentConfig.getMaxScheduleThreadNo() + "");
-                System.out.println(System.getProperty("java.util.concurrent.ForkJoinPool.common.parallelism"));
-            }
             BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
             long total = blockNumber.longValue();
             log.info("Current chain block number is:{}", blockNumber);
