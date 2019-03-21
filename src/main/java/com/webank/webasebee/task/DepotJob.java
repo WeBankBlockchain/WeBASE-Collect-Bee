@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
-import com.webank.webasebee.crawler.service.CommonCrawlerService;
 import com.webank.webasebee.crawler.service.SingleBlockCrawlerService;
 import com.webank.webasebee.enums.TxInfoStatusEnum;
 import com.webank.webasebee.ods.EthClient;
@@ -51,8 +50,6 @@ public class DepotJob implements DataflowJob<Block> {
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
     @Autowired
-    private CommonCrawlerService commonCrawlerService;
-    @Autowired
     private SingleBlockCrawlerService singleBlockCrawlerService;
 
     @Override
@@ -64,7 +61,6 @@ public class DepotJob implements DataflowJob<Block> {
         for (BlockTaskPool task : tasks) {
             task.setStatus(TxInfoStatusEnum.DOING.getStatus());
             blockTaskPoolRepository.save(task);
-            //rollBackService.rollback(task.getBlockHeight(), task.getBlockHeight() + 1);
             BigInteger bigBlockHeight = new BigInteger(Long.toString(task.getBlockHeight()));
             try {
                 Block block = ethClient.getBlock(bigBlockHeight);
@@ -93,7 +89,6 @@ public class DepotJob implements DataflowJob<Block> {
                         b.getNumber().longValue());
             }
         }
-
     }
 
 }
