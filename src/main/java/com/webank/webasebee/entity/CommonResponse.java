@@ -43,6 +43,8 @@ public class CommonResponse {
     public static CommonResponse SUCCESS = new CommonResponse();
     public static CommonResponse UNLOGIN = new CommonResponse(StatusCode.SESSION_EXPIRED, "user not login");
     public static CommonResponse UNAUTH = new CommonResponse(StatusCode.UNAUTH, "user no auth");
+    public static CommonResponse SYSERROR = new CommonResponse(StatusCode.EXECUTE_ERROR, "execute error");
+    public static CommonResponse NOBLOCK = new CommonResponse(StatusCode.PARAMETER_ERROR, "no block data");
 
     public CommonResponse(int status, String error) {
         this.status = status;

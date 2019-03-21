@@ -19,16 +19,14 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
 import com.webank.webasebee.crawler.service.CommonCrawlerService;
-import com.webank.webasebee.crawler.service.RollBackService;
+import com.webank.webasebee.crawler.service.SingleBlockCrawlerService;
 import com.webank.webasebee.enums.TxInfoStatusEnum;
 import com.webank.webasebee.ods.EthClient;
 import com.webank.webasebee.sys.db.entity.BlockTaskPool;
@@ -55,7 +53,7 @@ public class DepotJob implements DataflowJob<Block> {
     @Autowired
     private CommonCrawlerService commonCrawlerService;
     @Autowired
-    private RollBackService rollBackService;
+    private SingleBlockCrawlerService singleBlockCrawlerService;
 
     @Override
     public List<Block> fetchData(ShardingContext shardingContext) {
@@ -85,7 +83,7 @@ public class DepotJob implements DataflowJob<Block> {
     public void processData(ShardingContext shardingContext, List<Block> data) {
         for (Block b : data) {
             try {
-                commonCrawlerService.handleSingleBlock(b);
+                singleBlockCrawlerService.handleSingleBlock(b);
                 blockTaskPoolRepository.setStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(),
                         b.getNumber().longValue());
             } catch (IOException e) {
