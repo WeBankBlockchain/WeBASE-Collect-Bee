@@ -52,6 +52,8 @@ public class BlockDataResetService {
             return CommonResponse.NOBLOCK;
         }
         
+        //process multi-living
+        
         rollBackService.rollback(blockHeight);
         singleBlockCrawlerService.handleSingleBlock(blockHeight);
         
