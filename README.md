@@ -1,6 +1,7 @@
 # webase-bee
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/webase-bee/webase-bee.svg)](https://gitter.im/webase-bee/community)
+[![Total Lines](https://tokei.rs/b1/github/WeBankFinTech/webase-bee?category=lines)](https://github.com/WeBankFinTech/webase-bee)
 [![Stargazers over time](https://starcharts.herokuapp.com/WeBankFinTech/webase-bee.svg)](https://starcharts.herokuapp.com/WeBankFinTech/webase-bee)
 
 ## 1. 组件介绍
