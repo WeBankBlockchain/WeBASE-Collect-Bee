@@ -43,6 +43,7 @@ public class SystemEnvironmentConfig {
     private int maxBlockHeightThreshold;
     private int crawlBatchUnit;
     
+    private boolean multiLiving;
     private String zookeeperServiceLists;
     private String zookeeperNamespace;
     private String elasticJobName;

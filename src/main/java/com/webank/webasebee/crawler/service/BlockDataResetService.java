@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.dao.BlockInfoDAO;
 import com.webank.webasebee.entity.CommonResponse;
 import com.webank.webasebee.sys.db.entity.BlockInfo;
@@ -34,6 +35,8 @@ import com.webank.webasebee.sys.db.entity.BlockInfo;
  */
 @Service
 public class BlockDataResetService {
+	@Autowired
+    private SystemEnvironmentConfig systemEnvironmentConfig;
     @Autowired
     private BlockInfoDAO blockInfoDao;
     @Autowired
@@ -41,23 +44,21 @@ public class BlockDataResetService {
     @Autowired
     private SingleBlockCrawlerService singleBlockCrawlerService;
     
-    public CommonResponse resetBlockDataByBlockId(long blockHeight) throws IOException{
+    public CommonResponse resetBlockDataByBlockId(long blockHeight) throws IOException{ 
         
-        BlockInfo blockInfo = blockInfoDao.getBlockInfo();
-        if(blockInfo == null){
-            return CommonResponse.SYSERROR;
-        }
-        
-        if(blockHeight > blockInfo.getCurrentBlockHeight()){
-            return CommonResponse.NOBLOCK;
-        }
-        
-        //process multi-living
-        
-        rollBackService.rollback(blockHeight);
-        singleBlockCrawlerService.handleSingleBlock(blockHeight);
-        
-        return CommonResponse.SUCCESS;
+        if(systemEnvironmentConfig.isMultiLiving()) {
+        	//TODO:add multiLiving process
+        	return CommonResponse.SUCCESS;
+        }else {
+        	BlockInfo blockInfo = blockInfoDao.getBlockInfo();
+        	
+            if(blockInfo == null) return CommonResponse.SYSERROR;
+            if(blockHeight > blockInfo.getCurrentBlockHeight()) return CommonResponse.NOBLOCK;
+            
+            rollBackService.rollback(blockHeight);
+            singleBlockCrawlerService.handleSingleBlock(blockHeight);
+            
+            return CommonResponse.SUCCESS;
+        }         
     }
-
 }
