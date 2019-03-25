@@ -95,12 +95,33 @@ WEBASE-BEE还集成了Swagger组件，提供了可视化的文档和测试控制
 
 webase-bee的工程使用gradle进行构建，是一个SpringBoot工程。
 
+```
+-build.gradle
+-config/contract
+-src/main
+         -resources
+         		application-sharding-tables.properties
+         		application.properties
+         		ca.crt
+         		client.keystore
+         -java
 
-#### 2.2.2 配置工程
+```
+
+其中build.gradle为gradle的构建文件，config/contract目录存放了合约编译为Java的文件，src/main/resources下面存放了配置文件。
+
+自动生成的Java代码一般位于src/main/java/com/webank/webasebee/generated；而合约编译后的文件除了会被存放到config/contract文件夹下以外，还会按照原有的package名称放入到src/main/java的路径下。
+
+
+#### 2.2.2 配置工程(更多高级配置)
+
+当完整地按照webase-monkey的操作手册进行操作获得webase-bee工程后，会得到webase-bee工程，主要的基础配置都将会在配置中自动生成，无需额外配置。但是，基于已生成的配置文件，你可以继续按照需求进行深入的个性化高级配置，例如配置集群部署、分库分表、读写分离等等。
+
 
 在得到webase-bee工程后，主要的配置文件位于src/main/resources目录下。其中，application.properties包含了除部分数据库配置外的全部配置。 application-sharding-tables.properties包含了数据库部分的配置。
 
 ##### 单节点部署的配置
+在选择单节点配置后，以下配置会自动生成。
 单节点任务调度的配置，分布式任务调度的配置默认位于 src/main/resources/application.properties
 
 ```
@@ -249,4 +270,242 @@ sharding.jdbc.config.props.sql.show=true
 
 ```
 
+
+#### 2.2.3 编译代码并运行程序
+
+如果你已经按照webase-monkey的操作手册进行操作，那么可跳过此章节。
+
+但是如果你对配置或代码进行了深度定制，可参考以下步骤：
+
+```
+sh gradlew clean bootJar
+sh generate_bee.sh build 
+cd dist
+chmod +x *.jar
+nohup java -jar *.jar >/dev/null 2>&1 &
+tail -f *.log
+```
+
+当然，你也可以使用supervisor来守护和管理进程，supervisor能将一个普通的命令行进程变为后台daemon，并监控进程状态，异常退出时能自动重启。
+它是通过fork/exec的方式把这些被管理的进程当作supervisor的子进程来启动，这样只要在supervisor的配置文件中，把要管理的进程的可执行文件的路径写进去即可。
+也实现当子进程挂掉的时候，父进程可以准确获取子进程挂掉的信息的，可以选择是否自己启动和报警。
+supervisor还提供了一个功能，可以为supervisord或者每个子进程，设置一个非root的user，这个user就可以管理它对应的进程。
+
+supervisor的安装与部署可以参考 webase-monkey 附录6的说明文档。
+
+
+#### 2.2.4 检查运行状态及退出
+
+##### 2.2.4.1 检查程序进程是否正常运行
+```
+ps -ef |grep webase-bee
+```
+如果看到如下信息，则代表进程执行正常：
+```
+app   21980 24843  0 15:23 pts/3    00:00:44 java -jar webase-bee0.3.0-SNAPSHOT.jar
+```
+
+##### 2.2.4.2 检查程序是否已经正常执行
+
+当你看到程序运行，并在最后出现以下字样时，则代表运行成功：
+    
+```
+Hibernate: select blockheigh0_.pk_id as pk_id1_2_, blockheigh0_.block_height as block_he2_2_, blockheigh0_.event_name as event_na3_2_, blockheigh0_.depot_updatetime as depot_up4_2_ from block_height_info blockheigh0_ where blockheigh0_.event_name=?
+Hibernate: select blockheigh0_.pk_id as pk_id1_2_, blockheigh0_.block_height as block_he2_2_, blockheigh0_.event_name as event_na3_2_, blockheigh0_.depot_updatetime as depot_up4_2_ from block_height_info blockheigh0_ where blockheigh0_.event_name=?
+Hibernate: select blockheigh0_.pk_id as pk_id1_2_, blockheigh0_.block_height as block_he2_2_, blockheigh0_.event_name as event_na3_2_, blockheigh0_.depot_updatetime as depot_up4_2_ from block_height_info blockheigh0_ where blockheigh0_.event_name=?
+```
+
+##### 2.2.4.3 检查数据是否已经正常产生
+
+你也可以通过DB来检查，登录你之前配置的数据库，看到自动创建完表的信息，以及表内开始出现数据内容，则代表一切进展顺利。如你可以执行以下命令：
+```
+# 请用你的配置信息替换掉[]里的配置，并记得删除[]
+mysql -u[用户名] -p[密码] -e "use [数据库名]; select count(*) from block_detail_info"
+```
+如果查询结果非空，出现类似的如下记录，则代表导出数据已经开始运行：
+```
++----------+
+| count(*) |
++----------+
+|      633 |
++----------+
+```
+
+##### 2.2.4.4 停止导入程序
+
+```
+ps -ef |grep webase-bee |grep -v grep|awk '{print $2}' |xargs kill -9
+
+```
+
+
+
+## 3. 存储模型
+
+数据导出中间件会自动将数据导出到存储介质中，每一类数据都有特定的存储格式和模型，以MySQL为例。包括四类数据：区块数据、账户数据、事件数据和交易数据。
+
+### 3.1 区块数据存储模型
+
+区块数据存储模型包括三个数据存储模型，分别为区块基本数据存储模型、区块详细数据存储模型及区块交易数据存储模型。
+
+#### 3.1.1 区块基本数据存储模型
+
+##### 3.1.1.1 单机部署模式下
+
+在单机部署模式下，区块基本数据存储模型用于存储区块整体信息，包括链块高和链上当前交易总量，对应数据库表名称为**block_info**，该表中只会有一条记录，该表不能进行分表操作，如下所示。
+
+| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| pk_id | bigint(20) | Primary key & NOT NULL | 自增 | 主键Id |
+| current_block_height | bigint(20) |  |  | 已抓取的块高 |
+| status | int |  | 2 | 独立服务使用，处理块信息是否正常 |
+| tx_count | bigint(20) |  |  | 链上总交易量 |
+| depot_updatetime | datetime |  | 系统时间 | 记录插入/更新时间 |
+
+##### 3.1.1.2 集群部署模式下
+在集群部署模式下，区块基本数据存储模型与单机模式略有不同；存储了所有区块的状态信息，对应数据库表名称为**block_task_pool**,如下所示:
+
+| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| pk_id | bigint(20) | Primary key & NOT NULL | 自增 | 主键Id |
+| block_height | bigint(20) |  |  | 块高 |
+| handle_item | int(11) |  |  | 处理分片序号，默认为0 |
+| status | int |  | 2 | 0-待处理；1-处理中；2-已成功 |
+| depot_updatetime | datetime |  | 系统时间 | 记录插入/更新时间 |
+
+
+#### 3.1.2	区块详细数据存储模型
+
+区块详细数据存储模型用于存储每个区块的详细数据，包括区块哈希、块高、出块时间、块上交易量，对应的数据库表名为**block_detail_info**。如下表所示。
+
+| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| pk_id | bigint(20) | Primary key & NOT NULL | 自增 | 主键Id |
+| block_hash | varchar(225) | Unique key & Index |  | 区块哈希 |
+| block_height | bigint(20) |  |  | 区块高度 |
+| block_tiemstamp | datetime | index |  | 出块时间 |
+| tx_count | int(11) |  |  | 当前区块交易量 |
+| depot_updatetime | datetime |  | 系统时间 | 记录插入/更新时间 |
+
+#### 3.1.3区块交易数据存储模型
+
+区块交易数据存储模型用于存储每个区块中每个交易的基本信息，包括区块哈希、块高、出块时间、合约名称、方法名称、交易哈希、交易发起方地址、交易接收方地址，对应的数据库表名为**block_tx_detail_info**。如下表所示。
+
+| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| pk_id | bigint(20) | Primary key & NOT NULL | 自增 | 主键Id |
+| block_hash | varchar(225) | Unique key & Index |  | 区块哈希 |
+| block_height | bigint(20) |  |  | 区块高度 |
+| block_tiemstamp | datetime | index |  | 出块时间 |
+| contract_name | varchar(225) |  |  | 该笔交易的合约名称 |
+| method_name | varchar(225) |  |  | 该笔交易调用的function名称 |
+| tx_hash | varchar(225) |  |  | 交易哈希 |
+| tx_from | varchar(225) |  |  | 交易发起方地址 |
+| tx_to | varchar(225) |  |  | 交易接收方地址 |
+| depot_updatetime | datetime |  | 系统时间 | 记录插入/更新时间 |
+
+### 3.2 账户数据存储模型
+
+账户数据存储模型用于存储区块链网络中所有账户信息，包括账户创建时所在块高、账户所在块的出块时间、账户地址（合约地址）、合约名称。对应的数据库表名为**account_info**。如下表所示。需要注意的是，如果通过嵌套合约隐式调用构造方法，则不会导出。比如A合约中通过关键字new一个B合约，则B合约不会导出。
+
+| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| pk_id | bigint(20) | Primary key & NOT NULL | 自增 | 主键Id |
+| block_height | bigint(20) | index |  | 区块高度 |
+| block_tiemstamp | datetime | index |  | 出块时间 |
+| contract_address | varchar(225) | index |  | 合约/账户地址 |
+| contract_name | varchar(225) |  |  | 合约名称 |
+| depot_updatetime | datetime |  | 系统时间 | 记录插入/更新时间 |
+
+### 3.3 事件数据存储模型
+
+事件数据存储模型是根据合约中的事件（Event）自动生成的。一个合约中有多少个事件就会生成多少个对应的事件数据存储表。
+
+#### 3.3.1 事件数据存储命名规则
+
+由于事件数据存储模型是自动生成的，所以事件数据存储表名和表结构及字段命名采用统一的规则。以如下合约作为示例。
+
+```
+pragma solidity ^0.4.7;
+contract UserInfo {
+    bytes32 _userName;
+    uint8 _sex;
+    
+    function UserInfo(bytes32 userName, uint8 sex) public {
+        _userName = userName;
+        _sex = sex;
+    }
+    
+    event modifyUserNameEvent(bytes32 userName，uint8 sex);
+    
+    function modifyUserName(bytes32 userName) public returns(bytes32){
+        _userName = userName;
+        modifyUserNameEvent(_userName，_sex);
+        return _userName;
+    }
+}
+```
+##### 3.3.1.1	事件表命名规则
+
+事件表命名规则为：合约名称_事件名称，并将合约名称和事件名称中的驼峰命名转化为小写加下划线方式。比如上述合约中合约名称为UserInfo，事件名称为modifyUserNameEvent，则表名称为user_info_modify_user_name_event。
+
+##### 3.3.1.2	事件字段命名规则
+
+事件字段命名规则：事件字段驼峰命名转化为小写加下划线方式。仍以上述合约中modifyUserNameEvent为例，包含字段userName，则在user_info_modify_user_name_event表中对应的字段为user_name。
+
+#### 3.3.2 事件数据存储模型
+
+事件数据存储模型除过存储该事件的相关信息外，还会存储和该事件相关的块和交易信息，如下表所示。
+
+| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| pk_id | bigint(20) | Primary key & NOT NULL | 自增 | 主键Id |
+| block_height | bigint(20) | index |  | 区块高度 |
+| block_tiemstamp | datetime | index |  | 出块时间 |
+| **event-paralist** |  |  |  | 事件字段列表 |
+| tx_hash | varchar(225) | index |  | 交易哈希 |
+| depot_updatetime | datetime |  | 系统时间 | 记录插入/更新时间 |
+
+以上述智能合约为例，对应的 **<event-paralist>** 如下：
+
+| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| user_name | varchar(255) |  |  | 用户名 |
+| sex | int |  |  | 性别 |
+
+### 3.4	交易数据存储模型
+
+交易数据存储模型同事件数据存储模型类似，是根据合约中的方法（Function）自动生成的。一个合约中有多少个方法就会生成多少个对应的方法数据存储表。该方法指的是实际产生交易的方法（含构造方法），不包含事件（Event）方法和查询方法（constant关键字标注）。
+
+#### 3.4.1	交易数据存储命名规则
+
+交易数据存储表名、表结构及字段命名规则同事件数据存储模型类似，以3.3.1中的合约为例进行说明。
+
+##### 3.4.1.1	交易表命名规则
+
+交易表命名规则为：合约名称_方法名称，并将合约名称和方法名称中的驼峰命名转化为小写加下划线方式。比如上述合约中合约名称为UserInfo，方法名称为modifyUserName，则表名称为user_info_modify_user_name；构造方法名称为UserInfo，那么对应的表名为user_info_user_info。
+
+##### 3.4.1.2	交易字段命名规则
+
+交易字段命名规则也是将交易参数字段驼峰命名转化为小写加下划线，不再赘述。需要指出的是，对于一些没有参数的方法，交易数据存储模型没有办法存储，即通过无参方法产生的交易明细将无法通过数据导出工具获取到。
+
+#### 3.4.2	交易数据存储模型
+
+交易数据存储模型除过存储该方法的相关信息外，还会存储和该方法相关的块和交易信息，如下表所示。
+
+| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| pk_id | bigint(20) | Primary key & NOT NULL | 自增 | 主键Id |
+| block_height | bigint(20) | index |  | 区块高度 |
+| block_tiemstamp | datetime | index |  | 出块时间 |
+| **function-paralist** |  |  |  | 方法字段列表 |
+| tx_hash | varchar(225) | index |  | 交易哈希 |
+| depot_updatetime | datetime |  | 系统时间 | 记录插入/更新时间 |
+
+以**3.3.1**中的合约为例，对应的 **<function-paralist>** 如下：
+
+| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| user_name | varchar(255) |  |  | 用户名 |
+| sex | int |  |  | 性别 |
 
