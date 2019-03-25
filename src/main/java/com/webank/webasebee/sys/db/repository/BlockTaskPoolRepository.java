@@ -40,6 +40,8 @@ public interface BlockTaskPoolRepository
         extends JpaRepository<BlockTaskPool, Long>, JpaSpecificationExecutor<BlockTaskPool> {
 
     public BlockTaskPool findTopByOrderByBlockHeightDesc();
+    
+    public BlockTaskPool findByBlockHeight(long blockHeight);
 
     @Query(value = "select * from block_task_pool where block_height% ?1 = ?2 and status = ?3 limit ?4", nativeQuery = true)
     public List<BlockTaskPool> findByStatusModByBlockHeightLimit(int shardingCount, int shardingItem, int status,
