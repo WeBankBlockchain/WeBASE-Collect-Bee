@@ -24,6 +24,11 @@ import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.dao.BlockInfoDAO;
 import com.webank.webasebee.entity.CommonResponse;
 import com.webank.webasebee.sys.db.entity.BlockInfo;
+import com.webank.webasebee.sys.db.entity.BlockTaskPool;
+import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.task.CustomJobExceptionHandler;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * BlockDataResetService
@@ -34,6 +39,7 @@ import com.webank.webasebee.sys.db.entity.BlockInfo;
  *
  */
 @Service
+@Slf4j
 public class BlockDataResetService {
 	@Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
@@ -43,22 +49,26 @@ public class BlockDataResetService {
     private RollBackService rollBackService;
     @Autowired
     private SingleBlockCrawlerService singleBlockCrawlerService;
+    @Autowired
+    private BlockTaskPoolRepository blockTaskPoolRepository;
     
     public CommonResponse resetBlockDataByBlockId(long blockHeight) throws IOException{ 
         
+        log.info("================multiliving==========:{}", systemEnvironmentConfig.isMultiLiving());
+        
         if(systemEnvironmentConfig.isMultiLiving()) {
-        	//TODO:add multiLiving process
-        	return CommonResponse.SUCCESS;
+            BlockTaskPool blockTaskPool = blockTaskPoolRepository.findByBlockHeight(blockHeight);
+            if(blockTaskPool == null) return CommonResponse.NOBLOCK;
         }else {
         	BlockInfo blockInfo = blockInfoDao.getBlockInfo();
         	
             if(blockInfo == null) return CommonResponse.SYSERROR;
             if(blockHeight > blockInfo.getCurrentBlockHeight()) return CommonResponse.NOBLOCK;
-            
-            rollBackService.rollback(blockHeight);
-            singleBlockCrawlerService.handleSingleBlock(blockHeight);
-            
-            return CommonResponse.SUCCESS;
-        }         
+        }  
+        
+        rollBackService.rollback(blockHeight);
+        singleBlockCrawlerService.handleSingleBlock(blockHeight);
+        
+        return CommonResponse.SUCCESS;
     }
 }
