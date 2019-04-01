@@ -19,6 +19,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -42,7 +43,9 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@Table(name = "block_task_pool")
+@Table(name = "block_task_pool", indexes = { @Index(name = "block_height", columnList = "block_height"),
+        @Index(name = "sync_status", columnList = "sync_status"), @Index(name = "certainty", columnList = "certainty"),
+        @Index(name = "depot_updatetime", columnList = "depot_updatetime") })
 @Entity(name = "block_task_pool")
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

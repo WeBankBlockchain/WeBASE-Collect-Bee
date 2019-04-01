@@ -23,6 +23,14 @@ import com.webank.webasebee.entity.CommonDataResponse;
 import com.webank.webasebee.entity.CommonResponse;
 import com.webank.webasebee.entity.ValidErrorResponse;
 
+/**
+ * ResponseUtils
+ *
+ * @Description: ResponseUtils
+ * @author maojiayu
+ * @data Apr 1, 2019 9:25:46 PM
+ *
+ */
 public class ResponseUtils {
 
     /**
