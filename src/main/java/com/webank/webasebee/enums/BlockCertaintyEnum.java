@@ -19,17 +19,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * TxInfoStatusEnum
+ * BlockCertaintyEnum
  *
- * @Description: TxInfoStatusEnum
+ * @Description: BlockCertaintyEnum
  * @author maojiayu
- * @data Dec 13, 2018 8:48:55 PM
+ * @data Apr 1, 2019 3:58:30 PM
  *
  */
 @AllArgsConstructor
 @Getter
-public enum TxInfoStatusEnum {
+public enum BlockCertaintyEnum {
+    UNCERTAIN(0), FIXED(1);
+    private int certainty;
 
-    INIT(0), DOING(1), DONE(2), ERROR(3), TIMEOUT(4);
-    private int status;
 }

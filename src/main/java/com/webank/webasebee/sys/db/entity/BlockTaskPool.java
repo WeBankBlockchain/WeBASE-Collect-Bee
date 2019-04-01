@@ -32,16 +32,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-
 /**
- * BlockInfo entity storage of block chain base info.
+ * BlockTaskPool
  *
- * @Description: BlockInfo
- * @author graysonzhang
- * @data 2018-11-15 00:41:39
+ * @Description: BlockTaskPool
+ * @author maojiayu
+ * @data Apr 1, 2019 3:04:00 PM
  *
  */
-@SuppressWarnings("serial")
 @Data
 @Accessors(chain = true)
 @Table(name = "block_task_pool")
@@ -49,17 +47,23 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BlockTaskPool extends IdEntity {
-    
+
+    private static final long serialVersionUID = 5987912520917085396L;
+
     @Column(name = "block_height", unique = true)
     private long blockHeight;
-    
-    /** @Fields status : roll back status */
-    @Column(name = "status")
-    private int status;
-    
+
+    /** @Fields syncStatus : sync status of transactions */
+    @Column(name = "sync_status")
+    private int syncStatus;
+
+    /** @Fields certainty : certainty of fork check */
+    @Column(name = "certainty")
+    private int certainty;
+
     @Column(name = "handle_item")
-    private int handleItem;
-    
+    private int handleItem = 0;
+
     /** @Fields updatetime : update time */
     @UpdateTimestamp
     @Column(name = "depot_updatetime")

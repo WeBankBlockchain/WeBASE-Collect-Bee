@@ -25,9 +25,7 @@ import org.springframework.stereotype.Service;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
-import com.webank.webasebee.enums.TxInfoStatusEnum;
-import com.webank.webasebee.sys.db.entity.BlockTaskPool;
-import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.crawler.service.BlockTaskPoolService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Description: PrepareTaskJob
  * @author maojiayu
  * @data Jan 11, 2019 10:03:29 AM
- *
+ * 
  */
 @Service
 @Slf4j
@@ -46,24 +44,24 @@ public class PrepareTaskJob implements SimpleJob {
     @Autowired
     private Web3j web3j;
     @Autowired
-    private BlockTaskPoolRepository blockTaskPoolRepository;
+    private BlockTaskPoolService blockTaskPoolService;
 
+    /**
+     * prepare to do tasks, and restored in block_task_pool. 1. process errors; 2. process forks; 3. prepare tasks;
+     * 
+     * @param ShardingContext: elastic-job
+     * @return void
+     * @see com.dangdang.ddframe.job.api.simple.SimpleJob#execute(com.dangdang.ddframe.job.api.ShardingContext)
+     */
     @Override
     public void execute(ShardingContext shardingContext) {
         try {
             BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
             long total = blockNumber.longValue();
             log.info("Current chain block number is:{}", total);
-            BlockTaskPool item = blockTaskPoolRepository.findTopByOrderByBlockHeightDesc();
-            long height = 0;
-            if (item != null) {
-                height = item.getBlockHeight() + 1;
-            }
-            for (; height <= total; height++) {
-                BlockTaskPool pool = new BlockTaskPool().setBlockHeight(height)
-                        .setStatus(TxInfoStatusEnum.INIT.getStatus()).setHandleItem(shardingContext.getShardingItem());
-                blockTaskPoolRepository.save(pool);
-            }
+            long height = blockTaskPoolService.getTaskPoolHeight();
+            blockTaskPoolService.processErrors();
+            blockTaskPoolService.prepareTask(height, total);
         } catch (IOException e) {
             log.error("Job {}, exception occur in job processing: {}", shardingContext.getTaskId(), e.getMessage());
 

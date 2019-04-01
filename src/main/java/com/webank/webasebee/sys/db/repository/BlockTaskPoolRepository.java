@@ -16,6 +16,7 @@
 package com.webank.webasebee.sys.db.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -39,19 +40,25 @@ import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 public interface BlockTaskPoolRepository
         extends JpaRepository<BlockTaskPool, Long>, JpaSpecificationExecutor<BlockTaskPool> {
 
-    public BlockTaskPool findTopByOrderByBlockHeightDesc();
-    
+    public Optional<BlockTaskPool> findTopByOrderByBlockHeightDesc();
+
     public BlockTaskPool findByBlockHeight(long blockHeight);
 
-    @Query(value = "select * from block_task_pool where block_height% ?1 = ?2 and status = ?3 limit ?4", nativeQuery = true)
-    public List<BlockTaskPool> findByStatusModByBlockHeightLimit(int shardingCount, int shardingItem, int status,
-            int limit);
+    @Query(value = "select * from #{#entityName} where sync_status = 4 or sync_status = 3 ", nativeQuery = true)
+    public List<BlockTaskPool> findUnNormalRecords();
+
+    @Query(value = "select * from #{#entityName} where sync_status = ?1 order by block_height limit ?2", nativeQuery = true)
+    public List<BlockTaskPool> findBySyncStatusOrderByBlockHeightLimit(int syncStatus, int limit);
+
+    @Query(value = "select * from #{#entityName} where block_height% ?1 = ?2 and sync_status = ?3 limit ?4", nativeQuery = true)
+    public List<BlockTaskPool> findBySyncStatusModByBlockHeightLimit(int shardingCount, int shardingItem,
+            int syncStatus, int limit);
 
     @Transactional
     @Modifying
-    @Query(value = "update #{#entityName} set status = ?1 where block_height = ?2", nativeQuery = true)
-    public void setStatusByBlockHeight(int status, long blockHeight);
-    
+    @Query(value = "update #{#entityName} set sync_status = ?1 where block_height = ?2", nativeQuery = true)
+    public void setSyncStatusByBlockHeight(int syncStatus, long blockHeight);
+
     /*
      * @see com.webank.webasebee.sys.db.repository.RollbackInterface#rollback(long)
      */

@@ -15,23 +15,19 @@
  */
 package com.webank.webasebee.task;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
+
 import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
-import com.webank.webasebee.crawler.service.SingleBlockCrawlerService;
+import com.webank.webasebee.crawler.service.BlockSyncService;
 import com.webank.webasebee.enums.TxInfoStatusEnum;
-import com.webank.webasebee.ods.EthClient;
 import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * MyDataflowJob
@@ -43,52 +39,25 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @ConditionalOnProperty(name = "system.multiLiving", havingValue = "true")
-@Slf4j
 public class DepotJob implements DataflowJob<Block> {
-    @Autowired
-    private EthClient ethClient;
+
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
+
     @Autowired
-    private SingleBlockCrawlerService singleBlockCrawlerService;
+    private BlockSyncService blockSyncService;
 
     @Override
     public List<Block> fetchData(ShardingContext shardingContext) {
         List<BlockTaskPool> tasks =
-                blockTaskPoolRepository.findByStatusModByBlockHeightLimit(shardingContext.getShardingTotalCount(),
+                blockTaskPoolRepository.findBySyncStatusModByBlockHeightLimit(shardingContext.getShardingTotalCount(),
                         shardingContext.getShardingItem(), TxInfoStatusEnum.INIT.getStatus(), 1);
-        List<Block> result = new ArrayList<>();
-        for (BlockTaskPool task : tasks) {
-            task.setStatus(TxInfoStatusEnum.DOING.getStatus());
-            blockTaskPoolRepository.save(task);
-            BigInteger bigBlockHeight = new BigInteger(Long.toString(task.getBlockHeight()));
-            try {
-                Block block = ethClient.getBlock(bigBlockHeight);
-                result.add(block);
-            } catch (IOException e) {
-                log.error("Job  {}, Block {},  exception occur in job processing: {}", shardingContext.getTaskId(),
-                        task.getBlockHeight(), e.getMessage());
-                blockTaskPoolRepository.setStatusByBlockHeight(TxInfoStatusEnum.INIT.getStatus(),
-                        task.getBlockHeight());
-            }
-        }
-        return result;
+        return blockSyncService.getTasks(tasks);
     }
 
     @Override
     public void processData(ShardingContext shardingContext, List<Block> data) {
-        for (Block b : data) {
-            try {
-                singleBlockCrawlerService.handleSingleBlock(b);
-                blockTaskPoolRepository.setStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(),
-                        b.getNumber().longValue());
-            } catch (IOException e) {
-                log.error("Job {}, block {}, exception occur in job processing: {}", shardingContext.getTaskId(),
-                        b.getNumber().longValue(), e.getMessage());
-                blockTaskPoolRepository.setStatusByBlockHeight(TxInfoStatusEnum.INIT.getStatus(),
-                        b.getNumber().longValue());
-            }
-        }
+        blockSyncService.processDataSequence(data);
     }
 
 }

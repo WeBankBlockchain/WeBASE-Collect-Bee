@@ -16,19 +16,15 @@
 package com.webank.webasebee.handler;
 
 import java.sql.Date;
-import java.util.List;
 
 import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
+
 import com.webank.webasebee.dao.BaseDAO;
 import com.webank.webasebee.sys.db.entity.BlockDetailInfo;
-import com.webank.webasebee.sys.db.entity.BlockInfo;
 import com.webank.webasebee.sys.db.repository.BlockDetailInfoRepository;
-import com.webank.webasebee.sys.db.repository.BlockInfoRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * BlockCrawlerHandler is responsible for crawling block info.
@@ -40,48 +36,19 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @EnableScheduling
-@Slf4j
-public class BlockCrawlerHandler{
-	/** @Fields blockInfoRepository : block info repository */
-	@Autowired
-	private BlockInfoRepository blockInfoRepository;
+public class BlockCrawlerHandler {
+
     /** @Fields blockDetailInfoRepository : block detail info repository */
     @Autowired
     private BlockDetailInfoRepository blockDetailInfoRepository;
-    
-    /**    
-     * get block height and transaction's count in current block, then add up the transaction's count, update block base info finally.  
-     * 
-     * @param block : Block
-     * @param blockHeight : block height     
-     * @return boolean       
-     */
-    public boolean handleBlock(Block block, long blockHeight) {
-		BlockInfo blockInfo = null;
-		List<BlockInfo> blockInfoList = blockInfoRepository.findAll();
-		if(blockInfoList != null && blockInfoList.size() != 0){
-			blockInfo = blockInfoList.get(0);
-		}else{
-			blockInfo = new BlockInfo();
-		}
-		
-		long tempTxCount = blockInfo.getTxCount();
-		log.info("tx count : {}", tempTxCount);
-		tempTxCount += block.getTransactions().size();
-		blockInfo.setCurrentBlockHeight(blockHeight);
-		blockInfo.setTxCount(tempTxCount);
-		blockInfoRepository.save(blockInfo);
-		return true;
-	}
 
-    
-    /**    
+    /**
      * Get block detail info form block object, and insert into db. Block detail info contains block height,
-     * transaction's count in current block, block hash and block timestamp.  
+     * transaction's count in current block, block hash and block timestamp.
      * 
      * @param block
-     * @param blockHeight   
-     * @return boolean       
+     * @param blockHeight
+     * @return boolean
      */
     public boolean handleBlockDetail(Block block, long blockHeight) {
         BlockDetailInfo blockDetailInfo = new BlockDetailInfo();
