@@ -73,7 +73,7 @@ public class SingleBlockCrawlerService {
      */
     public long handleSingleBlock(long blockHeight) throws IOException {
         BigInteger bigBlockHeight = new BigInteger(Long.toString(blockHeight));
-        EthBlock.Block block = ethClient.getBlock(bigBlockHeight);
+        EthBlock.Block block = ethClient.getBlock(bigBlockHeight);        
         return handleSingleBlock(block);
     }
 

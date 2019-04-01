@@ -15,18 +15,27 @@
  */
 package com.webank.webasebee.crawler.service;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.bcos.web3j.protocol.core.methods.response.EthBlock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.webank.webasebee.constants.BlockForkConstants;
+import com.webank.webasebee.dao.BlockDetailInfoDAO;
 import com.webank.webasebee.enums.BlockCertaintyEnum;
 import com.webank.webasebee.enums.TxInfoStatusEnum;
+import com.webank.webasebee.ods.EthClient;
 import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
+
+import cn.hutool.core.date.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * BlockTaskPoolService
@@ -37,12 +46,17 @@ import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
  *
  */
 @Service
+@Slf4j
 public class BlockTaskPoolService {
 
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
     @Autowired
+    private BlockDetailInfoDAO blockDetailInfoDAO;
+    @Autowired
     private RollBackService rollBackService;
+    @Autowired
+    private EthClient ethClient;
 
     public long getTaskPoolHeight() {
         Optional<BlockTaskPool> item = blockTaskPoolRepository.findTopByOrderByBlockHeightDesc();
@@ -76,6 +90,52 @@ public class BlockTaskPoolService {
                 blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.INIT.getStatus(), e);
             });
         }
+    }
+
+    public void checkForks(long currentBlockHeight) throws IOException {
+        List<BlockTaskPool> uncertainBlocks =
+                blockTaskPoolRepository.findByCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
+        for (BlockTaskPool pool : uncertainBlocks) {
+            if (pool.getBlockHeight() <= currentBlockHeight - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
+                if (pool.getSyncStatus() == TxInfoStatusEnum.DOING.getStatus()) {
+                    log.error("block {} is doing!", pool.getBlockHeight());
+                    continue;
+                }
+                if (pool.getSyncStatus() == TxInfoStatusEnum.INIT.getStatus()) {
+                    log.error("block {} is not sync!", pool.getBlockHeight());
+                    blockTaskPoolRepository.setCertaintyByBlockHeight(BlockCertaintyEnum.FIXED.getCertainty(),
+                            pool.getBlockHeight());
+                    continue;
+                }
+                EthBlock.Block block = ethClient.getBlock(BigInteger.valueOf(pool.getBlockHeight()));
+                String newHash = block.getHash();
+                if (!newHash.equals(
+                        blockDetailInfoDAO.getBlockDetailInfoByBlockHeight(pool.getBlockHeight()).getBlockHash())) {
+                    log.info("Block {} is forked!!! ready to resync", pool.getBlockHeight());
+                    rollBackService.rollback(pool.getBlockHeight(), pool.getBlockHeight() + 1);
+                    blockTaskPoolRepository.setSyncStatusAndCertaintyByBlockHeight(TxInfoStatusEnum.INIT.getStatus(),
+                            BlockCertaintyEnum.FIXED.getCertainty(), pool.getBlockHeight());
+                } else {
+                    log.info("Block {} is not forked!", pool.getBlockHeight());
+                    blockTaskPoolRepository.setCertaintyByBlockHeight(BlockCertaintyEnum.FIXED.getCertainty(),
+                            pool.getBlockHeight());
+                }
+
+            }
+        }
+
+    }
+
+    public void checkTimeOut() {
+        Date offsetDate = DateUtil.offsetSecond(DateUtil.date(), BlockForkConstants.DEPOT_TIME_OUT);
+        List<BlockTaskPool> list = blockTaskPoolRepository
+                .findBySyncStatusLessThanDepotUpdatetime(TxInfoStatusEnum.DOING.getStatus(), offsetDate);
+        list.forEach(p -> {
+            log.error("Block {} sync timeout!!", p.getBlockHeight());
+            blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.TIMEOUT.getStatus(),
+                    p.getBlockHeight());
+        });
+
     }
 
 }

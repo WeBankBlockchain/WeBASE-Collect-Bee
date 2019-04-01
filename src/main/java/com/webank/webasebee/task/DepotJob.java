@@ -47,6 +47,9 @@ public class DepotJob implements DataflowJob<Block> {
     @Autowired
     private BlockSyncService blockSyncService;
 
+    /*
+     * @see com.dangdang.ddframe.job.api.dataflow.DataflowJob#fetchData(com.dangdang.ddframe.job.api.ShardingContext)
+     */
     @Override
     public List<Block> fetchData(ShardingContext shardingContext) {
         List<BlockTaskPool> tasks =
@@ -55,6 +58,10 @@ public class DepotJob implements DataflowJob<Block> {
         return blockSyncService.getTasks(tasks);
     }
 
+    /*
+     * @see com.dangdang.ddframe.job.api.dataflow.DataflowJob#processData(com.dangdang.ddframe.job.api.ShardingContext,
+     * java.util.List)
+     */
     @Override
     public void processData(ShardingContext shardingContext, List<Block> data) {
         blockSyncService.processDataSequence(data);

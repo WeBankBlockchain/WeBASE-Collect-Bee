@@ -48,15 +48,13 @@ public class CommonCrawlerService {
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
     @Autowired
-    private RollBackService rollBackService;
-    @Autowired
     private BlockTaskPoolService blockTaskPoolService;
     @Autowired
     private BlockSyncService blockSyncService;
 
     /**
-     * The key driving entrance of single instance depot: 1. process errors; 2. produce tasks; 3. consume tasks;
-     * 4. check the fork status; 5. rollback; 6. continue and circle;
+     * The key driving entrance of single instance depot: 1. check timeout txs and process errors; 2. produce tasks; 3.
+     * consume tasks; 4. check the fork status; 5. rollback; 6. continue and circle;
      * 
      */
     public void handle() {
@@ -67,6 +65,7 @@ public class CommonCrawlerService {
                 log.info(
                         "Current blockNumber is {}, now height to depot is {}, and the max block height threshold is {}.",
                         total, height, systemEnvironmentConfig.getMaxBlockHeightThreshold());
+                blockTaskPoolService.checkTimeOut();
                 blockTaskPoolService.processErrors();
                 blockTaskPoolService.prepareTask(height, total);
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
@@ -81,6 +80,7 @@ public class CommonCrawlerService {
                 // single circle sleep time is read from the application.properties
                 Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
                 total = getCurrentBlockHeight();
+                blockTaskPoolService.checkForks(total);
             }
         } catch (IOException e) {
             log.error("depot IOError, {}", e.getMessage());

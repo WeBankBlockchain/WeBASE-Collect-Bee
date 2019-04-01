@@ -42,7 +42,6 @@ public class CrawlApplicationRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments var1) throws InterruptedException {
-        
         commonCrawlerService.handle();
     }
 }

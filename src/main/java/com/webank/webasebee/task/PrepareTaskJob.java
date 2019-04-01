@@ -47,7 +47,8 @@ public class PrepareTaskJob implements SimpleJob {
     private BlockTaskPoolService blockTaskPoolService;
 
     /**
-     * prepare to do tasks, and restored in block_task_pool. 1. process errors; 2. process forks; 3. prepare tasks;
+     * prepare to do tasks, and restored in block_task_pool. 1. check timeout txs and process errors; 2. process forks;
+     * 3. prepare tasks;
      * 
      * @param ShardingContext: elastic-job
      * @return void
@@ -60,7 +61,9 @@ public class PrepareTaskJob implements SimpleJob {
             long total = blockNumber.longValue();
             log.info("Current chain block number is:{}", total);
             long height = blockTaskPoolService.getTaskPoolHeight();
+            blockTaskPoolService.checkTimeOut();
             blockTaskPoolService.processErrors();
+            blockTaskPoolService.checkForks(total);
             blockTaskPoolService.prepareTask(height, total);
         } catch (IOException e) {
             log.error("Job {}, exception occur in job processing: {}", shardingContext.getTaskId(), e.getMessage());
