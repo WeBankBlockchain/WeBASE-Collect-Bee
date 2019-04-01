@@ -20,10 +20,11 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.entity.CommonResponse;
+import com.webank.webasebee.enums.TxInfoStatusEnum;
 import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.tools.ResponseUtils;
 
 /**
  * BlockDataResetService
@@ -35,8 +36,6 @@ import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
  */
 @Service
 public class BlockDataResetService {
-    @Autowired
-    private SystemEnvironmentConfig systemEnvironmentConfig;
     @Autowired
     private RollBackService rollBackService;
     @Autowired
@@ -50,8 +49,13 @@ public class BlockDataResetService {
         if (blockTaskPool == null) {
             return CommonResponse.NOBLOCK;
         }
+        if (blockTaskPool.getSyncStatus() == TxInfoStatusEnum.DOING.getStatus()) {
+            return ResponseUtils.error("Some task is still running. please resend the request later.");
+        }
+        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DOING.getStatus(), blockHeight);
         rollBackService.rollback(blockHeight, blockHeight + 1);
         singleBlockCrawlerService.handleSingleBlock(blockHeight);
+        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), blockHeight);
 
         return CommonResponse.SUCCESS;
     }
