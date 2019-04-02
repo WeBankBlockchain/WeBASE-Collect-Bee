@@ -57,7 +57,7 @@ public class SystemEnvironmentConfig {
     private String projectName;
     private String contractPath;
 
-    private long startBlockHeight;
+    private long startBlockHeight = 0;
     private String startDate;
 
 }

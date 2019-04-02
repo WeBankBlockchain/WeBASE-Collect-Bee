@@ -1,7 +1,13 @@
 # webase-bee
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/webase-bee/webase-bee.svg)](https://gitter.im/webase-bee/community)
-[![Stargazers over time](https://starcharts.herokuapp.com/WeBankFinTech/webase-bee.svg)](https://starcharts.herokuapp.com/WeBankFinTech/webase-bee)
+
+
+> 穿花度柳飞如箭，
+> 粘絮寻香似落星。
+> 小小微躯能负重，
+> 器器薄翅会乘风。
+> -- 吴承恩
 
 ## 1. 组件介绍
 
@@ -119,6 +125,15 @@ webase-bee的工程使用gradle进行构建，是一个SpringBoot工程。
 
 
 在得到webase-bee工程后，主要的配置文件位于src/main/resources目录下。其中，application.properties包含了除部分数据库配置外的全部配置。 application-sharding-tables.properties包含了数据库部分的配置。
+
+##### 导出数据范围的配置
+
+配置文件位于 src/main/resources/application.properties
+
+| 配置项 | 是否必输 | 说明 | 举例 | 默认值 |
+| --- | --- | --- | --- | --- |
+| system.startBlockHeight | N | 设置导出数据的起始区块号 | 1000 | 0 |
+| system.startDate | N | 设置导出数据的起始时间，例如设置导出2019年元旦开始上链的数据 | 2019-01-01 | - |
 
 ##### 单节点部署的配置
 在选择单节点配置后，以下配置会自动生成。
@@ -348,29 +363,17 @@ ps -ef |grep webase-bee |grep -v grep|awk '{print $2}' |xargs kill -9
 
 区块数据存储模型包括三个数据存储模型，分别为区块基本数据存储模型、区块详细数据存储模型及区块交易数据存储模型。
 
-#### 3.1.1 区块基本数据存储模型
+#### 3.1.1 区块下载任务明细表
 
-##### 3.1.1.1 单机部署模式下
-
-在单机部署模式下，区块基本数据存储模型用于存储区块整体信息，包括链块高和链上当前交易总量，对应数据库表名称为**block_info**，该表中只会有一条记录，该表不能进行分表操作，如下所示。
-
-| 字段 | 类型 | 字段设置 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| pk_id | bigint(20) | Primary key & NOT NULL | 自增 | 主键Id |
-| current_block_height | bigint(20) |  |  | 已抓取的块高 |
-| status | int |  | 2 | 独立服务使用，处理块信息是否正常 |
-| tx_count | bigint(20) |  |  | 链上总交易量 |
-| depot_updatetime | datetime |  | 系统时间 | 记录插入/更新时间 |
-
-##### 3.1.1.2 集群部署模式下
-在集群部署模式下，区块基本数据存储模型与单机模式略有不同；存储了所有区块的状态信息，对应数据库表名称为**block_task_pool**,如下所示:
+存储了所有区块的状态信息和下载情况，对应数据库表名称为**block_task_pool**,如下所示:
 
 | 字段 | 类型 | 字段设置 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | pk_id | bigint(20) | Primary key & NOT NULL | 自增 | 主键Id |
 | block_height | bigint(20) |  |  | 块高 |
+| certainty   |  int(11)		| 是否可能分叉 | 0- 是； 1-否 |
 | handle_item | int(11) |  |  | 处理分片序号，默认为0 |
-| status | int |  | 2 | 0-待处理；1-处理中；2-已成功 |
+| sync_status | int |  | 2 | 0-待处理；1-处理中；2-已成功；3-处理失败；4-超时 |
 | depot_updatetime | datetime |  | 系统时间 | 记录插入/更新时间 |
 
 
