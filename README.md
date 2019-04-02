@@ -85,7 +85,7 @@ WEBASE-BEE还集成了Swagger组件，提供了可视化的文档和测试控制
 | 依赖软件 | 说明 |备注|
 | --- | --- | --- |
 | Bash | 需支持Bash（理论上来说支持所有ksh、zsh等其他unix shell，但未测试）|
-| Java | >= Oracle JDK[1.8] | |
+| Java | >= JDK[1.8] | |
 | Git | 下载的安装包使用Git | |
 | MySQL | >= mysql-community-server[5.7] | |
 | zookeeper | >= zookeeper[3.4] | 只有在进行集群部署的时候需要安装|
