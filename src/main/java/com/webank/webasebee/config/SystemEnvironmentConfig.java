@@ -42,19 +42,22 @@ public class SystemEnvironmentConfig {
     private String privateKey;
     private int maxBlockHeightThreshold;
     private int crawlBatchUnit;
-    
+
     private boolean multiLiving;
     private String zookeeperServiceLists;
     private String zookeeperNamespace;
     private String elasticJobName;
     private String elasticJobcron;
     private int elasticJobshardingTotalCount;
-    
+
     private long frequency;
     private String contractPackName;
     private String group;
     private String baseProjectPath;
     private String projectName;
     private String contractPath;
+
+    private long startBlockHeight;
+    private String startDate;
 
 }

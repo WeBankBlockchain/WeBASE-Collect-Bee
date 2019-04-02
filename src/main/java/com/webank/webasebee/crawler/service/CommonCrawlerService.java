@@ -17,7 +17,10 @@ package com.webank.webasebee.crawler.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.ParseException;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
@@ -52,6 +55,17 @@ public class CommonCrawlerService {
     @Autowired
     private BlockSyncService blockSyncService;
 
+    @Autowired
+    private BlockIndexService blockIndexService;
+
+    private long startBlockNumber;
+
+    @PostConstruct
+    public void setStartBlockNumber() throws ParseException, IOException, InterruptedException {
+        startBlockNumber = blockIndexService.getStartBlockIndex();
+        log.info("Start succeed, and the block number is {}", startBlockNumber);
+    }
+
     /**
      * The key driving entrance of single instance depot: 1. check timeout txs and process errors; 2. produce tasks; 3.
      * consume tasks; 4. check the fork status; 5. rollback; 6. continue and circle;
@@ -62,6 +76,7 @@ public class CommonCrawlerService {
             while (true) {
                 long total = getCurrentBlockHeight();
                 long height = blockTaskPoolService.getTaskPoolHeight();
+                height = height > startBlockNumber ? height : startBlockNumber;
                 log.info(
                         "Current blockNumber is {}, now height to depot is {}, and the max block height threshold is {}.",
                         total, height, systemEnvironmentConfig.getMaxBlockHeightThreshold());
