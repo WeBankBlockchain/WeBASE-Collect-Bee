@@ -77,6 +77,9 @@ WEBASE-BEE还集成了Swagger组件，提供了可视化的文档和测试控制
 #### 提供可视化的互动API控制台
 集成swagger插件，提供可视化互动API控制台
 
+### 支持可视化的监控页面
+webase-bee可与grafana深度集成，支持自动生成dashboard实例，让您的链上数据了如指掌。
+
 ## 2. 快速开始
 
 ### 2.1 前置依赖
@@ -353,7 +356,90 @@ ps -ef |grep webase-bee |grep -v grep|awk '{print $2}' |xargs kill -9
 
 ```
 
+### 2.3 可视化监控程序安装和部署
 
+#### 2.3.1 安装软件
+
+首先，请安装docker，docker的安装可参考[docker安装手册](https://docker_practice.gitee.io/install/centos.html)
+
+等docker安装成功后，请下载grafana：
+
+```
+docker pull grafana/grafana
+
+```
+
+#### 2.3.2 启动grafana
+```
+docker run   -d   -p 3000:3000   --name=grafana   -e "GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource"   grafana/grafana
+```
+grafana将自动绑定3000端口。
+
+
+#### 2.3.3 登录grafana界面
+
+直接使用浏览器访问： http://your_ip:3000/ 
+
+请注意使用你机器的IP替换掉your_ip
+
+默认的用户名和密码为admin/admin
+
+
+#### 2.3.4 添加MySQL数据源
+在正常登录成功后，如图所示，选择左边栏设置按钮，点击『Data Sources』， 选择『MySQL』数据源
+
+![添加步骤：](https://github.com/WeBankFinTech/webase-monkey/blob/feature_datacheck.2019.03/photos/add_datasource.png)
+
+随后按照提示的页面，配置 Host， Database， User 和 Password等。
+
+#### 2.3.5 导入Dashboard模板
+webase-monkey会自动生成数据的dashboard模板，数据的路径位于：webase-bee/src/main/scripts/default_dashboard.json
+
+请点击左边栏『+』，选择『import』，点击绿色按钮『Upload .json File』,选择刚才的webase-bee/src/main/scripts/default_dashboard.json文件
+
+![导入步骤：](https://github.com/WeBankFinTech/webase-monkey/blob/feature_datacheck.2019.03/photos/import_json.png)
+
+最后，点击『import』按钮。
+
+如果导入成功，dashboards下面会出现『FISCO-BCOS区块链监控视图』
+
+您可以选择右上方的时间按钮来选择和设置时间范围及刷新时间等。
+
+更多关于Grafana的自定义配置和开发文档，可参考 [Grafana官方文档](http://docs.grafana.org/guides/getting_started/)
+
+
+### 2.4 开启可视化的功能性测试
+WEBASE-BEE默认集成了swagger的插件，支持通过可视化的控制台来发送交易、生成报文、查看结果、调试交易等。
+
+![swagger控制台：](https://github.com/WeBankFinTech/webase-monkey/blob/feature_datacheck.2019.03/photos/swagger.png)
+
+
+**请注意， swagger插件仅推荐在开发或测试环境调试使用，在正式上生产环境时，请关闭此插件**
+
+#### 2.4.1 打开swagger页面：
+
+请在你的浏览器打开此地址：
+
+> http://your_ip:port/swagger-ui.html
+
+例如，当你在本机运行了webase-bee，且未修改默认的8080端口，则可以访问此地址：
+
+> http://localhost:8080/swagger-ui.html
+
+此时，你可以看到上述页面，可以看到页面主要包括了http请求页面和数据模型两部分。
+
+
+#### 2.4.2 使用swagger发送具体的交易：
+
+选择点击对应的http请求集，可以点开相关的http请求。此时，你可以选择点击“try it out”，手动修改发送的Json报文，点击“Excute”按钮，即可发送并查收结果。
+
+我们以查询区块信息为例，如下列图所示：
+
+![选择请求：](https://github.com/WeBankFinTech/webase-monkey/blob/feature_datacheck.2019.03/photos/swag_test1.png)
+
+![编辑报文：](https://github.com/WeBankFinTech/webase-monkey/blob/feature_datacheck.2019.03/photos/swag_test2.png)
+
+![查收结果：](https://github.com/WeBankFinTech/webase-monkey/blob/feature_datacheck.2019.03/photos/swag_test3.png)
 
 ## 3. 存储模型
 
