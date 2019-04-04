@@ -17,6 +17,7 @@ package com.webank.webasebee.crawler.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.google.common.collect.Lists;
 import com.webank.webasebee.constants.BlockForkConstants;
 import com.webank.webasebee.dao.BlockDetailInfoDAO;
 import com.webank.webasebee.enums.BlockCertaintyEnum;
@@ -68,6 +70,7 @@ public class BlockTaskPoolService {
     }
 
     public void prepareTask(long begin, long end) {
+        List<BlockTaskPool> list = Lists.newArrayList();
         for (; begin <= end; begin++) {
             BlockTaskPool pool =
                     new BlockTaskPool().setBlockHeight(begin).setSyncStatus(TxInfoStatusEnum.INIT.getStatus());
@@ -76,8 +79,9 @@ public class BlockTaskPoolService {
             } else {
                 pool.setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
             }
-            blockTaskPoolRepository.save(pool);
+            list.add(pool);
         }
+        blockTaskPoolRepository.saveAll(list);
     }
 
     public void processErrors() {
