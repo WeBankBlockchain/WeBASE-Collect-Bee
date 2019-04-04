@@ -40,7 +40,7 @@ public class SystemEnvironmentConfig {
     private String clientCertPassword;
 
     private String privateKey;
-    private int maxBlockHeightThreshold = 20;
+    private int maxBlockHeightThreshold = 10;
     private int crawlBatchUnit = 100;
 
     private boolean multiLiving;
