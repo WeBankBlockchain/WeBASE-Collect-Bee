@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.ods.EthClient;
 
+import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -55,8 +56,7 @@ public class BlockIndexService {
         }
         if (systemEnvironmentConfig.getStartDate() != null && systemEnvironmentConfig.getStartDate().length() > 0) {
             log.info("startDate : {}", systemEnvironmentConfig.getStartDate());
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date startDate = simpleDateFormat.parse(systemEnvironmentConfig.getStartDate());
+            Date startDate = DateUtil.parse(systemEnvironmentConfig.getStartDate());
             long blockIndex = -1;
             while ((blockIndex = getBlockIndexByStartDate(startDate)) < 0) {
                 Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
