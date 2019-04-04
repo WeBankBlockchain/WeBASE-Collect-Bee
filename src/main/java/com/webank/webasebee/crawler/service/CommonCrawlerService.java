@@ -86,9 +86,9 @@ public class CommonCrawlerService {
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 while (!CollectionUtils.isEmpty(taskList)) {
                     if (taskList.size() < systemEnvironmentConfig.getCrawlBatchUnit()) {
-                        blockSyncService.processDataParallel(taskList);
-                    } else {
                         blockSyncService.processDataSequence(taskList);
+                    } else {
+                        blockSyncService.processDataParallel(taskList);
                     }
                     taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 }

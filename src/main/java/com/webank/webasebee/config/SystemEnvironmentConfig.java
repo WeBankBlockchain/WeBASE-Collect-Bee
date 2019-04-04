@@ -40,8 +40,8 @@ public class SystemEnvironmentConfig {
     private String clientCertPassword;
 
     private String privateKey;
-    private int maxBlockHeightThreshold;
-    private int crawlBatchUnit;
+    private int maxBlockHeightThreshold = 20;
+    private int crawlBatchUnit = 100;
 
     private boolean multiLiving;
     private String zookeeperServiceLists;
