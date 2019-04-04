@@ -82,7 +82,10 @@ public class CommonCrawlerService {
                         total, height, systemEnvironmentConfig.getMaxBlockHeightThreshold());
                 blockTaskPoolService.checkTimeOut();
                 blockTaskPoolService.processErrors();
-                blockTaskPoolService.prepareTask(height, total);
+                // control the batch unit number
+                long end = height + systemEnvironmentConfig.getCrawlBatchUnit();
+                long batchNo = total < end ? total : end;
+                blockTaskPoolService.prepareTask(height, batchNo);
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 while (!CollectionUtils.isEmpty(taskList)) {
                     if (taskList.size() < systemEnvironmentConfig.getCrawlBatchUnit()) {

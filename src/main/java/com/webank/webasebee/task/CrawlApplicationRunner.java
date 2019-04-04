@@ -22,7 +22,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.crawler.service.CommonCrawlerService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * GenerateCodeApplicationRunner
@@ -36,12 +39,20 @@ import com.webank.webasebee.crawler.service.CommonCrawlerService;
 @Component
 @Order(value = 1)
 @ConditionalOnProperty(name = "system.multiLiving", havingValue = "false")
+@Slf4j
 public class CrawlApplicationRunner implements ApplicationRunner {
     @Autowired
     private CommonCrawlerService commonCrawlerService;
+    @Autowired
+    private SystemEnvironmentConfig systemEnvironmentConfig;
 
     @Override
     public void run(ApplicationArguments var1) throws InterruptedException {
+        if (systemEnvironmentConfig.getCrawlBatchUnit() < 1
+                || systemEnvironmentConfig.getMaxBlockHeightThreshold() < 1) {
+            log.error("The batch unit or max block height threshold can't be less than 1!!");
+            System.exit(1);
+        }
         commonCrawlerService.handle();
     }
 }
