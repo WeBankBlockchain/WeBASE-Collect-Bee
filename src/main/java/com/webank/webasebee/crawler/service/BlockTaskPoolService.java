@@ -17,7 +17,6 @@ package com.webank.webasebee.crawler.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +34,7 @@ import com.webank.webasebee.enums.TxInfoStatusEnum;
 import com.webank.webasebee.ods.EthClient;
 import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.tools.JacksonUtils;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -91,7 +91,7 @@ public class BlockTaskPoolService {
         } else {
             unnormalRecords.parallelStream().map(b -> b.getBlockHeight()).forEach(e -> {
                 rollBackService.rollback(e, e + 1);
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.INIT.getStatus(), e);
+                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.INIT.getStatus(), new Date(), e);
             });
         }
     }
@@ -133,10 +133,12 @@ public class BlockTaskPoolService {
     public void checkTimeOut() {
         Date offsetDate = DateUtil.offsetSecond(DateUtil.date(), 0 - BlockForkConstants.DEPOT_TIME_OUT);
         List<BlockTaskPool> list = blockTaskPoolRepository
-                .findBySyncStatusLessThanDepotUpdatetime(TxInfoStatusEnum.DOING.getStatus(), offsetDate);
+                .findBySyncStatusAndDepotUpdatetimeLessThan(TxInfoStatusEnum.DOING.getStatus(), offsetDate);
         list.forEach(p -> {
-            log.error("Block {} sync timeout!!", p.getBlockHeight());
-            blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.TIMEOUT.getStatus(),
+            log.info("{}", JacksonUtils.toJson(p));
+            log.error("Block {} sync timeout!!, the depot_time is {}, and the threshold time is {}", p.getBlockHeight(),
+                    p.getUpdatetime(), offsetDate);
+            blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.TIMEOUT.getStatus(), new Date(),
                     p.getBlockHeight());
         });
 

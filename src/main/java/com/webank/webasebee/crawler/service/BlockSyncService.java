@@ -18,6 +18,7 @@ package com.webank.webasebee.crawler.service;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
@@ -66,7 +67,7 @@ public class BlockSyncService {
                 result.add(block);
             } catch (IOException e) {
                 log.error("Block {},  exception occur in job processing: {}", task.getBlockHeight(), e.getMessage());
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(),
+                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(), new Date(),
                         task.getBlockHeight());
             }
         }
@@ -78,11 +79,11 @@ public class BlockSyncService {
         for (Block b : data) {
             try {
                 singleBlockCrawlerService.handleSingleBlock(b);
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(),
+                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(),
                         b.getNumber().longValue());
             } catch (IOException e) {
                 log.error("block {}, exception occur in job processing: {}", b.getNumber().longValue(), e.getMessage());
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(),
+                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(), new Date(),
                         b.getNumber().longValue());
             }
         }
@@ -92,17 +93,14 @@ public class BlockSyncService {
         data.parallelStream().forEach(b -> {
             try {
                 singleBlockCrawlerService.handleSingleBlock(b);
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(),
+                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(),
                         b.getNumber().longValue());
             } catch (IOException e) {
                 log.error("block {}, exception occur in job processing: {}", b.getNumber().longValue(), e.getMessage());
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(),
+                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(), new Date(),
                         b.getNumber().longValue());
             }
         });
     }
-    
-    
-    
 
 }

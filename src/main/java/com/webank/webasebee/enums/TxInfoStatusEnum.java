@@ -30,6 +30,6 @@ import lombok.Getter;
 @Getter
 public enum TxInfoStatusEnum {
 
-    INIT(0), DOING(1), DONE(2), ERROR(3), TIMEOUT(4);
+    INIT(0), DOING(1), DONE(2), ERROR(3), TIMEOUT(4), RESET(5);
     private int status;
 }

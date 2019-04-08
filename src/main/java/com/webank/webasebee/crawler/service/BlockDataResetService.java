@@ -16,6 +16,8 @@
 package com.webank.webasebee.crawler.service;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,15 +28,21 @@ import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
 import com.webank.webasebee.tools.ResponseUtils;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * BlockDataResetService
  *
  * @Description: BlockDataResetService
  * @author graysonzhang
+ * @author maojiayu
  * @data 2019-03-21 14:51:50
  *
  */
 @Service
+@Slf4j
 public class BlockDataResetService {
     @Autowired
     private RollBackService rollBackService;
@@ -45,18 +53,24 @@ public class BlockDataResetService {
 
     public CommonResponse resetBlockDataByBlockId(long blockHeight) throws IOException {
 
-        BlockTaskPool blockTaskPool = blockTaskPoolRepository.findByBlockHeight(blockHeight);
-        if (blockTaskPool == null) {
+        Optional<BlockTaskPool> blockTaskPool = blockTaskPoolRepository.findByBlockHeight(blockHeight);
+        if (!blockTaskPool.isPresent()) {
             return CommonResponse.NOBLOCK;
         }
-        if (blockTaskPool.getSyncStatus() == TxInfoStatusEnum.DOING.getStatus()) {
+        if (blockTaskPool.get().getSyncStatus() == TxInfoStatusEnum.DOING.getStatus()) {
             return ResponseUtils.error("Some task is still running. please resend the request later.");
         }
-        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DOING.getStatus(), blockHeight);
+        if (blockTaskPool.get().getSyncStatus() == TxInfoStatusEnum.RESET.getStatus()) {
+            if (DateUtil.between(blockTaskPool.get().getUpdatetime(), DateUtil.date(), DateUnit.SECOND) < 60) {
+                return ResponseUtils.error("The block is already in progress to reset. please send the request later");
+            }
+        }
+        log.info("begin to refetch block {}", blockHeight);
+        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.RESET.getStatus(), new Date(), blockHeight);
         rollBackService.rollback(blockHeight, blockHeight + 1);
         singleBlockCrawlerService.handleSingleBlock(blockHeight);
-        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), blockHeight);
-
-        return CommonResponse.SUCCESS;
+        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(), blockHeight);
+        log.info("block {} is reset!", blockHeight);
+        return ResponseUtils.success();
     }
 }

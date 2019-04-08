@@ -43,7 +43,7 @@ public interface BlockTaskPoolRepository
 
     public Optional<BlockTaskPool> findTopByOrderByBlockHeightDesc();
 
-    public BlockTaskPool findByBlockHeight(long blockHeight);
+    public Optional<BlockTaskPool> findByBlockHeight(long blockHeight);
 
     public List<BlockTaskPool> findByCertainty(int certainty);
 
@@ -58,12 +58,12 @@ public interface BlockTaskPoolRepository
             int syncStatus, int limit);
 
     @Query(value = "select * from #{#entityName} where sync_status = ?1 and depot_updatetime <= ?2", nativeQuery = true)
-    public List<BlockTaskPool> findBySyncStatusLessThanDepotUpdatetime(int syncStatus, Date time);
+    public List<BlockTaskPool> findBySyncStatusAndDepotUpdatetimeLessThan(int syncStatus, Date time);
 
     @Transactional
     @Modifying
-    @Query(value = "update #{#entityName} set sync_status = ?1 where block_height = ?2", nativeQuery = true)
-    public void setSyncStatusByBlockHeight(int syncStatus, long blockHeight);
+    @Query(value = "update #{#entityName} set sync_status = ?1, depot_updatetime= ?2 where block_height = ?3", nativeQuery = true)
+    public void setSyncStatusByBlockHeight(int syncStatus, Date updateTime, long blockHeight);
 
     @Transactional
     @Modifying
