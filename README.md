@@ -127,7 +127,21 @@ webase-bee的工程使用gradle进行构建，是一个SpringBoot工程。
 当完整地按照[WEBASE-MONKEY](https://github.com/WeBankFinTech/webase-monkey/tree/feature_datacheck.2019.03)的操作手册进行操作获得webase-bee工程后，会得到webase-bee工程，主要的基础配置都将会在配置中自动生成，无需额外配置。但是，基于已生成的配置文件，你可以继续按照需求进行深入的个性化高级配置，例如配置集群部署、分库分表、读写分离等等。
 
 
-在得到webase-bee工程后，主要的配置文件位于src/main/resources目录下。其中，application.properties包含了除部分数据库配置外的全部配置。 application-sharding-tables.properties包含了数据库部分的配置。
+在得到webase-bee工程后，进入webase-bee的目录：
+
+```
+cd webase-bee
+
+```
+
+主要的配置文件位于src/main/resources目录下。其中，application.properties包含了除部分数据库配置外的全部配置。 application-sharding-tables.properties包含了数据库部分的配置。
+
+注意： 当修改完配置文件后，需要重新编译代码，然后再执行，编译的命令如下：
+
+```
+sh gradlew clean bootJar
+
+```
 
 ##### 导出数据范围的配置
 
@@ -369,6 +383,12 @@ docker pull grafana/grafana
 
 ```
 
+如果你是使用sudo用户安装了docker，可能会提示『permission denied』的错误，建议执行:
+```
+sudo docker pull grafana/grafana
+
+```
+
 #### 2.3.2 启动grafana
 ```
 docker run   -d   -p 3000:3000   --name=grafana   -e "GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource"   grafana/grafana
@@ -393,9 +413,9 @@ grafana将自动绑定3000端口。
 随后按照提示的页面，配置 Host， Database， User 和 Password等。
 
 #### 2.3.5 导入Dashboard模板
-[WEBASE-MONKEY](https://github.com/WeBankFinTech/webase-monkey/tree/feature_datacheck.2019.03)会自动生成数据的dashboard模板，数据的路径位于：webase-bee/src/main/scripts/default_dashboard.json
+[WEBASE-MONKEY](https://github.com/WeBankFinTech/webase-monkey/tree/feature_datacheck.2019.03)会自动生成数据的dashboard模板，数据的路径位于：webase-bee/src/main/scripts/grafana/default_dashboard.json
 
-请点击左边栏『+』，选择『import』，点击绿色按钮『Upload .json File』,选择刚才的webase-bee/src/main/scripts/default_dashboard.json文件
+请点击左边栏『+』，选择『import』，点击绿色按钮『Upload .json File』,选择刚才的webase-bee/src/main/scripts/grafana/default_dashboard.json文件
 
 ![导入步骤：](https://github.com/WeBankFinTech/webase-monkey/blob/feature_datacheck.2019.03/photos/import_json.png)
 
