@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
+import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.crawler.service.BlockIndexService;
 import com.webank.webasebee.crawler.service.BlockTaskPoolService;
 
@@ -51,7 +52,8 @@ public class PrepareTaskJob implements SimpleJob {
     private BlockTaskPoolService blockTaskPoolService;
     @Autowired
     private BlockIndexService blockIndexService;
-
+    @Autowired
+    private SystemEnvironmentConfig systemEnvironmentConfig;
     private long startBlockNumber;
 
     @PostConstruct
@@ -61,8 +63,8 @@ public class PrepareTaskJob implements SimpleJob {
     }
 
     /**
-     * prepare to do tasks, and restored in block_task_pool. 1. check timeout txs and process errors; 2. process forks;
-     * 3. prepare tasks;
+     * prepare to do tasks, and restored in block_task_pool. 1. check timeout txs and process errors; 2. prepare tasks;
+     * 3. process forks;
      * 
      * @param ShardingContext: elastic-job
      * @return void
@@ -76,10 +78,14 @@ public class PrepareTaskJob implements SimpleJob {
             log.info("Current chain block number is:{}", total);
             long height = blockTaskPoolService.getTaskPoolHeight();
             height = height > startBlockNumber ? height : startBlockNumber;
+
             blockTaskPoolService.checkTimeOut();
             blockTaskPoolService.processErrors();
+            long end = height + systemEnvironmentConfig.getCrawlBatchUnit();
+            long batchNo = total < end ? total : end;
+            blockTaskPoolService.prepareTask(height, batchNo);
             blockTaskPoolService.checkForks(total);
-            blockTaskPoolService.prepareTask(height, total);
+
         } catch (IOException e) {
             log.error("Job {}, exception occur in job processing: {}", shardingContext.getTaskId(), e.getMessage());
 
