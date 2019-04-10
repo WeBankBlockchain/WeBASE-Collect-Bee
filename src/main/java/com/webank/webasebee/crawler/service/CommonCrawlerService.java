@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.webank.webasebee.config.SystemEnvironmentConfig;
+import com.webank.webasebee.constants.BlockForkConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,7 +86,8 @@ public class CommonCrawlerService {
                 // control the batch unit number
                 long end = height + systemEnvironmentConfig.getCrawlBatchUnit();
                 long batchNo = total < end ? total : end;
-                blockTaskPoolService.prepareTask(height, batchNo);
+                boolean certainty = end < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
+                blockTaskPoolService.prepareTask(height, batchNo, certainty);
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 while (!CollectionUtils.isEmpty(taskList)) {
                     if (taskList.size() < systemEnvironmentConfig.getCrawlBatchUnit()) {
@@ -98,7 +100,9 @@ public class CommonCrawlerService {
                 // single circle sleep time is read from the application.properties
                 Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
                 total = getCurrentBlockHeight();
-                blockTaskPoolService.checkForks(total);
+                if (!certainty) {
+                    blockTaskPoolService.checkForks(total);
+                }
             }
         } catch (IOException e) {
             log.error("depot IOError, {}", e.getMessage());

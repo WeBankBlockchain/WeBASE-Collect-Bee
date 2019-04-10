@@ -58,19 +58,22 @@ public class BlockSyncService {
 
     public List<Block> getTasks(List<BlockTaskPool> tasks) {
         List<Block> result = new ArrayList<>();
+        List<BlockTaskPool> pools = new ArrayList<>();
         for (BlockTaskPool task : tasks) {
-            task.setSyncStatus(TxInfoStatusEnum.DOING.getStatus());
-            blockTaskPoolRepository.save(task);
+            task.setSyncStatus(TxInfoStatusEnum.DOING.getStatus()).setUpdatetime(new Date());
             BigInteger bigBlockHeight = new BigInteger(Long.toString(task.getBlockHeight()));
+            Block block;
             try {
-                Block block = ethClient.getBlock(bigBlockHeight);
+                block = ethClient.getBlock(bigBlockHeight);
                 result.add(block);
+                pools.add(task);
             } catch (IOException e) {
                 log.error("Block {},  exception occur in job processing: {}", task.getBlockHeight(), e.getMessage());
                 blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(), new Date(),
                         task.getBlockHeight());
             }
         }
+        blockTaskPoolRepository.saveAll(pools);
         log.info("Successful fetch {} Blocks.", result.size());
         return result;
     }

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.webank.webasebee.config.SystemEnvironmentConfig;
+import com.webank.webasebee.constants.BlockForkConstants;
 import com.webank.webasebee.crawler.service.BlockIndexService;
 import com.webank.webasebee.crawler.service.BlockTaskPoolService;
 
@@ -83,7 +84,8 @@ public class PrepareTaskJob implements SimpleJob {
             blockTaskPoolService.processErrors();
             long end = height + systemEnvironmentConfig.getCrawlBatchUnit();
             long batchNo = total < end ? total : end;
-            blockTaskPoolService.prepareTask(height, batchNo);
+            boolean certainty = end < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
+            blockTaskPoolService.prepareTask(height, batchNo, certainty);
             blockTaskPoolService.checkForks(total);
 
         } catch (IOException e) {

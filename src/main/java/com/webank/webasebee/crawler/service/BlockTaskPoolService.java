@@ -69,15 +69,19 @@ public class BlockTaskPoolService {
         return height;
     }
 
-    public void prepareTask(long begin, long end) {
+    public void prepareTask(long begin, long end, boolean certainty) {
         List<BlockTaskPool> list = Lists.newArrayList();
         for (; begin <= end; begin++) {
             BlockTaskPool pool =
                     new BlockTaskPool().setBlockHeight(begin).setSyncStatus(TxInfoStatusEnum.INIT.getStatus());
-            if (begin <= end - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
+            if (certainty) {
                 pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
             } else {
-                pool.setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
+                if (begin <= end - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
+                    pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
+                } else {
+                    pool.setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
+                }
             }
             list.add(pool);
         }
@@ -97,6 +101,7 @@ public class BlockTaskPoolService {
     }
 
     public void checkForks(long currentBlockHeight) throws IOException {
+        log.info("current block height is {}, and begin to check forks", currentBlockHeight);
         List<BlockTaskPool> uncertainBlocks =
                 blockTaskPoolRepository.findByCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
         for (BlockTaskPool pool : uncertainBlocks) {
@@ -135,7 +140,6 @@ public class BlockTaskPoolService {
         List<BlockTaskPool> list = blockTaskPoolRepository
                 .findBySyncStatusAndDepotUpdatetimeLessThan(TxInfoStatusEnum.DOING.getStatus(), offsetDate);
         list.forEach(p -> {
-            log.info("{}", JacksonUtils.toJson(p));
             log.error("Block {} sync timeout!!, the depot_time is {}, and the threshold time is {}", p.getBlockHeight(),
                     p.getUpdatetime(), offsetDate);
             blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.TIMEOUT.getStatus(), new Date(),
