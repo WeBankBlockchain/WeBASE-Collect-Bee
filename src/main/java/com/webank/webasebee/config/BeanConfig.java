@@ -56,6 +56,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BeanConfig {
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
+
     /**
      * web3j thread pool config.
      * 
@@ -172,6 +173,8 @@ public class BeanConfig {
         log.info("开始启动web3j Service.");
         log.info("初始化AOMP的ChannelEthereumService");
         ChannelEthereumService channelEthereumService = new ChannelEthereumService();
+        // set all the timeout of sync request. Prevent the zombie thread.
+        channelEthereumService.setTimeout(30 * 1000);
         log.info("初始化AOMP的ChannelEthereumService 结束");
         channelEthereumService.setChannelService(service);
         // 使用AMOP消息信道初始化web3j

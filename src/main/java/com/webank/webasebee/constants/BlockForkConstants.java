@@ -25,7 +25,7 @@ package com.webank.webasebee.constants;
  */
 public class BlockForkConstants {
 
-    public static int MAX_FORK_CERTAINTY_BLOCK_NUMBER = 6;
-    public static int DEPOT_TIME_OUT = 300;
+    public static final int MAX_FORK_CERTAINTY_BLOCK_NUMBER = 6;
+    public static final int DEPOT_TIME_OUT = 300;
 
 }
