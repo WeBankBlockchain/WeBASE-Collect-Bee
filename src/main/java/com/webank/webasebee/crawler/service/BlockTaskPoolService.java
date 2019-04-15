@@ -137,6 +137,7 @@ public class BlockTaskPoolService {
 
     public void checkTimeOut() {
         Date offsetDate = DateUtil.offsetSecond(DateUtil.date(), 0 - BlockForkConstants.DEPOT_TIME_OUT);
+        log.info("Begin to check timeout txs, {}", offsetDate);
         List<BlockTaskPool> list = blockTaskPoolRepository
                 .findBySyncStatusAndDepotUpdatetimeLessThan(TxInfoStatusEnum.DOING.getStatus(), offsetDate);
         list.forEach(p -> {
