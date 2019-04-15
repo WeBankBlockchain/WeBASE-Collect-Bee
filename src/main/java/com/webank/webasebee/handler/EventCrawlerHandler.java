@@ -17,12 +17,13 @@ package com.webank.webasebee.handler;
 
 import java.math.BigInteger;
 import java.util.Map;
+
 import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
-import com.webank.webasebee.crawler.face.BcosEventCrawlerInterface;
 
+import com.webank.webasebee.crawler.face.BcosEventCrawlerInterface;
 
 /**
  * EventCrawlerHandler is responsible for crawling events info.
@@ -35,21 +36,21 @@ import com.webank.webasebee.crawler.face.BcosEventCrawlerInterface;
 @Service
 @EnableScheduling
 public class EventCrawlerHandler {
-	
-	/** @Fields bcosEventCrawlerMap : event crawler map for crawling event data */
-	@Autowired
+
+    /** @Fields bcosEventCrawlerMap : event crawler map for crawling event data */
+    @Autowired
     private Map<String, BcosEventCrawlerInterface> bcosEventCrawlerMap;
-	
-	/**    
-	 * Each TransactionReceipt will be processed by all event's crawlers that implements BcosEventCrawlerInterface. 
-	 * 
-	 * @param receipt: TransactionReceipt
-	 * @param blockTimeStamp: block timestamp     
-	 * @return void       
-	 */
-	public void handle(TransactionReceipt receipt, BigInteger blockTimeStamp){
-		bcosEventCrawlerMap.forEach((k, v) -> {
+
+    /**
+     * Each TransactionReceipt will be processed by all event's crawlers that implements BcosEventCrawlerInterface.
+     * 
+     * @param receipt: TransactionReceipt
+     * @param blockTimeStamp: block timestamp
+     * @return void
+     */
+    public void handle(TransactionReceipt receipt, BigInteger blockTimeStamp) {
+        bcosEventCrawlerMap.forEach((k, v) -> {
             v.handleReceipt(receipt, blockTimeStamp);
         });
-	}
+    }
 }

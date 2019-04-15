@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  * AccountCrawlerHandler is responsible for crawling account info.
  *
  * @author graysonzhang
+ * @author maojiayu
  * @data 2018-12-19 18:27:47
  *
  */
@@ -59,30 +60,30 @@ public class AccountCrawlerHandler {
      * constructor function transaction by judging if transaction's param named to is null, parsing transaction data and
      * save into database.
      * 
+     * throw the IOException.
+     * 
      * @param receipt: TransactionReceipt
      * @param blockTimeStamp: block timestamp
      * @return void
+     * @throws IOException
      */
-    public void handle(TransactionReceipt receipt, BigInteger blockTimeStamp) {
+    public void handle(TransactionReceipt receipt, BigInteger blockTimeStamp) throws IOException {
         Optional<Transaction> optt;
-        try {
-            optt = web3j.ethGetTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
-            if (optt.isPresent()) {
-                Transaction transaction = optt.get();
-                String input = transaction.getInput();
-                // get constructor function transaction by judging if transaction's param named to is null
-                if (transaction.getTo() == null) {
-                    Entry<String, String> entry = contractConstructorService.getConstructorNameByBinary(input);
-                    if (entry == null) {
-                        log.info("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());
-                        return;
-                    }
-                    accountInfoDAO.save(receipt, blockTimeStamp, entry.getValue());
+        optt = web3j.ethGetTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
+        if (optt.isPresent()) {
+            Transaction transaction = optt.get();
+            String input = transaction.getInput();
+            // get constructor function transaction by judging if transaction's param named to is null
+            if (transaction.getTo() == null) {
+                Entry<String, String> entry = contractConstructorService.getConstructorNameByBinary(input);
+                if (entry == null) {
+                    log.info("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());
+                    return;
                 }
+                accountInfoDAO.save(receipt, blockTimeStamp, entry.getValue());
             }
-        } catch (IOException e1) {
-            log.error("MethodCrawlerHandler Error: {}", e1.getMessage());
         }
+
     }
 
 }

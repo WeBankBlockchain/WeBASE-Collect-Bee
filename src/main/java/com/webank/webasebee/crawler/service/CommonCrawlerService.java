@@ -84,7 +84,7 @@ public class CommonCrawlerService {
                 blockTaskPoolService.checkTimeOut();
                 blockTaskPoolService.processErrors();
                 // control the batch unit number
-                long end = height + systemEnvironmentConfig.getCrawlBatchUnit();
+                long end = height + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
                 long batchNo = total < end ? total : end;
                 boolean certainty = end < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
                 blockTaskPoolService.prepareTask(height, batchNo, certainty);

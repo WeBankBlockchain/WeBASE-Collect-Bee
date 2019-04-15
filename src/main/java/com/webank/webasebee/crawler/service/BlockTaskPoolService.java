@@ -71,7 +71,7 @@ public class BlockTaskPoolService {
 
     public void prepareTask(long begin, long end, boolean certainty) {
         List<BlockTaskPool> list = Lists.newArrayList();
-        for (; begin < end; begin++) {
+        for (; begin <= end; begin++) {
             BlockTaskPool pool =
                     new BlockTaskPool().setBlockHeight(begin).setSyncStatus(TxInfoStatusEnum.INIT.getStatus());
             if (certainty) {
