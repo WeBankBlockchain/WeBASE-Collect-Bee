@@ -140,6 +140,9 @@ public class BlockTaskPoolService {
         log.info("Begin to check timeout txs, {}", offsetDate);
         List<BlockTaskPool> list = blockTaskPoolRepository
                 .findBySyncStatusAndDepotUpdatetimeLessThan(TxInfoStatusEnum.DOING.getStatus(), offsetDate);
+        if (!CollectionUtils.isEmpty(list)) {
+            log.info("detect {} timeout txs", list.size());
+        }
         list.forEach(p -> {
             log.error("Block {} sync timeout!!, the depot_time is {}, and the threshold time is {}", p.getBlockHeight(),
                     p.getUpdatetime(), offsetDate);
