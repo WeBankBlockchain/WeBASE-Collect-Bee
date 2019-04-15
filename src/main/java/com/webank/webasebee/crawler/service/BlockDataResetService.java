@@ -61,7 +61,7 @@ public class BlockDataResetService {
             return ResponseUtils.error("Some task is still running. please resend the request later.");
         }
         if (blockTaskPool.get().getSyncStatus() == TxInfoStatusEnum.RESET.getStatus()) {
-            if (DateUtil.between(blockTaskPool.get().getUpdatetime(), DateUtil.date(), DateUnit.SECOND) < 60) {
+            if (DateUtil.between(blockTaskPool.get().getDepotUpdatetime(), DateUtil.date(), DateUnit.SECOND) < 60) {
                 return ResponseUtils.error("The block is already in progress to reset. please send the request later");
             }
         }

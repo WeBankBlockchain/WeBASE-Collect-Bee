@@ -145,7 +145,7 @@ public class BlockTaskPoolService {
         }
         list.forEach(p -> {
             log.error("Block {} sync timeout!!, the depot_time is {}, and the threshold time is {}", p.getBlockHeight(),
-                    p.getUpdatetime(), offsetDate);
+                    p.getDepotUpdatetime(), offsetDate);
             blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.TIMEOUT.getStatus(), new Date(),
                     p.getBlockHeight());
         });

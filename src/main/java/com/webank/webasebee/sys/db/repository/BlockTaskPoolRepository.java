@@ -57,7 +57,6 @@ public interface BlockTaskPoolRepository
     public List<BlockTaskPool> findBySyncStatusModByBlockHeightLimit(int shardingCount, int shardingItem,
             int syncStatus, int limit);
 
-    @Query(value = "select * from #{#entityName} where sync_status = ?1 and depot_updatetime <= ?2", nativeQuery = true)
     public List<BlockTaskPool> findBySyncStatusAndDepotUpdatetimeLessThan(int syncStatus, Date time);
 
     @Transactional

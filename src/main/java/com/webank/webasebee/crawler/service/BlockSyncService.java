@@ -60,7 +60,7 @@ public class BlockSyncService {
         List<Block> result = new ArrayList<>();
         List<BlockTaskPool> pools = new ArrayList<>();
         for (BlockTaskPool task : tasks) {
-            task.setSyncStatus(TxInfoStatusEnum.DOING.getStatus()).setUpdatetime(new Date());
+            task.setSyncStatus(TxInfoStatusEnum.DOING.getStatus()).setDepotUpdatetime(new Date());
             BigInteger bigBlockHeight = new BigInteger(Long.toString(task.getBlockHeight()));
             Block block;
             try {

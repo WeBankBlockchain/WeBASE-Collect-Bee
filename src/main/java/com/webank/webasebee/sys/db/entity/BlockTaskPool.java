@@ -71,5 +71,5 @@ public class BlockTaskPool extends IdEntity {
     @UpdateTimestamp
     @Column(name = "depot_updatetime")
     @Temporal(TemporalType.TIMESTAMP)
-    protected Date updatetime;
+    protected Date depotUpdatetime;
 }
