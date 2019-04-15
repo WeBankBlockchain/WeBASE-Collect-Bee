@@ -88,7 +88,7 @@ public class CommonCrawlerService {
                 long batchNo = total < end ? total : end;
                 boolean certainty = end < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
                 blockTaskPoolService.prepareTask(height, batchNo, certainty);
-                List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
+                List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit() * 2);
                 while (!CollectionUtils.isEmpty(taskList)) {
                     if (taskList.size() < systemEnvironmentConfig.getCrawlBatchUnit()) {
                         blockSyncService.processDataSequence(taskList);
