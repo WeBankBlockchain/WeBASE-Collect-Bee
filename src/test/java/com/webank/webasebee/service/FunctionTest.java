@@ -21,15 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.bcos.web3j.abi.FunctionReturnDecoder;
-import org.bcos.web3j.abi.TypeReference;
-import org.bcos.web3j.abi.datatypes.Type;
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.methods.response.EthBlock;
-import org.bcos.web3j.protocol.core.methods.response.EthBlock.TransactionResult;
-import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.abi.FunctionReturnDecoder;
+import org.fisco.bcos.web3j.abi.TypeReference;
+import org.fisco.bcos.web3j.abi.datatypes.Type;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -68,17 +68,16 @@ public class FunctionTest extends BaseTest {
     @Test
     public void testInput() throws IOException {
         BigInteger bigBlockHeight = new BigInteger(Integer.toString(8));
-        EthBlock.Block block = ethClient.getBlock(bigBlockHeight);
+        Block block = ethClient.getBlock(bigBlockHeight);
         List<TransactionResult> transactionResults = block.getTransactions();
         log.info("transactionResults.size:{}", transactionResults.size());
         for (TransactionResult result : transactionResults) {
-            EthGetTransactionReceipt ethGetTransactionReceipt =
-                    web3j.ethGetTransactionReceipt((String) result.get()).send();
+            BcosTransactionReceipt ethGetTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();
             Optional<TransactionReceipt> opt = ethGetTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 log.info("TransactionReceipt hash: {}", opt.get().getTransactionHash());
                 Optional<Transaction> optt =
-                        web3j.ethGetTransactionByHash(opt.get().getTransactionHash()).send().getTransaction();
+                        web3j.getTransactionByHash(opt.get().getTransactionHash()).send().getTransaction();
                 if (optt.isPresent()) {
                     String rawInput = optt.get().getInput();
 
@@ -102,17 +101,16 @@ public class FunctionTest extends BaseTest {
     // @Test
     public void testActivity() throws IOException {
         BigInteger bigBlockHeight = new BigInteger(Integer.toString(200));
-        EthBlock.Block block = ethClient.getBlock(bigBlockHeight);
+        Block block = ethClient.getBlock(bigBlockHeight);
         List<TransactionResult> transactionResults = block.getTransactions();
         log.info("transactionResults.size:{}", transactionResults.size());
         for (TransactionResult result : transactionResults) {
-            EthGetTransactionReceipt ethGetTransactionReceipt =
-                    web3j.ethGetTransactionReceipt((String) result.get()).send();
+            BcosTransactionReceipt ethGetTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();
             Optional<TransactionReceipt> opt = ethGetTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 log.info("TransactionReceipt hash: {}", opt.get().getTransactionHash());
                 Optional<Transaction> optt =
-                        web3j.ethGetTransactionByHash(opt.get().getTransactionHash()).send().getTransaction();
+                        web3j.getTransactionByHash(opt.get().getTransactionHash()).send().getTransaction();
                 if (optt.isPresent()) {
                     String rawInput = optt.get().getInput();
                     log.info("input : {}", optt.get().getInput());

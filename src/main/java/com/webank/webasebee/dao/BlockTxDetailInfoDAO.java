@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Date;
 
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,38 +38,40 @@ import com.webank.webasebee.sys.db.repository.BlockTxDetailInfoRepository;
  */
 @Service
 public class BlockTxDetailInfoDAO {
-    
+
     /** @Fields web3j : web3j */
     @Autowired
     private Web3j web3j;
 
-	/** @Fields blockTxDetailInfoRepository : block transaction detail info repository */
-	@Autowired
+    /** @Fields blockTxDetailInfoRepository : block transaction detail info repository */
+    @Autowired
     private BlockTxDetailInfoRepository blockTxDetailInfoRepository;
-	
-	/**    
-	 * Get block transaction detail info from transaction receipt object and insert BlockTxDetailInfo into db.  
-	 * 
-	 * @param receipt : TransactionReceipt
-	 * @param blockTimeStamp
-	 * @param contractName: contract name
-	 * @param methodName: method name    
-	 * @return void       
-	 * @throws IOException 
-	 */
-	public void save(TransactionReceipt receipt, BigInteger blockTimeStamp, String contractName, String methodName) throws IOException{
-		BlockTxDetailInfo blockTxDetailInfo = new BlockTxDetailInfo();
-		blockTxDetailInfo.setBlockHash(receipt.getBlockHash());
-		blockTxDetailInfo.setBlockHeight(receipt.getBlockNumber().longValue());
-		blockTxDetailInfo.setContractName(contractName);
 
-		blockTxDetailInfo.setMethodName(methodName.substring(contractName.length()));
-		Transaction transaction = web3j.ethGetTransactionByHash(receipt.getTransactionHash()).send().getTransaction().get();
-		blockTxDetailInfo.setTxFrom(transaction.getFrom());
-		blockTxDetailInfo.setTxTo(transaction.getTo());
-		blockTxDetailInfo.setTxHash(receipt.getTransactionHash());
-		blockTxDetailInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()));
-		blockTxDetailInfoRepository.save(blockTxDetailInfo);
-	}
+    /**
+     * Get block transaction detail info from transaction receipt object and insert BlockTxDetailInfo into db.
+     * 
+     * @param receipt : TransactionReceipt
+     * @param blockTimeStamp
+     * @param contractName: contract name
+     * @param methodName: method name
+     * @return void
+     * @throws IOException
+     */
+    public void save(TransactionReceipt receipt, BigInteger blockTimeStamp, String contractName, String methodName)
+            throws IOException {
+        BlockTxDetailInfo blockTxDetailInfo = new BlockTxDetailInfo();
+        blockTxDetailInfo.setBlockHash(receipt.getBlockHash());
+        blockTxDetailInfo.setBlockHeight(receipt.getBlockNumber().longValue());
+        blockTxDetailInfo.setContractName(contractName);
+
+        blockTxDetailInfo.setMethodName(methodName.substring(contractName.length()));
+        Transaction transaction =
+                web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction().get();
+        blockTxDetailInfo.setTxFrom(transaction.getFrom());
+        blockTxDetailInfo.setTxTo(transaction.getTo());
+        blockTxDetailInfo.setTxHash(receipt.getTransactionHash());
+        blockTxDetailInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()));
+        blockTxDetailInfoRepository.save(blockTxDetailInfo);
+    }
 
 }

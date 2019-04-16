@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +46,7 @@ public class EthClient {
     public Block getBlock(BigInteger blockHeightNumber) throws IOException {
         Stopwatch stopwatch = Stopwatch.createStarted();
         log.info("get block number: {}", blockHeightNumber);
-        Block block =
-                web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockHeightNumber), false).send().getBlock();
+        Block block = web3j.getBlockByNumber(DefaultBlockParameter.valueOf(blockHeightNumber), false).send().getBlock();
         Stopwatch st1 = stopwatch.stop();
         log.info("get block:{} succeed, eth.getBlock useTime: {}", blockHeightNumber,
                 st1.elapsed(TimeUnit.MILLISECONDS));

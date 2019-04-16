@@ -21,8 +21,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.methods.response.EthBlock;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,9 +75,9 @@ public class BlockIndexService {
      */
     private long getBlockIndexByStartDate(Date startDate) throws IOException {
 
-        EthBlock.Block beginBlock = ethClient.getBlock(new BigInteger("0"));
-        BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
-        EthBlock.Block endBlock = ethClient.getBlock(blockNumber);
+        Block beginBlock = ethClient.getBlock(new BigInteger("0"));
+        BigInteger blockNumber = web3j.getBlockNumber().send().getBlockNumber();
+        Block endBlock = ethClient.getBlock(blockNumber);
 
         Date beginDate = new Date(beginBlock.getTimestamp().longValue());
         Date endDate = new Date(endBlock.getTimestamp().longValue());
@@ -103,7 +103,7 @@ public class BlockIndexService {
      */
     private long searchBlockIndex(long begin, long end, Date startDate) throws IOException {
         long index = (begin + end) / 2;
-        EthBlock.Block indexBlock = ethClient.getBlock(new BigInteger(Long.toString(index)));
+        Block indexBlock = ethClient.getBlock(new BigInteger(Long.toString(index)));
         Date indexDate = new Date(indexBlock.getTimestamp().longValue());
         if (indexDate.getTime() == startDate.getTime()) {
             return index;
@@ -119,17 +119,6 @@ public class BlockIndexService {
             } else {
                 return searchBlockIndex(index, end, startDate);
             }
-        }
-    }
-
-    public static void main(String[] args) {
-        String strDate = "2018-09-03";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date date = simpleDateFormat.parse(strDate);
-            System.out.println(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
     }
 

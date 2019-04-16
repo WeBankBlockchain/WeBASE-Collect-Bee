@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.bcos.web3j.protocol.core.methods.response.EthBlock;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -34,7 +34,6 @@ import com.webank.webasebee.enums.TxInfoStatusEnum;
 import com.webank.webasebee.ods.EthClient;
 import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
-import com.webank.webasebee.tools.JacksonUtils;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -116,7 +115,7 @@ public class BlockTaskPoolService {
                             pool.getBlockHeight());
                     continue;
                 }
-                EthBlock.Block block = ethClient.getBlock(BigInteger.valueOf(pool.getBlockHeight()));
+                Block block = ethClient.getBlock(BigInteger.valueOf(pool.getBlockHeight()));
                 String newHash = block.getHash();
                 if (!newHash.equals(
                         blockDetailInfoDAO.getBlockDetailInfoByBlockHeight(pool.getBlockHeight()).getBlockHash())) {

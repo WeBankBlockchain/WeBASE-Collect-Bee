@@ -17,7 +17,7 @@ package com.webank.webasebee.tools;
 
 import java.math.BigInteger;
 
-import org.bcos.web3j.abi.datatypes.Address;
+import org.fisco.bcos.web3j.abi.datatypes.Address;
 
 /**
  * AddressUtils
@@ -28,12 +28,12 @@ import org.bcos.web3j.abi.datatypes.Address;
  *
  */
 public class AddressUtils {
-    
+
     public static String bigIntegerToString(BigInteger bi) {
         Address address = new Address(bi);
         return address.toString();
     }
-    
+
     public static String bigIntegerToString(Object obj) {
         return bigIntegerToString((BigInteger) obj);
     }

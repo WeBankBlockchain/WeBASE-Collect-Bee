@@ -18,7 +18,7 @@ package com.webank.webasebee.crawler.face;
 import java.math.BigInteger;
 import java.util.Map;
 
-import org.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 
 /**
  * BcosMethodCrawlerInterface
@@ -28,15 +28,16 @@ import org.bcos.web3j.protocol.core.methods.response.Transaction;
  * @data 2018-12-5 11:23:40
  *
  */
-public interface BcosMethodCrawlerInterface {	
-	/**    
-	 * Get method input data by parsing transaction object and storage method input data into db.   
-	 * 
-	 * @param transaction
-	 * @param blockTimeStamp
-	 * @param entry
-	 * @param methodName      
-	 * @return void        
-	 */
-	void transactionHandler(Transaction transaction, BigInteger blockTimeStamp, Map.Entry<String, String> entry, String methodName);
+public interface BcosMethodCrawlerInterface {
+    /**
+     * Get method input data by parsing transaction object and storage method input data into db.
+     * 
+     * @param transaction
+     * @param blockTimeStamp
+     * @param entry
+     * @param methodName
+     * @return void
+     */
+    void transactionHandler(Transaction transaction, BigInteger blockTimeStamp, Map.Entry<String, String> entry,
+            String methodName);
 }

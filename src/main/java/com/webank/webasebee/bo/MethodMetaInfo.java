@@ -17,7 +17,7 @@ package com.webank.webasebee.bo;
 
 import java.util.List;
 
-import org.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
+import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 
 import lombok.Data;
 
@@ -31,23 +31,23 @@ import lombok.Data;
  */
 @Data
 public class MethodMetaInfo {
-	
-	/** @Fields methodId : method id */
-	private String methodId;
-	
-	/** @Fields methodName : method name */
-	private String methodName;
-	
+
+    /** @Fields methodId : method id */
+    private String methodId;
+
+    /** @Fields methodName : method name */
+    private String methodName;
+
     /** @Fields methodTableCount : for sharding method table */
     private int methodTableCount;
-    
+
     /** @Fields ignoreParams : when parsing method data, the ignore params will be ignored */
     private List<String> ignoreParams;
-    
+
     /** @Fields contractName : contract name */
     private String contractName;
-    
-	/** @Fields fieldsList : method input param list */
-	private List<NamedType> fieldsList;
+
+    /** @Fields fieldsList : method input param list */
+    private List<NamedType> fieldsList;
 
 }

@@ -17,7 +17,7 @@ package com.webank.webasebee.task;
 
 import java.util.List;
 
-import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;

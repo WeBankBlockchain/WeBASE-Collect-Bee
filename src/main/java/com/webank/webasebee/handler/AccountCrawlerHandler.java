@@ -17,16 +17,19 @@ package com.webank.webasebee.handler;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Optional;
 import java.util.Map.Entry;
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import java.util.Optional;
+
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
+
 import com.webank.webasebee.dao.AccountInfoDAO;
 import com.webank.webasebee.service.ContractConstructorService;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -68,8 +71,7 @@ public class AccountCrawlerHandler {
      * @throws IOException
      */
     public void handle(TransactionReceipt receipt, BigInteger blockTimeStamp) throws IOException {
-        Optional<Transaction> optt;
-        optt = web3j.ethGetTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
+        Optional<Transaction> optt = web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
         if (optt.isPresent()) {
             Transaction transaction = optt.get();
             String input = transaction.getInput();

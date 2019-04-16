@@ -18,9 +18,10 @@ package com.webank.webasebee.dao;
 import java.math.BigInteger;
 import java.sql.Date;
 
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.webank.webasebee.sys.db.entity.AccountInfo;
 import com.webank.webasebee.sys.db.repository.AccountInfoRepository;
 

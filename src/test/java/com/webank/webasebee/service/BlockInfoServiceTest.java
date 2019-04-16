@@ -21,16 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.bcos.web3j.abi.FunctionReturnDecoder;
-import org.bcos.web3j.abi.TypeReference;
-import org.bcos.web3j.abi.Utils;
-import org.bcos.web3j.abi.datatypes.Type;
-import org.bcos.web3j.abi.datatypes.generated.Uint64;
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.methods.response.EthBlock;
-import org.bcos.web3j.protocol.core.methods.response.EthBlock.TransactionResult;
-import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.abi.FunctionReturnDecoder;
+import org.fisco.bcos.web3j.abi.TypeReference;
+import org.fisco.bcos.web3j.abi.Utils;
+import org.fisco.bcos.web3j.abi.datatypes.Type;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Uint64;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,17 +60,16 @@ public class BlockInfoServiceTest extends BaseTest {
 
     @Test
     public void testInput() throws IOException {
-        EthBlock.Block block = ethClient.getBlock(BigInteger.valueOf(8677));
+        Block block = ethClient.getBlock(BigInteger.valueOf(8677));
         List<TransactionResult> transactionResults = block.getTransactions();
         log.info("transactionResults.size:{}", transactionResults.size());
         for (TransactionResult result : transactionResults) {
-            EthGetTransactionReceipt ethGetTransactionReceipt =
-                    web3j.ethGetTransactionReceipt((String) result.get()).send();
+            BcosTransactionReceipt ethGetTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();
             Optional<TransactionReceipt> opt = ethGetTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 log.info("TransactionReceipt hash: {}", opt.get().getTransactionHash());
-                Optional<org.bcos.web3j.protocol.core.methods.response.Transaction> optt =
-                        web3j.ethGetTransactionByHash(opt.get().getTransactionHash()).send().getTransaction();
+                Optional<Transaction> optt =
+                        web3j.getTransactionByHash(opt.get().getTransactionHash()).send().getTransaction();
                 if (optt.isPresent()) {
                     log.info("transaction hash : {}", optt.get().getHash());
                     log.info("transaction info : {}", optt.get().getValue());

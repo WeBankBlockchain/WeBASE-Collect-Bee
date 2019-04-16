@@ -18,31 +18,30 @@ package com.webank.webasebee.bo;
 import java.util.List;
 import java.util.Map;
 
-import org.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
+import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 
 import com.webank.webasebee.tools.NameValueVO;
 
 import lombok.Data;
 
-
 /**
  * ContractMapsInfo
  *
- * @Description: ContractMapsInfo storages contract info, that will used to parse method data. 
+ * @Description: ContractMapsInfo storages contract info, that will used to parse method data.
  * @author graysonzhang
  * @data 2018-12-17 14:55:20
  *
  */
 @Data
 public class ContractMapsInfo {
-	
-	/** @Fields methodIdMap : use to storage methodId map , key:methodId, value:(contractName, methodName) */
-	private Map<String, NameValueVO<String>> methodIdMap;
-	
-	/** @Fields methodFiledsMap : use to storage method fileds map , key:methodName, value:fieldsList  */
-	private Map<String, List<NamedType>> methodFiledsMap;
-	
-	/** @Fields contractBinaryMap : use to storage contract binary map, key:contract binary, value:contract name */
-	private Map<String, String> contractBinaryMap;
+
+    /** @Fields methodIdMap : use to storage methodId map , key:methodId, value:(contractName, methodName) */
+    private Map<String, NameValueVO<String>> methodIdMap;
+
+    /** @Fields methodFiledsMap : use to storage method fileds map , key:methodName, value:fieldsList */
+    private Map<String, List<NamedType>> methodFiledsMap;
+
+    /** @Fields contractBinaryMap : use to storage contract binary map, key:contract binary, value:contract name */
+    private Map<String, String> contractBinaryMap;
 
 }

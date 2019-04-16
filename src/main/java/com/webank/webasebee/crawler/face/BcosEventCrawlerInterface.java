@@ -16,7 +16,8 @@
 package com.webank.webasebee.crawler.face;
 
 import java.math.BigInteger;
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 
 /**
  * BcosEventCrawlerInterface

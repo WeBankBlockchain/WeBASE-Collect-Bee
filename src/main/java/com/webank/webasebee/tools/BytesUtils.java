@@ -19,15 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.binary.StringUtils;
-import org.bcos.web3j.abi.datatypes.Bytes;
-import org.bcos.web3j.abi.datatypes.DynamicArray;
-import org.bcos.web3j.abi.datatypes.Int;
-import org.bcos.web3j.abi.datatypes.StaticArray;
-import org.bcos.web3j.abi.datatypes.Uint;
-import org.bcos.web3j.abi.datatypes.generated.Bytes32;
-import org.bcos.web3j.abi.datatypes.generated.Int256;
-import org.bcos.web3j.abi.datatypes.generated.Int8;
-import org.bcos.web3j.abi.datatypes.generated.Uint256;
+import org.fisco.bcos.web3j.abi.datatypes.Bytes;
+import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
+import org.fisco.bcos.web3j.abi.datatypes.Int;
+import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
+import org.fisco.bcos.web3j.abi.datatypes.Uint;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes32;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Int256;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Int8;
+import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
 
 /**
  * BytesUtils
@@ -83,7 +83,7 @@ public class BytesUtils {
         }
         return JacksonUtils.toJson(stringList);
     }
-    
+
     public static String uintDynamicArrayToString(List<Uint> list) {
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -91,7 +91,7 @@ public class BytesUtils {
         }
         return JacksonUtils.toJson(stringList);
     }
-    
+
     public static String int8DynamicArrayToString(List<Int8> list) {
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -99,7 +99,7 @@ public class BytesUtils {
         }
         return JacksonUtils.toJson(stringList);
     }
-    
+
     public static String int256DynamicArrayToString(List<Int256> list) {
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -107,7 +107,7 @@ public class BytesUtils {
         }
         return JacksonUtils.toJson(stringList);
     }
-    
+
     public static String intDynamicArrayToString(List<Int> list) {
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {

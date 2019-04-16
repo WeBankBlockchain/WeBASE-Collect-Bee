@@ -22,9 +22,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
@@ -87,7 +87,7 @@ public class MethodCrawlerHandler {
      */
     public void handle(TransactionReceipt receipt, BigInteger blockTimeStamp) throws IOException {
         Optional<Transaction> optt;
-        optt = web3j.ethGetTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
+        optt = web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
         if (optt.isPresent()) {
             Transaction transaction = optt.get();
             String input = transaction.getInput();

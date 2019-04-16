@@ -17,7 +17,7 @@ package com.webank.webasebee.handler;
 
 import java.sql.Date;
 
-import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,7 @@ import com.webank.webasebee.sys.db.repository.BlockDetailInfoRepository;
  *
  * @Description: BlockCrawlerHandler
  * @author graysonzhang
+ * @author maojiayu
  * @data 2018-12-20 14:32:58
  *
  */

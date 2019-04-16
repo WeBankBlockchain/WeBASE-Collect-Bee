@@ -21,10 +21,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.methods.response.EthBlock;
-import org.bcos.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,18 +74,17 @@ public class SingleBlockCrawlerService {
      */
     public long handleSingleBlock(long blockHeight) throws IOException {
         BigInteger bigBlockHeight = new BigInteger(Long.toString(blockHeight));
-        EthBlock.Block block = ethClient.getBlock(bigBlockHeight);        
+        Block block = ethClient.getBlock(bigBlockHeight);
         return handleSingleBlock(block);
     }
 
-    public long handleSingleBlock(EthBlock.Block block) throws IOException {
+    public long handleSingleBlock(Block block) throws IOException {
         Stopwatch st1 = Stopwatch.createStarted();
         log.info("Begin to sync block {}", block.getNumber().longValue());
-        List<EthBlock.TransactionResult> transactionResults = block.getTransactions();
-        for (EthBlock.TransactionResult result : transactionResults) {
-            EthGetTransactionReceipt ethGetTransactionReceipt =
-                    web3j.ethGetTransactionReceipt((String) result.get()).send();
-            Optional<TransactionReceipt> opt = ethGetTransactionReceipt.getTransactionReceipt();
+        List<TransactionResult> transactionResults = block.getTransactions();
+        for (TransactionResult result : transactionResults) {
+            BcosTransactionReceipt bcosTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();
+            Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
 

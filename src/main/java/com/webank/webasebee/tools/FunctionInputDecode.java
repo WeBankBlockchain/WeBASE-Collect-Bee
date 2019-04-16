@@ -18,11 +18,12 @@ package com.webank.webasebee.tools;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.bcos.web3j.abi.TypeReference;
-import org.bcos.web3j.abi.datatypes.Type;
-import org.bcos.web3j.utils.Numeric;
-import lombok.extern.slf4j.Slf4j;
 
+import org.fisco.bcos.web3j.abi.TypeReference;
+import org.fisco.bcos.web3j.abi.datatypes.Type;
+import org.fisco.bcos.web3j.utils.Numeric;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * FunctionInputDecode
@@ -35,29 +36,29 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FunctionInputDecode {
 
-	/**    
-	 * decode function input, return List<Type>.  
-	 * 
-	 * @param rawInput
-	 * @param inputParameters
-	 * @return      
-	 * @return List<Type>       
-	 */
-	public static List<Type> decode(String rawInput, List<TypeReference<Type>> inputParameters) {
-		String input = Numeric.cleanHexPrefix(rawInput);
-		log.info("input without Prefix : {}", input);
+    /**
+     * decode function input, return List<Type>.
+     * 
+     * @param rawInput
+     * @param inputParameters
+     * @return
+     * @return List<Type>
+     */
+    public static List<Type> decode(String rawInput, List<TypeReference<Type>> inputParameters) {
+        String input = Numeric.cleanHexPrefix(rawInput);
+        log.info("input without Prefix : {}", input);
 
-		if (input == null || input.length() == 0) {
-			return Collections.emptyList();
-		} else {
-			return build(input, inputParameters);
-		}
-	}
+        if (input == null || input.length() == 0) {
+            return Collections.emptyList();
+        } else {
+            return build(input, inputParameters);
+        }
+    }
 
-	private static List<Type> build(String input, List<TypeReference<Type>> inputParameters) {
+    private static List<Type> build(String input, List<TypeReference<Type>> inputParameters) {
         List<Type> results = new ArrayList<>(inputParameters.size());
         int offset = 0;
-        for (TypeReference<?> typeReference:inputParameters) {
+        for (TypeReference<?> typeReference : inputParameters) {
             try {
                 @SuppressWarnings("unchecked")
                 Class<Type> type = (Class<Type>) typeReference.getClassType();

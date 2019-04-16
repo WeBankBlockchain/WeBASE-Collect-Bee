@@ -22,8 +22,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.bcos.web3j.protocol.Web3j;
-import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
@@ -112,7 +112,7 @@ public class CommonCrawlerService {
     }
 
     public long getCurrentBlockHeight() throws IOException {
-        BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
+        BigInteger blockNumber = web3j.getBlockNumber().send().getBlockNumber();
         long total = blockNumber.longValue();
         log.info("Current chain block number is:{}", blockNumber);
         return total;

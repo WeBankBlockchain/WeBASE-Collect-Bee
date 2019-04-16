@@ -21,7 +21,7 @@ import java.text.ParseException;
 
 import javax.annotation.PostConstruct;
 
-import org.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.Web3j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -74,7 +74,7 @@ public class PrepareTaskJob implements SimpleJob {
     @Override
     public void execute(ShardingContext shardingContext) {
         try {
-            BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
+            BigInteger blockNumber = web3j.getBlockNumber().send().getBlockNumber();
             long total = blockNumber.longValue();
             log.info("Current chain block number is:{}", total);
             long height = blockTaskPoolService.getTaskPoolHeight();
