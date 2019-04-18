@@ -19,6 +19,8 @@ import java.io.IOException;
 
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.resource.ClasspathResourceLoader;
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -46,6 +48,11 @@ public class BeanConfig {
         org.beetl.core.Configuration cfg = org.beetl.core.Configuration.defaultConfiguration();
         GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
         return gt;
+    }
+
+    @Bean
+    public static Credentials getCredentials() {
+        return GenCredential.create();
     }
 
 }

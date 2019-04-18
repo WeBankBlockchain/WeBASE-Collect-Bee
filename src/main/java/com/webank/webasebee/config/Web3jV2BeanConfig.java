@@ -25,10 +25,14 @@ import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
 import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
+import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.google.common.collect.Lists;
+import com.webank.webasebee.constants.GasConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
+@Configuration
 public class Web3jV2BeanConfig {
 
     @Autowired
@@ -78,9 +83,16 @@ public class Web3jV2BeanConfig {
         ArrayList<String> list = new ArrayList<>();
         List<ChannelConnections> allChannelConnections = new ArrayList<>();
         String[] nodes = StringUtils.split(systemEnvironmentConfig.getNodeStr(), ";");
+        for (int i = 0; i < nodes.length; i++) {
+            if (nodes[i].contains("@")) {
+                nodes[i] = StringUtils.substringAfter(nodes[i], "@");
+            }
+        }
         List<String> nodesList = Lists.newArrayList(nodes);
         list.addAll(nodesList);
-        list.stream().forEach(s -> log.info("connect address: {}", s));
+        list.stream().forEach(s -> {
+            log.info("connect address: {}", s);
+        });
         con.setConnectionsStr(list);
         con.setGroupId(systemEnvironmentConfig.getGroupId());
         allChannelConnections.add(con);
@@ -92,6 +104,11 @@ public class Web3jV2BeanConfig {
     public EncryptType getEncryptType() {
         // 0-RSA 1-Chinese
         return new EncryptType(0);
+    }
+
+    @Bean
+    public ContractGasProvider getContractGasProvider() {
+        return new StaticGasProvider(GasConstants.GAS_PRICE, GasConstants.GAS_LIMIT);
     }
 
 }
