@@ -42,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @Description: MethodCrawlerHandler
  * @author graysonzhang
+ * @author maojiayu
  * @data 2018-12-5 11:43:30
  *
  */
@@ -77,48 +78,47 @@ public class MethodCrawlerHandler {
      * methodId, then parsing transaction by method crawler that correspond with current transaction, and save the
      * transaction data into database.
      * 
+     * throw the IOException.
+     * 
      * @param receipt: TransactionReceipt
      * @param blockTimeStamp: block timestamp
      * @return void
+     * @throws IOException
      */
-    public void handle(TransactionReceipt receipt, BigInteger blockTimeStamp) {
+    public void handle(TransactionReceipt receipt, BigInteger blockTimeStamp) throws IOException {
         Optional<Transaction> optt;
-        try {
-            optt = web3j.ethGetTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
-            if (optt.isPresent()) {
-                Transaction transaction = optt.get();
-                String input = transaction.getInput();
-                String methodId = input.substring(0, 10);
-                String methodName = null;
-                String contractName = null;
-                Entry<String, String> entry = null;
-                if (transaction.getTo() == null) {
-                    entry = contractConstructorService.getConstructorNameByBinary(input);
-                    if (entry == null) {
-                        log.info("block:{} constructor binary can't find!", transaction.getBlockNumber().longValue());
-                        return;
-                    }
-                    contractName = entry.getValue();
-                    methodName = contractName + contractName;
-                } else if (input != null && contractMapsInfo.getMethodIdMap().containsKey(methodId)) {
-                    NameValueVO<String> nameValue = contractMapsInfo.getMethodIdMap().get(methodId);
-                    contractName = nameValue.getName();
-                    methodName = nameValue.getValue();
-                } else {
+        optt = web3j.ethGetTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
+        if (optt.isPresent()) {
+            Transaction transaction = optt.get();
+            String input = transaction.getInput();
+            String methodId = input.substring(0, 10);
+            String methodName = null;
+            String contractName = null;
+            Entry<String, String> entry = null;
+            if (transaction.getTo() == null) {
+                entry = contractConstructorService.getConstructorNameByBinary(input);
+                if (entry == null) {
+                    log.info("block:{} constructor binary can't find!", transaction.getBlockNumber().longValue());
                     return;
                 }
-                blockTxDetailInfoDAO.save(receipt, blockTimeStamp, contractName, methodName);
-
-                if (!bcosMethodCrawlerMap.containsKey(StringUtils.uncapitalize(methodName) + "MethodCrawlerImpl")) {
-                    log.error("The methodName {} doesn't exist, please check it !", methodName);
-                    return;
-                }
-                bcosMethodCrawlerMap.get(StringUtils.uncapitalize(methodName) + "MethodCrawlerImpl")
-                        .transactionHandler(transaction, blockTimeStamp, entry, methodName);
-
+                contractName = entry.getValue();
+                methodName = contractName + contractName;
+            } else if (input != null && contractMapsInfo.getMethodIdMap().containsKey(methodId)) {
+                NameValueVO<String> nameValue = contractMapsInfo.getMethodIdMap().get(methodId);
+                contractName = nameValue.getName();
+                methodName = nameValue.getValue();
+            } else {
+                return;
             }
-        } catch (IOException e1) {
-            log.error("MethodCrawlerHandler Error: {}", e1.getMessage());
+            blockTxDetailInfoDAO.save(receipt, blockTimeStamp, contractName, methodName);
+
+            if (!bcosMethodCrawlerMap.containsKey(StringUtils.uncapitalize(methodName) + "MethodCrawlerImpl")) {
+                log.error("The methodName {} doesn't exist, please check it !", methodName);
+                return;
+            }
+            bcosMethodCrawlerMap.get(StringUtils.uncapitalize(methodName) + "MethodCrawlerImpl")
+                    .transactionHandler(transaction, blockTimeStamp, entry, methodName);
+
         }
     }
 }

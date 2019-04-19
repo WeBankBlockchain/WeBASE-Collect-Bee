@@ -40,21 +40,24 @@ public class SystemEnvironmentConfig {
     private String clientCertPassword;
 
     private String privateKey;
-    private int maxBlockHeightThreshold;
-    private int crawlBatchUnit;
-    
+    private int maxBlockHeightThreshold = 10;
+    private int crawlBatchUnit = 1000;
+
     private boolean multiLiving;
     private String zookeeperServiceLists;
     private String zookeeperNamespace;
     private String elasticJobName;
     private String elasticJobcron;
     private int elasticJobshardingTotalCount;
-    
+
     private long frequency;
     private String contractPackName;
     private String group;
     private String baseProjectPath;
     private String projectName;
     private String contractPath;
+
+    private long startBlockHeight = 0;
+    private String startDate;
 
 }

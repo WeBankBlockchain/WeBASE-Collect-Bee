@@ -13,23 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.enums;
+package com.webank.webasebee.jpa;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.util.Date;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.webank.webasebee.WebaseBeeApplicationTests;
+import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
 
 /**
- * TxInfoStatusEnum
+ * BlockTaskPoolRepositoryTest
  *
- * @Description: TxInfoStatusEnum
+ * @Description: BlockTaskPoolRepositoryTest
  * @author maojiayu
- * @data Dec 13, 2018 8:48:55 PM
+ * @data Apr 8, 2019 5:30:43 PM
  *
  */
-@AllArgsConstructor
-@Getter
-public enum TxInfoStatusEnum {
+public class BlockTaskPoolRepositoryTest extends WebaseBeeApplicationTests {
+    @Autowired
+    private BlockTaskPoolRepository r;
 
-    INIT(0), DOING(1), DONE(2), ERROR(3), TIMEOUT(4), RESET(5);
-    private int status;
+    @Test
+    public void testUpd() {
+        r.setSyncStatusByBlockHeight(7, new Date(), 20);
+    }
+
 }

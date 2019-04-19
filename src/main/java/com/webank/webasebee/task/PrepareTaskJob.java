@@ -17,6 +17,9 @@ package com.webank.webasebee.task;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.ParseException;
+
+import javax.annotation.PostConstruct;
 
 import org.bcos.web3j.protocol.Web3j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +28,10 @@ import org.springframework.stereotype.Service;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
-import com.webank.webasebee.enums.TxInfoStatusEnum;
-import com.webank.webasebee.sys.db.entity.BlockTaskPool;
-import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.config.SystemEnvironmentConfig;
+import com.webank.webasebee.constants.BlockForkConstants;
+import com.webank.webasebee.crawler.service.BlockIndexService;
+import com.webank.webasebee.crawler.service.BlockTaskPoolService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Description: PrepareTaskJob
  * @author maojiayu
  * @data Jan 11, 2019 10:03:29 AM
- *
+ * 
  */
 @Service
 @Slf4j
@@ -46,24 +50,44 @@ public class PrepareTaskJob implements SimpleJob {
     @Autowired
     private Web3j web3j;
     @Autowired
-    private BlockTaskPoolRepository blockTaskPoolRepository;
+    private BlockTaskPoolService blockTaskPoolService;
+    @Autowired
+    private BlockIndexService blockIndexService;
+    @Autowired
+    private SystemEnvironmentConfig systemEnvironmentConfig;
+    private long startBlockNumber;
 
+    @PostConstruct
+    public void setStartBlockNumber() throws ParseException, IOException, InterruptedException {
+        startBlockNumber = blockIndexService.getStartBlockIndex();
+        log.info("Start succeed, and the block number is {}", startBlockNumber);
+    }
+
+    /**
+     * prepare to do tasks, and restored in block_task_pool. 1. check timeout txs and process errors; 2. prepare tasks;
+     * 3. process forks;
+     * 
+     * @param ShardingContext: elastic-job
+     * @return void
+     * @see com.dangdang.ddframe.job.api.simple.SimpleJob#execute(com.dangdang.ddframe.job.api.ShardingContext)
+     */
     @Override
     public void execute(ShardingContext shardingContext) {
         try {
             BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
             long total = blockNumber.longValue();
             log.info("Current chain block number is:{}", total);
-            BlockTaskPool item = blockTaskPoolRepository.findTopByOrderByBlockHeightDesc();
-            long height = 0;
-            if (item != null) {
-                height = item.getBlockHeight() + 1;
-            }
-            for (; height <= total; height++) {
-                BlockTaskPool pool = new BlockTaskPool().setBlockHeight(height)
-                        .setStatus(TxInfoStatusEnum.INIT.getStatus()).setHandleItem(shardingContext.getShardingItem());
-                blockTaskPoolRepository.save(pool);
-            }
+            long height = blockTaskPoolService.getTaskPoolHeight();
+            height = height > startBlockNumber ? height : startBlockNumber;
+
+            blockTaskPoolService.checkTimeOut();
+            blockTaskPoolService.processErrors();
+            long end = height + systemEnvironmentConfig.getCrawlBatchUnit();
+            long batchNo = total < end ? total : end;
+            boolean certainty = end < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
+            blockTaskPoolService.prepareTask(height, batchNo, certainty);
+            blockTaskPoolService.checkForks(total);
+
         } catch (IOException e) {
             log.error("Job {}, exception occur in job processing: {}", shardingContext.getTaskId(), e.getMessage());
 

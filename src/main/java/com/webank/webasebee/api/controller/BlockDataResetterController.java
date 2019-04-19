@@ -18,19 +18,22 @@ package com.webank.webasebee.api.controller;
 import java.io.IOException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.webank.webasebee.crawler.service.BlockDataResetService;
 import com.webank.webasebee.entity.CommonResponse;
 import com.webank.webasebee.tools.ResponseUtils;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
 
 /**
  * 
@@ -45,15 +48,15 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/api/blockdata/")
 @Api(value = "BlockDataResetterController", tags = "Block Data Infomation Reset")
 public class BlockDataResetterController {
-    
+
     @Autowired
     private BlockDataResetService blockDataResetService;
-    
+
     @ResponseBody
     @RequestMapping("/reset")
     @ApiOperation(value = "reset single block data", httpMethod = "POST")
-    public CommonResponse resetBlockDataByBlockId(@RequestBody @Valid long blockHeight,
-            BindingResult result) throws IOException {
+    public CommonResponse resetBlockDataByBlockId(@RequestBody @Valid @Min(0) long blockHeight, BindingResult result)
+            throws IOException {
         if (result.hasErrors()) {
             return ResponseUtils.validateError(result);
         }

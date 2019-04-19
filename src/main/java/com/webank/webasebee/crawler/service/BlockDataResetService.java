@@ -16,51 +16,61 @@
 package com.webank.webasebee.crawler.service;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.webank.webasebee.config.SystemEnvironmentConfig;
-import com.webank.webasebee.dao.BlockInfoDAO;
+
 import com.webank.webasebee.entity.CommonResponse;
-import com.webank.webasebee.sys.db.entity.BlockInfo;
+import com.webank.webasebee.enums.TxInfoStatusEnum;
 import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.tools.ResponseUtils;
+
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * BlockDataResetService
  *
  * @Description: BlockDataResetService
  * @author graysonzhang
+ * @author maojiayu
  * @data 2019-03-21 14:51:50
  *
  */
 @Service
+@Slf4j
 public class BlockDataResetService {
-	@Autowired
-    private SystemEnvironmentConfig systemEnvironmentConfig;
-    @Autowired
-    private BlockInfoDAO blockInfoDao;
     @Autowired
     private RollBackService rollBackService;
     @Autowired
     private SingleBlockCrawlerService singleBlockCrawlerService;
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
-    
-    public CommonResponse resetBlockDataByBlockId(long blockHeight) throws IOException{ 
-        
-        if(systemEnvironmentConfig.isMultiLiving()) {
-            BlockTaskPool blockTaskPool = blockTaskPoolRepository.findByBlockHeight(blockHeight);
-            if(blockTaskPool == null) return CommonResponse.NOBLOCK;
-        }else {
-        	BlockInfo blockInfo = blockInfoDao.getBlockInfo();
-        	
-            if(blockInfo == null) return CommonResponse.SYSERROR;
-            if(blockHeight > blockInfo.getCurrentBlockHeight()) return CommonResponse.NOBLOCK;
-        }  
-        
+
+    public CommonResponse resetBlockDataByBlockId(long blockHeight) throws IOException {
+
+        Optional<BlockTaskPool> blockTaskPool = blockTaskPoolRepository.findByBlockHeight(blockHeight);
+        if (!blockTaskPool.isPresent()) {
+            return CommonResponse.NOBLOCK;
+        }
+        if (blockTaskPool.get().getSyncStatus() == TxInfoStatusEnum.DOING.getStatus()) {
+            return ResponseUtils.error("Some task is still running. please resend the request later.");
+        }
+        if (blockTaskPool.get().getSyncStatus() == TxInfoStatusEnum.RESET.getStatus()) {
+            if (DateUtil.between(blockTaskPool.get().getDepotUpdatetime(), DateUtil.date(), DateUnit.SECOND) < 60) {
+                return ResponseUtils.error("The block is already in progress to reset. please send the request later");
+            }
+        }
+        log.info("begin to refetch block {}", blockHeight);
+        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.RESET.getStatus(), new Date(), blockHeight);
         rollBackService.rollback(blockHeight, blockHeight + 1);
         singleBlockCrawlerService.handleSingleBlock(blockHeight);
-        
-        return CommonResponse.SUCCESS;
+        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(), blockHeight);
+        log.info("block {} is reset!", blockHeight);
+        return ResponseUtils.success();
     }
 }
