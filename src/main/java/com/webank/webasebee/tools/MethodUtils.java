@@ -57,7 +57,7 @@ public class MethodUtils {
         List<TypeReference<Type>> referencesTypeList = Lists.newArrayList();
         for (NamedType type : list) {
             TypeReference reference = AbiTypeRefUtils.getTypeRef(type.getType().split(" ")[0]);
-            log.debug("type: {} TypeReference converted: {}", type.getType(), JacksonUtils.toJson(reference));
+            log.info("type: {} TypeReference converted: {}", type.getType(), JacksonUtils.toJson(reference));
             referencesTypeList.add(reference);
         }
         return referencesTypeList;

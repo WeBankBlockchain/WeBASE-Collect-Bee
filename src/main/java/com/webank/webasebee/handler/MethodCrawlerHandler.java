@@ -86,8 +86,7 @@ public class MethodCrawlerHandler {
      * @throws IOException
      */
     public void handle(TransactionReceipt receipt, BigInteger blockTimeStamp) throws IOException {
-        Optional<Transaction> optt;
-        optt = web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
+        Optional<Transaction> optt = web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
         if (optt.isPresent()) {
             Transaction transaction = optt.get();
             String input = transaction.getInput();
@@ -95,7 +94,7 @@ public class MethodCrawlerHandler {
             String methodName = null;
             String contractName = null;
             Entry<String, String> entry = null;
-            if (transaction.getTo() == null) {
+            if (transaction.getTo() == null|| transaction.getTo().equals("0x0000000000000000000000000000000000000000")) {
                 entry = contractConstructorService.getConstructorNameByBinary(input);
                 if (entry == null) {
                     log.info("block:{} constructor binary can't find!", transaction.getBlockNumber().longValue());
@@ -103,6 +102,8 @@ public class MethodCrawlerHandler {
                 }
                 contractName = entry.getValue();
                 methodName = contractName + contractName;
+                log.debug("find methodName: {}, block number is {}, transaction index is {}", methodName,
+                        transaction.getBlockNumber(), transaction.getTransactionIndex());
             } else if (input != null && contractMapsInfo.getMethodIdMap().containsKey(methodId)) {
                 NameValueVO<String> nameValue = contractMapsInfo.getMethodIdMap().get(methodId);
                 contractName = nameValue.getName();
