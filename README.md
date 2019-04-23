@@ -87,6 +87,7 @@ webase-bee可与grafana深度集成，支持自动生成dashboard实例，让您
 
 | 依赖软件 | 说明 |备注|
 | --- | --- | --- |
+| FISCO-BCOS | >= 2.0， 1.x版本请参考V0.5版本 |
 | Bash | 需支持Bash（理论上来说支持所有ksh、zsh等其他unix shell，但未测试）|
 | Java | >= JDK[1.8] | |
 | Git | 下载的安装包使用Git | |
