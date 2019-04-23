@@ -112,7 +112,8 @@ webase-bee的工程使用gradle进行构建，是一个SpringBoot工程。
          		application-sharding-tables.properties
          		application.properties
          		ca.crt
-         		client.keystore
+         		node.crt
+         		node.key
          -java
 
 ```

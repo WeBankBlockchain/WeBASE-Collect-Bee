@@ -37,8 +37,6 @@ public class SystemEnvironmentConfig {
     private int groupId;
 
     private String configPath;
-    private String keystorePassword;
-    private String clientCertPassword;
 
     private String privateKey;
     private int maxBlockHeightThreshold = 10;
