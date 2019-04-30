@@ -95,6 +95,10 @@ bootJar {
 			from configurations.runtime
 			into 'dist/lib'
 		}
+        copy {
+            from file('src/main/shell/')
+            into 'dist'
+        }
 		copy {
             from file('src/main/resources/')
             into 'dist/config'
