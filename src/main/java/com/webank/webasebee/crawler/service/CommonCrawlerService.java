@@ -17,16 +17,20 @@ package com.webank.webasebee.crawler.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.stream.LongStream;
+import java.text.ParseException;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import org.bcos.web3j.protocol.Web3j;
+import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import com.webank.webasebee.config.SystemEnvironmentConfig;
-import com.webank.webasebee.dao.BlockDetailInfoDAO;
-import com.webank.webasebee.dao.BlockInfoDAO;
-import com.webank.webasebee.enums.TxInfoStatusEnum;
-import com.webank.webasebee.sys.db.entity.BlockInfo;
+import com.webank.webasebee.constants.BlockForkConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,73 +50,72 @@ public class CommonCrawlerService {
     @Autowired
     private Web3j web3j;
     @Autowired
-    private BlockInfoDAO blockInfoDao;
-    @Autowired
-    private BlockDetailInfoDAO blockDetailInfoDao;
-    @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
     @Autowired
-    private RollBackService rollBackService;
+    private BlockTaskPoolService blockTaskPoolService;
     @Autowired
-    private SingleBlockCrawlerService singleBlockCrawlerService;
+    private BlockSyncService blockSyncService;
+
+    @Autowired
+    private BlockIndexService blockIndexService;
+
+    private long startBlockNumber;
+
+    @PostConstruct
+    public void setStartBlockNumber() throws ParseException, IOException, InterruptedException {
+        startBlockNumber = blockIndexService.getStartBlockIndex();
+        log.info("Start succeed, and the block number is {}", startBlockNumber);
+    }
 
     /**
-     * The key driving entrance of depot. 1. get block info; 2. execute rollback; 3. decide to enter multi-thread mode;
-     * 4. do block handle; 5. update tx info; 6. continue...
+     * The key driving entrance of single instance depot: 1. check timeout txs and process errors; 2. produce tasks; 3.
+     * consume tasks; 4. check the fork status; 5. rollback; 6. continue and circle;
      * 
      */
     public void handle() {
         try {
-            BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
-            long total = blockNumber.longValue();
-            log.info("Current chain block number is:{}", blockNumber);
-            BlockInfo blockInfo = blockInfoDao.getBlockInfo();
-            long height = rollBackService.processRollback(blockInfo);
             while (true) {
+                long total = getCurrentBlockHeight();
+                long height = blockTaskPoolService.getTaskPoolHeight();
+                height = height > startBlockNumber ? height : startBlockNumber;
                 log.info(
                         "Current blockNumber is {}, now height to depot is {}, and the max block height threshold is {}.",
                         total, height, systemEnvironmentConfig.getMaxBlockHeightThreshold());
-                if (height + systemEnvironmentConfig.getMaxBlockHeightThreshold() < total) {
-                    for (long beginIndex = height; beginIndex
-                            + systemEnvironmentConfig.getCrawlBatchUnit() <= total; beginIndex +=
-                                    systemEnvironmentConfig.getCrawlBatchUnit()) {
-                        log.info("begin to start Multi-thread system, start: {}, end: {}", height, total);
-                        long tmpUpper = beginIndex + systemEnvironmentConfig.getCrawlBatchUnit();
-                        long maxBlockNumber = tmpUpper <= total ? tmpUpper : total;
-                        LongStream.range(beginIndex, maxBlockNumber).parallel().forEach(t -> {
-                            try {
-                                singleBlockCrawlerService.handleSingleBlock(t);
-                            } catch (IOException e) {
-                                log.error("handle error IOException, {}", e.getMessage());
-                            }
-                        });
-                        height = beginIndex + systemEnvironmentConfig.getCrawlBatchUnit();
-                        long tempTxCount = blockDetailInfoDao.sumByTxCountBetweens(0, height);
-                        blockInfo.setTxCount((long) tempTxCount).setStatus(TxInfoStatusEnum.DONE.getStatus())
-                                .setCurrentBlockHeight(height);
-                        blockInfoDao.save(blockInfo);
+                blockTaskPoolService.checkTimeOut();
+                blockTaskPoolService.processErrors();
+                // control the batch unit number
+                long end = height + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
+                long batchNo = total < end ? total : end;
+                boolean certainty = end + 1 < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
+                blockTaskPoolService.prepareTask(height, batchNo, certainty);
+                List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
+                while (!CollectionUtils.isEmpty(taskList)) {
+                    if (taskList.size() < systemEnvironmentConfig.getCrawlBatchUnit()) {
+                        blockSyncService.processDataSequence(taskList);
+                    } else {
+                        blockSyncService.processDataParallel(taskList);
                     }
-                }
-                // single thread process
-                while (height <= total) {
-                    log.info("back to checkoout single-thread system, start: {}", height);
-                    singleBlockCrawlerService.handleSingleBlock(height);
-                    blockInfo.setCurrentBlockHeight(height)
-                            .setTxCount(blockDetailInfoDao.sumByTxCountBetweens(0, height + 1))
-                            .setStatus(TxInfoStatusEnum.DONE.getStatus());
-                    blockInfoDao.save(blockInfo);
-                    height++;
+                    taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 }
                 // single circle sleep time is read from the application.properties
                 Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
-                blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
-                total = blockNumber.longValue();
+                total = getCurrentBlockHeight();
+                if (!certainty) {
+                    blockTaskPoolService.checkForks(total);
+                }
             }
         } catch (IOException e) {
             log.error("depot IOError, {}", e.getMessage());
         } catch (InterruptedException e) {
             log.error("depot InterruptedException, {}", e.getMessage());
         }
+    }
+
+    public long getCurrentBlockHeight() throws IOException {
+        BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
+        long total = blockNumber.longValue();
+        log.info("Current chain block number is:{}", blockNumber);
+        return total;
     }
 
 }

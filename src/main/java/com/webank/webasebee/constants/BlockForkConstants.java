@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.enums;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+package com.webank.webasebee.constants;
 
 /**
- * TxInfoStatusEnum
+ * BlockForkConstants
  *
- * @Description: TxInfoStatusEnum
+ * @Description: BlockForkConstants
  * @author maojiayu
- * @data Dec 13, 2018 8:48:55 PM
+ * @data Apr 1, 2019 3:56:30 PM
  *
  */
-@AllArgsConstructor
-@Getter
-public enum TxInfoStatusEnum {
+public class BlockForkConstants {
 
-    INIT(0), DOING(1), DONE(2), ERROR(3), TIMEOUT(4), RESET(5);
-    private int status;
+    public static final int MAX_FORK_CERTAINTY_BLOCK_NUMBER = 6;
+    public static final int DEPOT_TIME_OUT = 300;
+
 }

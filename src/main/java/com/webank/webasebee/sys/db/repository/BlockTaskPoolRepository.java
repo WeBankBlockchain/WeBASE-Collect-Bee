@@ -15,7 +15,9 @@
  */
 package com.webank.webasebee.sys.db.repository;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -39,19 +41,39 @@ import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 public interface BlockTaskPoolRepository
         extends JpaRepository<BlockTaskPool, Long>, JpaSpecificationExecutor<BlockTaskPool> {
 
-    public BlockTaskPool findTopByOrderByBlockHeightDesc();
-    
-    public BlockTaskPool findByBlockHeight(long blockHeight);
+    public Optional<BlockTaskPool> findTopByOrderByBlockHeightDesc();
 
-    @Query(value = "select * from block_task_pool where block_height% ?1 = ?2 and status = ?3 limit ?4", nativeQuery = true)
-    public List<BlockTaskPool> findByStatusModByBlockHeightLimit(int shardingCount, int shardingItem, int status,
-            int limit);
+    public Optional<BlockTaskPool> findByBlockHeight(long blockHeight);
+
+    public List<BlockTaskPool> findByCertainty(int certainty);
+
+    @Query(value = "select * from #{#entityName} where sync_status = 4 or sync_status = 3 ", nativeQuery = true)
+    public List<BlockTaskPool> findUnNormalRecords();
+
+    @Query(value = "select * from #{#entityName} where sync_status = ?1 order by block_height limit ?2", nativeQuery = true)
+    public List<BlockTaskPool> findBySyncStatusOrderByBlockHeightLimit(int syncStatus, int limit);
+
+    @Query(value = "select * from #{#entityName} where block_height% ?1 = ?2 and sync_status = ?3 limit ?4", nativeQuery = true)
+    public List<BlockTaskPool> findBySyncStatusModByBlockHeightLimit(int shardingCount, int shardingItem,
+            int syncStatus, int limit);
+
+    public List<BlockTaskPool> findBySyncStatusAndDepotUpdatetimeLessThan(int syncStatus, Date time);
 
     @Transactional
     @Modifying
-    @Query(value = "update #{#entityName} set status = ?1 where block_height = ?2", nativeQuery = true)
-    public void setStatusByBlockHeight(int status, long blockHeight);
-    
+    @Query(value = "update #{#entityName} set sync_status = ?1, depot_updatetime= ?2 where block_height = ?3", nativeQuery = true)
+    public void setSyncStatusByBlockHeight(int syncStatus, Date updateTime, long blockHeight);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update #{#entityName} set certainty = ?1 where block_height = ?2", nativeQuery = true)
+    public void setCertaintyByBlockHeight(int certainty, long blockHeight);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update #{#entityName} set sync_status = ?1, certainty = ?2 where block_height = ?3", nativeQuery = true)
+    public void setSyncStatusAndCertaintyByBlockHeight(int syncStatus, int certainty, long blockHeight);
+
     /*
      * @see com.webank.webasebee.sys.db.repository.RollbackInterface#rollback(long)
      */

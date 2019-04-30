@@ -41,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
  * SingleBlockCrawlerService
  *
  * @Description: SingleBlockCrawlerService
+ * @author maojiayu
  * @author graysonzhang
  * @data 2019-03-21 15:00:30
  *
@@ -48,7 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class SingleBlockCrawlerService {
-    
+
     @Autowired
     private Web3j web3j;
     @Autowired
@@ -61,7 +62,7 @@ public class SingleBlockCrawlerService {
     private MethodCrawlerHandler methodCrawlerHandler;
     @Autowired
     private AccountCrawlerHandler accountCrawlerHandler;
-    
+
     /**
      * handle a single block: 1. download a new block. 2. handle event. 3. handle method. 4. handle account. 5. insert
      * block detail.
@@ -72,12 +73,13 @@ public class SingleBlockCrawlerService {
      */
     public long handleSingleBlock(long blockHeight) throws IOException {
         BigInteger bigBlockHeight = new BigInteger(Long.toString(blockHeight));
-        EthBlock.Block block = ethClient.getBlock(bigBlockHeight);
+        EthBlock.Block block = ethClient.getBlock(bigBlockHeight);        
         return handleSingleBlock(block);
     }
 
     public long handleSingleBlock(EthBlock.Block block) throws IOException {
         Stopwatch st1 = Stopwatch.createStarted();
+        log.info("Begin to sync block {}", block.getNumber().longValue());
         List<EthBlock.TransactionResult> transactionResults = block.getTransactions();
         for (EthBlock.TransactionResult result : transactionResults) {
             EthGetTransactionReceipt ethGetTransactionReceipt =
@@ -97,9 +99,8 @@ public class SingleBlockCrawlerService {
             }
         }
 
-        Stopwatch st2 = st1.stop();
         log.info("bcosCrawlerMap block:{} succeed, bcosCrawlerMap.handleReceipt useTime: {}",
-                block.getNumber().longValue(), st2.elapsed(TimeUnit.MILLISECONDS));
+                block.getNumber().longValue(), st1.stop().elapsed(TimeUnit.MILLISECONDS));
         blockCrawlerHandler.handleBlockDetail(block, block.getNumber().longValue());
         return transactionResults.size();
     }

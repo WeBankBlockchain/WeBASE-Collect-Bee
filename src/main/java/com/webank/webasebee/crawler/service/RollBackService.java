@@ -19,10 +19,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.enums.TxInfoStatusEnum;
-import com.webank.webasebee.sys.db.entity.BlockInfo;
 import com.webank.webasebee.sys.db.repository.RollbackInterface;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -70,13 +71,11 @@ public class RollBackService {
     /**
      * process roll back according to block info and total block number. decide from which block to rollback.
      * 
-     * @param blockInfo
+     * @param block height, block status
      * @return begin block height
      */
-    public long processRollback(BlockInfo blockInfo) {
-        long height = blockInfo.getCurrentBlockHeight();
-        if (blockInfo.getCurrentBlockHeight() >= systemEnvironmentConfig.getCrawlBatchUnit()
-                && blockInfo.getStatus() != TxInfoStatusEnum.DONE.getStatus()) {
+    public long processRollback(long height, int status) {
+        if (height >= systemEnvironmentConfig.getCrawlBatchUnit() && status != TxInfoStatusEnum.DONE.getStatus()) {
             log.info("Begin to rollback block from {}.", height - systemEnvironmentConfig.getCrawlBatchUnit());
             rollback(height - systemEnvironmentConfig.getCrawlBatchUnit());
             height = height - systemEnvironmentConfig.getCrawlBatchUnit();

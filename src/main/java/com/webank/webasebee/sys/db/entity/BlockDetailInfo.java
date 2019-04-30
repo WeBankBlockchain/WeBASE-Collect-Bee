@@ -33,7 +33,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-
 /**
  * BlockDetailInfo entity storage of block detail info.
  *
@@ -46,40 +45,38 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @Entity(name = "block_detail_info")
-@Table(name = "block_detail_info", indexes = { @Index(name = "block_height", columnList = "block_height"),
-        @Index(name = "block_hash", columnList = "block_hash"),
+@Table(name = "block_detail_info", indexes = { @Index(name = "block_hash", columnList = "block_hash"),
         @Index(name = "block_timestamp", columnList = "block_timestamp") })
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class BlockDetailInfo extends IdEntity {
-    
+
     /** @Fields blockHeight : block height */
     @Column(name = "block_height", unique = true)
     private long blockHeight;
-    
+
     /** @Fields blockHash : block hash */
     @Column(name = "block_hash")
     private String blockHash;
-    
+
     /** @Fields txCount : transaction's count in block */
     @Column(name = "tx_count")
     private int txCount;
-    
+
     /** @Fields blockTimeStamp : block timestamp */
     @Column(name = "block_timestamp")
     private Date blockTimeStamp;
-    
+
     /** @Fields status : block process status */
     private Status status;
-    
+
     /** @Fields updatetime : depot update time */
     @UpdateTimestamp
     @Column(name = "depot_updatetime")
     @Temporal(TemporalType.TIMESTAMP)
     protected Date depotUpdatetime;
-    
+
     public enum Status {
-        TODO,
-        COMPLETED
+        TODO, COMPLETED
     }
 }

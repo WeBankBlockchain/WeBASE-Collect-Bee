@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
  * EventMetaInfo
  *
  * @Description: EventMetaInfo storages event config data for parsing event data 
+ * @author maojiayu
  * @author graysonzhang
  * @data 2018-11-08 22:03:20
  *
