@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,7 +70,9 @@ public class BlockTaskPoolService {
         return height;
     }
 
+    @Transactional
     public void prepareTask(long begin, long end, boolean certainty) {
+        log.info("Begin to prepare sync blocks from {} to {}", begin, end);
         List<BlockTaskPool> list = Lists.newArrayList();
         for (; begin <= end; begin++) {
             BlockTaskPool pool =
@@ -85,6 +89,7 @@ public class BlockTaskPoolService {
             list.add(pool);
         }
         blockTaskPoolRepository.saveAll(list);
+        log.info("Sync blocks from {} to {} are prepared.", begin, end);
     }
 
     public void processErrors() {
@@ -92,7 +97,9 @@ public class BlockTaskPoolService {
         if (CollectionUtils.isEmpty(unnormalRecords)) {
             return;
         } else {
+            log.info("sync block detect {} error transactions.", unnormalRecords.size());
             unnormalRecords.parallelStream().map(b -> b.getBlockHeight()).forEach(e -> {
+                log.error("Block {} sync error, and begin to rollback.", e);
                 rollBackService.rollback(e, e + 1);
                 blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.INIT.getStatus(), new Date(), e);
             });
@@ -136,14 +143,14 @@ public class BlockTaskPoolService {
 
     public void checkTimeOut() {
         Date offsetDate = DateUtil.offsetSecond(DateUtil.date(), 0 - BlockForkConstants.DEPOT_TIME_OUT);
-        log.info("Begin to check timeout txs, {}", offsetDate);
+        log.info("Begin to check timeout transactions which is ealier than {}", offsetDate);
         List<BlockTaskPool> list = blockTaskPoolRepository
                 .findBySyncStatusAndDepotUpdatetimeLessThan(TxInfoStatusEnum.DOING.getStatus(), offsetDate);
         if (!CollectionUtils.isEmpty(list)) {
-            log.info("detect {} timeout txs", list.size());
+            log.info("Detect {} timeout transactions.", list.size());
         }
         list.forEach(p -> {
-            log.error("Block {} sync timeout!!, the depot_time is {}, and the threshold time is {}", p.getBlockHeight(),
+            log.error("Block {} sync block timeout!!, the depot_time is {}, and the threshold time is {}", p.getBlockHeight(),
                     p.getDepotUpdatetime(), offsetDate);
             blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.TIMEOUT.getStatus(), new Date(),
                     p.getBlockHeight());

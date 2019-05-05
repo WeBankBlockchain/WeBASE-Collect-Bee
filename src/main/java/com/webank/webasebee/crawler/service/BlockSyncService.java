@@ -50,9 +50,9 @@ public class BlockSyncService {
     @Autowired
     private EthClient ethClient;
 
-    public List<Block> fetchData(int shard) {
+    public List<Block> fetchData(int count) {
         List<BlockTaskPool> tasks = blockTaskPoolRepository
-                .findBySyncStatusOrderByBlockHeightLimit(TxInfoStatusEnum.INIT.getStatus(), shard);
+                .findBySyncStatusOrderByBlockHeightLimit(TxInfoStatusEnum.INIT.getStatus(), count);
         return getTasks(tasks);
     }
 
@@ -78,32 +78,29 @@ public class BlockSyncService {
         return result;
     }
 
-    public void processDataSequence(List<Block> data) {
+    public void processDataSequence(List<Block> data, long total) {
         for (Block b : data) {
-            try {
-                singleBlockCrawlerService.handleSingleBlock(b);
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(),
-                        b.getNumber().longValue());
-            } catch (IOException e) {
-                log.error("block {}, exception occur in job processing: {}", b.getNumber().longValue(), e.getMessage());
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(), new Date(),
-                        b.getNumber().longValue());
-            }
+            handleSingleBlock(b, total);
         }
     }
 
-    public void processDataParallel(List<Block> data) {
+    public void processDataParallel(List<Block> data, long total) {
         data.parallelStream().forEach(b -> {
-            try {
-                singleBlockCrawlerService.handleSingleBlock(b);
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(),
-                        b.getNumber().longValue());
-            } catch (IOException e) {
-                log.error("block {}, exception occur in job processing: {}", b.getNumber().longValue(), e.getMessage());
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(), new Date(),
-                        b.getNumber().longValue());
-            }
+            handleSingleBlock(b, total);
         });
+    }
+
+    public void handleSingleBlock(Block b, long total) {
+        try {
+            singleBlockCrawlerService.handleSingleBlock(b);
+            blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(),
+                    b.getNumber().longValue());
+            log.info("Block {} of {} sync block succeed.", b.getNumber().longValue(), total);
+        } catch (IOException e) {
+            log.error("block {}, exception occur in job processing: {}", b.getNumber().longValue(), e.getMessage());
+            blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.ERROR.getStatus(), new Date(),
+                    b.getNumber().longValue());
+        }
     }
 
 }

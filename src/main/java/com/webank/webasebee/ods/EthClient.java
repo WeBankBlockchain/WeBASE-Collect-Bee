@@ -45,7 +45,7 @@ public class EthClient {
 
     public Block getBlock(BigInteger blockHeightNumber) throws IOException {
         Stopwatch stopwatch = Stopwatch.createStarted();
-        log.info("get block number: {}", blockHeightNumber);
+        log.debug("get block number: {}", blockHeightNumber);
         Block block = web3j.getBlockByNumber(DefaultBlockParameter.valueOf(blockHeightNumber), false).send().getBlock();
         Stopwatch st1 = stopwatch.stop();
         log.info("get block:{} succeed, eth.getBlock useTime: {}", blockHeightNumber,

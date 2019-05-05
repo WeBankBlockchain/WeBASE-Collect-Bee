@@ -80,7 +80,7 @@ public class SingleBlockCrawlerService {
 
     public long handleSingleBlock(Block block) throws IOException {
         Stopwatch st1 = Stopwatch.createStarted();
-        log.info("Begin to sync block {}", block.getNumber().longValue());
+        log.debug("Begin to sync block {}", block.getNumber().longValue());
         List<TransactionResult> transactionResults = block.getTransactions();
         for (TransactionResult result : transactionResults) {
             BcosTransactionReceipt bcosTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();

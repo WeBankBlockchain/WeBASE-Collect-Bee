@@ -67,6 +67,10 @@ public class CommonCrawlerService {
         log.info("Start succeed, and the block number is {}", startBlockNumber);
     }
 
+    public long getHeight(long height) {
+        return height > startBlockNumber ? height : startBlockNumber;
+    }
+
     /**
      * The key driving entrance of single instance depot: 1. check timeout txs and process errors; 2. produce tasks; 3.
      * consume tasks; 4. check the fork status; 5. rollback; 6. continue and circle;
@@ -74,26 +78,27 @@ public class CommonCrawlerService {
      */
     public void handle() {
         try {
+            log.info("The max block height threshold is {}", systemEnvironmentConfig.getMaxBlockHeightThreshold());
             while (true) {
                 long total = getCurrentBlockHeight();
-                long height = blockTaskPoolService.getTaskPoolHeight();
-                height = height > startBlockNumber ? height : startBlockNumber;
-                log.info(
-                        "Current blockNumber is {}, now height to depot is {}, and the max block height threshold is {}.",
-                        total, height, systemEnvironmentConfig.getMaxBlockHeightThreshold());
+                long height = getHeight(blockTaskPoolService.getTaskPoolHeight());
+                log.info("Current depot status: {} of {}, and try to process block {}", height - 1, total, height);
                 blockTaskPoolService.checkTimeOut();
                 blockTaskPoolService.processErrors();
                 // control the batch unit number
                 long end = height + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
                 long batchNo = total < end ? total : end;
                 boolean certainty = end + 1 < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
-                blockTaskPoolService.prepareTask(height, batchNo, certainty);
+                if (height <= batchNo) {
+                    log.info("Try to sync block number {} to {} of {}", height, batchNo, total);
+                    blockTaskPoolService.prepareTask(height, batchNo, certainty);
+                }
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 while (!CollectionUtils.isEmpty(taskList)) {
                     if (taskList.size() < systemEnvironmentConfig.getCrawlBatchUnit()) {
-                        blockSyncService.processDataSequence(taskList);
+                        blockSyncService.processDataSequence(taskList, total);
                     } else {
-                        blockSyncService.processDataParallel(taskList);
+                        blockSyncService.processDataParallel(taskList, total);
                     }
                     taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 }
@@ -114,7 +119,7 @@ public class CommonCrawlerService {
     public long getCurrentBlockHeight() throws IOException {
         BigInteger blockNumber = web3j.getBlockNumber().send().getBlockNumber();
         long total = blockNumber.longValue();
-        log.info("Current chain block number is:{}", blockNumber);
+        log.debug("Current chain block number is:{}", blockNumber);
         return total;
     }
 
