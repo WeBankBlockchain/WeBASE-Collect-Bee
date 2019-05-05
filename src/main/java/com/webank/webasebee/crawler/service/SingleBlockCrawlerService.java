@@ -79,7 +79,7 @@ public class SingleBlockCrawlerService {
 
     public long handleSingleBlock(EthBlock.Block block) throws IOException {
         Stopwatch st1 = Stopwatch.createStarted();
-        log.info("Begin to sync block {}", block.getNumber().longValue());
+        log.debug("Begin to sync block {}", block.getNumber().longValue());
         List<EthBlock.TransactionResult> transactionResults = block.getTransactions();
         for (EthBlock.TransactionResult result : transactionResults) {
             EthGetTransactionReceipt ethGetTransactionReceipt =

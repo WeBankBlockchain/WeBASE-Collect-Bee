@@ -15,8 +15,11 @@
  */
 package com.webank.webasebee.task;
 
+import java.io.IOException;
+import java.math.BigInteger;
 import java.util.List;
 
+import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,6 +32,8 @@ import com.webank.webasebee.enums.TxInfoStatusEnum;
 import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * MyDataflowJob
  *
@@ -38,14 +43,16 @@ import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
  *
  */
 @Service
+@Slf4j
 @ConditionalOnProperty(name = "system.multiLiving", havingValue = "true")
 public class DepotJob implements DataflowJob<Block> {
 
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
-
     @Autowired
     private BlockSyncService blockSyncService;
+    @Autowired
+    private Web3j web3j;
 
     /*
      * @see com.dangdang.ddframe.job.api.dataflow.DataflowJob#fetchData(com.dangdang.ddframe.job.api.ShardingContext)
@@ -64,7 +71,12 @@ public class DepotJob implements DataflowJob<Block> {
      */
     @Override
     public void processData(ShardingContext shardingContext, List<Block> data) {
-        blockSyncService.processDataSequence(data);
+        try {
+            BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
+            blockSyncService.processDataSequence(data, blockNumber.longValue());
+        } catch (IOException e) {
+            log.error("Job {}, exception occur in job processing: {}", shardingContext.getTaskId(), e.getMessage());
+        }
     }
 
 }
