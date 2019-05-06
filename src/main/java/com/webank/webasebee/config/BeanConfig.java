@@ -16,14 +16,21 @@
 package com.webank.webasebee.config;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.resource.ClasspathResourceLoader;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.gm.GenCredential;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.webank.webasebee.crawler.face.BcosEventCrawlerInterface;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * BeanConfig registers system common beans.
@@ -34,6 +41,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
+@Slf4j
 public class BeanConfig {
 
     /**
@@ -53,6 +61,13 @@ public class BeanConfig {
     @Bean
     public static Credentials getCredentials() {
         return GenCredential.create();
+    }
+    
+    @Bean
+    @ConditionalOnMissingBean(type="BcosEventCrawlerInterface")
+    public Map<String, BcosEventCrawlerInterface> getEmptyEventMap(){
+        log.info("Doesn't detect any object of BcosEventCrawlerInterface, return an empty bean.");
+        return new HashMap<String, BcosEventCrawlerInterface>();
     }
 
 }
