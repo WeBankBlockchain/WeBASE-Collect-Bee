@@ -46,6 +46,10 @@ public interface BlockTaskPoolRepository
     public Optional<BlockTaskPool> findByBlockHeight(long blockHeight);
 
     public List<BlockTaskPool> findByCertainty(int certainty);
+    
+    public List<BlockTaskPool> findByBlockHeightBetween(long startNumber, long endNumber);
+    
+    public long countByBlockHeightBetween(long startNumber, long endNumber);
 
     @Query(value = "select * from #{#entityName} where sync_status = 4 or sync_status = 3 ", nativeQuery = true)
     public List<BlockTaskPool> findUnNormalRecords();

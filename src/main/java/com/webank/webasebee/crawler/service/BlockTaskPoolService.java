@@ -17,9 +17,11 @@ package com.webank.webasebee.crawler.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bcos.web3j.protocol.core.methods.response.EthBlock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.google.common.collect.Lists;
+import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.constants.BlockForkConstants;
 import com.webank.webasebee.dao.BlockDetailInfoDAO;
 import com.webank.webasebee.enums.BlockCertaintyEnum;
@@ -35,6 +38,7 @@ import com.webank.webasebee.enums.TxInfoStatusEnum;
 import com.webank.webasebee.ods.EthClient;
 import com.webank.webasebee.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.tools.JacksonUtils;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +63,8 @@ public class BlockTaskPoolService {
     private RollBackService rollBackService;
     @Autowired
     private EthClient ethClient;
+    @Autowired
+    private SystemEnvironmentConfig systemEnvironmentConfig;
 
     public long getTaskPoolHeight() {
         Optional<BlockTaskPool> item = blockTaskPoolRepository.findTopByOrderByBlockHeightDesc();
@@ -155,6 +161,64 @@ public class BlockTaskPoolService {
                     p.getBlockHeight());
         });
 
+    }
+
+    public void checkTaskNumber(long startBlockNumber, long currentMaxTaskPoolNumber) {
+        log.info("Check task number from {} to {}", startBlockNumber, currentMaxTaskPoolNumber);
+        if (isComplete(startBlockNumber, currentMaxTaskPoolNumber)) {
+            return;
+        }
+        List<BlockTaskPool> supplements = new ArrayList<>();
+        long t = startBlockNumber;
+        for (long i = startBlockNumber; i <= currentMaxTaskPoolNumber
+                - systemEnvironmentConfig.getCrawlBatchUnit(); i += systemEnvironmentConfig.getCrawlBatchUnit()) {
+            long j = i + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
+            Optional<List<BlockTaskPool>> optional = findMissingPoolRecords(i, j);
+            if (optional.isPresent()) {
+                supplements.addAll(optional.get());
+            }
+            t = j + 1;
+        }
+        Optional<List<BlockTaskPool>> optional = findMissingPoolRecords(t, currentMaxTaskPoolNumber);
+        if (optional.isPresent()) {
+            supplements.addAll(optional.get());
+        }
+        log.info("Find {} missing pool numbers", supplements.size());
+        blockTaskPoolRepository.saveAll(supplements);
+    }
+
+    public Optional<List<BlockTaskPool>> findMissingPoolRecords(long startIndex, long endIndex) {
+        if (isComplete(startIndex, endIndex)) {
+            return Optional.empty();
+        }
+        List<BlockTaskPool> list = blockTaskPoolRepository.findByBlockHeightBetween(startIndex, endIndex);
+        List<Long> ids = list.stream().map(p -> p.getBlockHeight()).collect(Collectors.toList());
+        System.out.println(JacksonUtils.toJson(ids));
+        List<BlockTaskPool> supplements = new ArrayList<>();
+        for (long tmpIndex = startIndex; tmpIndex <= endIndex; tmpIndex++) {
+            if (ids.indexOf(tmpIndex) >= 0) {
+                continue;
+            }
+            log.info("Successfully detect block {} is missing. Try to sync block again.", tmpIndex);
+            BlockTaskPool pool =
+                    new BlockTaskPool().setBlockHeight(tmpIndex).setSyncStatus(TxInfoStatusEnum.ERROR.getStatus())
+                            .setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
+            supplements.add(pool);
+        }
+        return Optional.of(supplements);
+    }
+
+    public boolean isComplete(long startBlockNumber, long currentMaxTaskPoolNumber) {
+        long deserveCount = currentMaxTaskPoolNumber - startBlockNumber + 1;
+        long actualCount =
+                blockTaskPoolRepository.countByBlockHeightBetween(startBlockNumber, currentMaxTaskPoolNumber);
+        log.info("Begin to scan from block {} to {}, deserve count is {}, and actual count is {}", startBlockNumber,
+                currentMaxTaskPoolNumber, deserveCount, actualCount);
+        if (deserveCount == actualCount) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

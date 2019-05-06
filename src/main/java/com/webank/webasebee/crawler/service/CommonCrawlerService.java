@@ -88,7 +88,7 @@ public class CommonCrawlerService {
                 // control the batch unit number
                 long end = height + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
                 long batchNo = total < end ? total : end;
-                boolean certainty = end + 1 < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
+                boolean certainty = batchNo + 1 < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
                 if (height <= batchNo) {
                     log.info("Try to sync block number {} to {} of {}", height, batchNo, total);
                     blockTaskPoolService.prepareTask(height, batchNo, certainty);
@@ -107,6 +107,7 @@ public class CommonCrawlerService {
                 total = getCurrentBlockHeight();
                 if (!certainty) {
                     blockTaskPoolService.checkForks(total);
+                    blockTaskPoolService.checkTaskNumber(startBlockNumber, total);
                 }
             }
         } catch (IOException e) {

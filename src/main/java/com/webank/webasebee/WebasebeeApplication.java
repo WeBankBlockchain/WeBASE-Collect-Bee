@@ -82,6 +82,9 @@ public class WebasebeeApplication {
 
         @Override
         public void onApplicationEvent(ContextClosedEvent contextClosedEvent) {
+            if (this.connector == null) {
+                return;
+            }
             this.connector.pause();
             Executor executor = this.connector.getProtocolHandler().getExecutor();
             if (executor instanceof ThreadPoolExecutor) {
