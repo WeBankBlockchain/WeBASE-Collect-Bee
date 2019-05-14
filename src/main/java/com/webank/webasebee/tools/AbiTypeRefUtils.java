@@ -18,6 +18,7 @@ package com.webank.webasebee.tools;
 import org.fisco.bcos.web3j.abi.TypeReference;
 import org.fisco.bcos.web3j.abi.datatypes.Address;
 import org.fisco.bcos.web3j.abi.datatypes.Bool;
+import org.fisco.bcos.web3j.abi.datatypes.Bytes;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicBytes;
 import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
@@ -143,6 +144,8 @@ public final class AbiTypeRefUtils{
       case "string":
           return (TypeReference) new TypeReference<Utf8String>() {};
       case "byte[]":
+          return (TypeReference) new TypeReference<DynamicArray<Bytes>>() {};
+      case "bytes32[]":
           return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
       case "bytes":
           return (TypeReference) new TypeReference<DynamicBytes>() {};
