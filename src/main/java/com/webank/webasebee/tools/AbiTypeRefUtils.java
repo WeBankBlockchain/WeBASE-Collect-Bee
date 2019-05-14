@@ -142,6 +142,8 @@ public final class AbiTypeRefUtils{
           return (TypeReference) new TypeReference<Bool>() {};
       case "string":
           return (TypeReference) new TypeReference<Utf8String>() {};
+      case "byte[]":
+          return (TypeReference) new TypeReference<DynamicArray<Bytes32>>() {};
       case "bytes":
           return (TypeReference) new TypeReference<DynamicBytes>() {};
       case "address[]":
