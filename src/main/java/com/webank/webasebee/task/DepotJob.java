@@ -17,6 +17,7 @@ package com.webank.webasebee.task;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.fisco.bcos.web3j.protocol.Web3j;
@@ -24,6 +25,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
@@ -62,6 +64,9 @@ public class DepotJob implements DataflowJob<Block> {
         List<BlockTaskPool> tasks =
                 blockTaskPoolRepository.findBySyncStatusModByBlockHeightLimit(shardingContext.getShardingTotalCount(),
                         shardingContext.getShardingItem(), TxInfoStatusEnum.INIT.getStatus(), 1);
+        if (CollectionUtils.isEmpty(tasks)) {
+            return new ArrayList<Block>();
+        }
         return blockSyncService.getTasks(tasks);
     }
 

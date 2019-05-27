@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.dao.BaseDAO;
 import com.webank.webasebee.sys.db.entity.BlockDetailInfo;
+import com.webank.webasebee.sys.db.entity.BlockDetailInfo.Status;
 import com.webank.webasebee.sys.db.repository.BlockDetailInfoRepository;
 
 /**
@@ -58,6 +59,7 @@ public class BlockCrawlerHandler {
         blockDetailInfo.setTxCount(block.getTransactions().size());
         blockDetailInfo.setBlockHash(block.getHash());
         blockDetailInfo.setBlockTimeStamp(new Date(block.getTimestamp().longValue()));
+        blockDetailInfo.setStatus(Status.COMPLETED);
         BaseDAO.saveWithTimeLog(blockDetailInfoRepository, blockDetailInfo);
         return true;
     }
