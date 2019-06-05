@@ -46,8 +46,10 @@ public interface BlockTaskPoolRepository
     public Optional<BlockTaskPool> findByBlockHeight(long blockHeight);
 
     public List<BlockTaskPool> findByCertainty(int certainty);
-    
+
     public List<BlockTaskPool> findByBlockHeightBetween(long startNumber, long endNumber);
+
+    public long countBySyncStatus(int syncStatus);
 
     public long countByBlockHeightBetween(long startNumber, long endNumber);
 
