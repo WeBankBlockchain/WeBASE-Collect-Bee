@@ -193,7 +193,6 @@ public class BlockTaskPoolService {
         }
         List<BlockTaskPool> list = blockTaskPoolRepository.findByBlockHeightBetween(startIndex, endIndex);
         List<Long> ids = list.stream().map(p -> p.getBlockHeight()).collect(Collectors.toList());
-        System.out.println(JacksonUtils.toJson(ids));
         List<BlockTaskPool> supplements = new ArrayList<>();
         for (long tmpIndex = startIndex; tmpIndex <= endIndex; tmpIndex++) {
             if (ids.indexOf(tmpIndex) >= 0) {

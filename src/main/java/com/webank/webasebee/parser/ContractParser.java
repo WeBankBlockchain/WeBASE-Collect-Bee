@@ -83,7 +83,6 @@ public class ContractParser {
         Map<String, NameValueVO<String>> methodIdMap = new HashMap<>();
         Map<String, List<NamedType>> methodFiledsMap = new HashMap<>();
         Map<String, String> contractBinaryMap = new HashMap<>();
-
         for (ContractMethodInfo contractMethodInfo : contractMethodInfos) {
             contractBinaryMap.put(contractMethodInfo.getContractBinary(), contractMethodInfo.getContractName());
             for (MethodMetaInfo methodMetaInfo : contractMethodInfo.getMethodMetaInfos()) {
@@ -94,7 +93,6 @@ public class ContractParser {
                 methodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getFieldsList());
             }
         }
-
         contractMapsInfo.setContractBinaryMap(contractBinaryMap);
         contractMapsInfo.setMethodFiledsMap(methodFiledsMap);
         contractMapsInfo.setMethodIdMap(methodIdMap);
