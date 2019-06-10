@@ -37,16 +37,20 @@ import com.webank.webasebee.tools.ClazzScanUtils;
 import com.webank.webasebee.tools.MethodUtils;
 import com.webank.webasebee.tools.NameValueVO;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * ContractParser using for getting contract java code file info, that will be used to parse transaction data.
  *
  * @Description: ContractParser
  * @author graysonzhang
+ * @author maojiayu
  * @data 2018-12-17 15:06:51
  *
  */
 @Configuration
+@Slf4j
 public class ContractParser {
 
     /** @Fields monitorGeneratedConfig : monitor config params start with monitor in application.properties file */
@@ -93,8 +97,10 @@ public class ContractParser {
                 methodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getFieldsList());
             }
         }
+        log.info("Init sync block: find {} contract constructors.", contractBinaryMap.size());
         contractMapsInfo.setContractBinaryMap(contractBinaryMap);
         contractMapsInfo.setMethodFiledsMap(methodFiledsMap);
+        log.info("Init sync block: find {} contract methods.", methodIdMap.size());
         contractMapsInfo.setMethodIdMap(methodIdMap);
         return contractMapsInfo;
     }
