@@ -60,6 +60,8 @@ public class CommonCrawlerService {
     private BlockIndexService blockIndexService;
 
     private long startBlockNumber;
+    
+    private boolean signal = true;
 
     @PostConstruct
     public void setStartBlockNumber() throws ParseException, IOException, InterruptedException {
@@ -79,7 +81,7 @@ public class CommonCrawlerService {
     public void handle() {
         try {
             log.info("The max block height threshold is {}", systemEnvironmentConfig.getMaxBlockHeightThreshold());
-            while (true) {
+            while (signal) {
                 long total = getCurrentBlockHeight();
                 long height = getHeight(blockTaskPoolService.getTaskPoolHeight());
                 log.info("Current depot status: {} of {}, and try to process block {}", height - 1, total, height);
@@ -114,6 +116,7 @@ public class CommonCrawlerService {
             log.error("depot IOError, {}", e.getMessage());
         } catch (InterruptedException e) {
             log.error("depot InterruptedException, {}", e.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 
