@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.webank.webasebee.entity.CommonResponse;
 import com.webank.webasebee.tools.ResponseUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * ExceptionManager
  *
@@ -33,13 +35,15 @@ import com.webank.webasebee.tools.ResponseUtils;
  */
 
 @ControllerAdvice
+@Slf4j
 public class ExceptionManager {
     @ResponseBody
     @ExceptionHandler
     public CommonResponse processException(Exception e) {
-        e.printStackTrace();
+        log.error("ERROR occurred: {}", e.getMessage());
         if (e instanceof HttpMessageNotReadableException) {
-            return ResponseUtils.paramError("Http read convert error. Not a valid input, please check your input field! " + e.getMessage());
+            return ResponseUtils.paramError(
+                    "Http read convert error. Not a valid input, please check your input field! " + e.getMessage());
         }
         return ResponseUtils.exception(e);
     }
