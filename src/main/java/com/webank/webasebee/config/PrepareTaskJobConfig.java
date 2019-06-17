@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
-import com.dangdang.ddframe.job.event.JobEventConfiguration;
 import com.dangdang.ddframe.job.lite.api.JobScheduler;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
@@ -46,8 +45,6 @@ public class PrepareTaskJobConfig {
     @Resource
     private ZookeeperRegistryCenter regCenter;
 
-    @Resource
-    private JobEventConfiguration jobEventConfiguration;
 
     @Bean(initMethod = "init")
     public JobScheduler simpleJobScheduler(final SimpleJob simpleJob, @Value("${prepareTaskJob.cron}") final String cron,
@@ -55,7 +52,7 @@ public class PrepareTaskJobConfig {
             @Value("${prepareTaskJob.shardingItemParameters}") final String shardingItemParameters) {
         return new SpringJobScheduler(simpleJob, regCenter,
                 getLiteJobConfiguration(simpleJob.getClass(), cron, shardingTotalCount, shardingItemParameters),
-                jobEventConfiguration);
+                null);
     }
 
     private LiteJobConfiguration getLiteJobConfiguration(final Class<? extends SimpleJob> jobClass, final String cron,
