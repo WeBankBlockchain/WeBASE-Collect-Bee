@@ -45,14 +45,13 @@ public class PrepareTaskJobConfig {
     @Resource
     private ZookeeperRegistryCenter regCenter;
 
-
     @Bean(initMethod = "init")
-    public JobScheduler simpleJobScheduler(final SimpleJob simpleJob, @Value("${prepareTaskJob.cron}") final String cron,
+    public JobScheduler simpleJobScheduler(final SimpleJob simpleJob,
+            @Value("${prepareTaskJob.cron}") final String cron,
             @Value("${prepareTaskJob.shardingTotalCount}") final int shardingTotalCount,
             @Value("${prepareTaskJob.shardingItemParameters}") final String shardingItemParameters) {
         return new SpringJobScheduler(simpleJob, regCenter,
-                getLiteJobConfiguration(simpleJob.getClass(), cron, shardingTotalCount, shardingItemParameters),
-                null);
+                getLiteJobConfiguration(simpleJob.getClass(), cron, shardingTotalCount, shardingItemParameters));
     }
 
     private LiteJobConfiguration getLiteJobConfiguration(final Class<? extends SimpleJob> jobClass, final String cron,

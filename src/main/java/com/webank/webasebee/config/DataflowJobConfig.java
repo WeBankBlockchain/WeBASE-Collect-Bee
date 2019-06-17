@@ -45,15 +45,13 @@ public class DataflowJobConfig {
     @Resource
     private ZookeeperRegistryCenter regCenter;
 
-
     @Bean(initMethod = "init")
     public JobScheduler dataflowJobScheduler(final DataflowJob dataflowJob,
             @Value("${dataflowJob.cron}") final String cron,
             @Value("${dataflowJob.shardingTotalCount}") final int shardingTotalCount,
             @Value("${dataflowJob.shardingItemParameters}") final String shardingItemParameters) {
         return new SpringJobScheduler(dataflowJob, regCenter,
-                getLiteJobConfiguration(dataflowJob.getClass(), cron, shardingTotalCount, shardingItemParameters),
-                null);
+                getLiteJobConfiguration(dataflowJob.getClass(), cron, shardingTotalCount, shardingItemParameters));
     }
 
     private LiteJobConfiguration getLiteJobConfiguration(final Class<? extends DataflowJob> jobClass, final String cron,
