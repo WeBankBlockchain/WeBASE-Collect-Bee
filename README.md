@@ -46,12 +46,12 @@ WeBASE-Collect-Bee还集成了Swagger组件，提供了可视化的文档和测�
 某公司基于FISCO-BCOS开发了区块链的业务系统，需要将本地数据与链上的数据进行对账。
 
 - 解决方案
-该公司使用[WeBASE-Codegen-Monkey](https://github.com/WeBankFinTech/WeBASE-Codegen-Monkey/tree/dev_v0.7.0.2019.06)迅速生成了WeBASE-Collect-Bee的代码，并根据实际需求进行了定制化开发。通过在智能合约中设计的各类event，相关的业务数据都被导出到数据库中；从而实现轻松对账的需求。
+该公司使用[WeBASE-Codegen-Monkey](https://github.com/WeBankFinTech/WeBASE-Codegen-Monkey/tree/dev_v0.7.0.2019.06)迅速生成了WeBASE-Collect-Bee的代码，并根据实际需求进行了定制化开发。通过在智能合约中设计的各类event，相关的业务数据都被导出到数据库中；通过在智能合约中设计的各类event的埋点，相关的业务数据都被记录到event logs中，最终利用数据导出组件导出到数据库中；从而实现轻松对账的需求。
 
 #### 案例 区块链业务数据查询系统
 - 背景
 
-某互联网公司基于FISCO-BCOS开发了区块链的业务系统，但是发现智能合约对业务报表的支持不佳。但是，公司的一线业务部门要求实时查看各类复杂的业务报表。
+某互联网公司基于FISCO-BCOS开发了区块链的业务系统，但是发现智能合约对OLAP类的业务，如数据业务报表的支持不佳，而公司的一线业务部门要求实时查看各类复杂的业务报表。
 
 - 解决方案
 
@@ -336,7 +336,7 @@ ps -ef |grep WeBASE-Collect-Bee
 ```
 如果看到如下信息，则代表进程执行正常：
 ```
-app   21980 24843  0 15:23 pts/3    00:00:44 java -jar WeBASE-Collect-Bee0.3.0-SNAPSHOT.jar
+app   21980 24843  0 15:23 pts/3    00:00:44 java -jar WeBASE-Collect-Bee0.7.0-SNAPSHOT.jar
 ```
 
 ##### 2.2.4.2 检查程序是否已经正常执行
