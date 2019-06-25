@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * webasebeeApplication connect to fisco-bcos, and depot its datas.
  *
- * @Description: webase-bee project is a java project created by webase-monkey project, that using for crawling data
+ * @Description: WeBASE-Collect-Bee project is a java project created by webase-monkey project, that using for crawling data
  *               from fisco-bcos netwwork, including block data，event data, transaction data and account data.
  * @author maojiayu
  * @data Dec 28, 2018 4:15:20 PM
