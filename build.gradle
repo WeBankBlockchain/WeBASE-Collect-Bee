@@ -1,87 +1,97 @@
-buildscript {
-    ext {
-        springBootVersion = '2.1.2.RELEASE'
-    }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
+plugins {
+    id "org.springframework.boot" version "2.1.6.RELEASE"
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'maven'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+ext['lombok.version'] = "1.18.8"
 
-group = 'com.webank'
-version = '0.6.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-[compileJava, javadoc]*.options*.encoding = 'UTF-8'
-
-repositories {
+allprojects {
+  repositories {
     maven {
         url "http://maven.aliyun.com/nexus/content/groups/public/"
     }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     maven { url "https://dl.bintray.com/ethereum/maven/" }
-    mavenLocal()
-    mavenCentral()
+    mavenLocal()  
+    jcenter() 
+  }
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-        }
+subprojects {
+  version = "0.0.1"
 
-        resources {
-            srcDir 'src/main/resources'
-        }
+  apply plugin: "java"
+  apply plugin: 'eclipse'
+  apply plugin: 'maven'
+  apply plugin: "org.springframework.boot"
+  apply plugin: "io.spring.dependency-management"
+
+  sourceCompatibility = '1.8'
+  targetCompatibility = '1.8'
+
+  def defaultEncoding = 'UTF-8'
+  tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
+
+  javadoc {
+    options.encoding = defaultEncoding
+    options.addBooleanOption('Xdoclint:none', true)
+  }
+
+  compileJava.dependsOn(processResources)
+
+  test {
+    include "**/model/**", "**/controller/**", "**/usecase/**", "**/util/**", "**/context/**"
+  }
+
+  springBoot {
+    buildInfo()
+  }
+
+  dependencyManagement {
+    imports {
+      mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
     }
+  }
+
+  dependencies {
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    annotationProcessor "org.projectlombok:lombok"
+    compileOnly "org.springframework.boot:spring-boot-configuration-processor"
+    compileOnly "org.projectlombok:lombok"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-web" 
+    implementation "com.alibaba:fastjson:1.2.29"
+   
+    implementation "commons-io:commons-io:2.6"
+    implementation ('org.apache.commons:commons-lang3:3.8.1')
+    implementation 'cn.hutool:hutool-all:4.1.19'
+     // web3j依赖
+    implementation ('org.fisco-bcos:web3sdk:2.0.3')
+
+    implementation fileTree(dir: 'libs', includes: ['*.jar'])
+    testAnnotationProcessor "org.projectlombok:lombok"
+    testCompileOnly "org.projectlombok:lombok"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+  }
 }
 
-dependencies {
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    // sharding-jdbc
-    compile('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0')
-
-
-    //compile("net.sf.ehcache:ehcache")
-    compile 'mysql:mysql-connector-java'
-
-    // swagger
-    compile "io.springfox:springfox-swagger2:2.9.2"
-    compile "io.springfox:springfox-swagger-ui:2.9.2"
-
-    compile ('org.apache.commons:commons-lang3:3.8.1')
-    compile 'commons-io:commons-io:2.6'
-    compile 'cn.hutool:hutool-all:4.1.19'
-    compile "com.alibaba:fastjson:1.2.29"
-    compile "com.google.guava:guava:20.0"
-    compile ('org.projectlombok:lombok:1.16.18')
-    compile('com.ibeetl:beetl:2.9.3')
-
+project(':core') {
+  dependencies {
+    implementation project(':extractor')
+    implementation "io.springfox:springfox-swagger2:2.9.2"
+    implementation "io.springfox:springfox-swagger-ui:2.9.2"
+    implementation('com.ibeetl:beetl:2.9.3')
     // elastic-job
-    compile('com.dangdang:elastic-job-lite-core:2.1.5')
+    implementation('com.dangdang:elastic-job-lite-core:2.1.5')
     {
         exclude group: 'log4j'
     }
-    compile('com.dangdang:elastic-job-lite-spring:2.1.5')
+    implementation('com.dangdang:elastic-job-lite-spring:2.1.5')
     {
         exclude group: 'log4j'
     }
-
-    // web3j依赖
-    compile ('org.fisco-bcos:web3sdk:2.0.3')
-
+   
+  }
 }
 
 configurations {
@@ -91,34 +101,6 @@ configurations {
     }
 }
 
-bootJar {
-    destinationDir file('dist')
-    archiveName project.name + version + '.jar'
-
-    doLast {
-        copy {
-            from file('config/contract/')
-            into 'dist/config/contract'
-        }
-        copy {
-            from configurations.runtime
-            into 'dist/lib'
-        }
-        copy {
-            from file('src/main/shell/')
-            into 'dist'
-        }
-        copy {
-            from file('src/main/resources/')
-            into 'dist/config'
-        }
-        copy {
-            from file('.').listFiles().findAll{File f -> (f.name.endsWith('.crt') || f.name.endsWith('.keystore'))}
-            into 'dist/config'
-        }
-    }
-}
-clean {
-    println "delete ${projectDir}/dist"
-    delete "${projectDir}/dist"
+wrapper {
+  gradleVersion = "5.4.1"
 }
