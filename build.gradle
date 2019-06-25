@@ -58,10 +58,9 @@ subprojects {
     annotationProcessor "org.projectlombok:lombok"
     compileOnly "org.springframework.boot:spring-boot-configuration-processor"
     compileOnly "org.projectlombok:lombok"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-web" 
     implementation "com.alibaba:fastjson:1.2.29"
-   
+    implementation "com.google.guava:guava:20.0"
     implementation "commons-io:commons-io:2.6"
     implementation ('org.apache.commons:commons-lang3:3.8.1')
     implementation 'cn.hutool:hutool-all:4.1.19'
@@ -78,6 +77,10 @@ subprojects {
 project(':core') {
   dependencies {
     implementation project(':extractor')
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation 'mysql:mysql-connector-java'
+    implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0')
+
     implementation "io.springfox:springfox-swagger2:2.9.2"
     implementation "io.springfox:springfox-swagger-ui:2.9.2"
     implementation('com.ibeetl:beetl:2.9.3')

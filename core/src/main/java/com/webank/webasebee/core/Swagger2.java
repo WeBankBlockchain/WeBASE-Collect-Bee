@@ -42,7 +42,7 @@ public class Swagger2 {
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).select()
                 // current path
-                .apis(RequestHandlerSelectors.basePackage("com.webank.webasebee")).paths(PathSelectors.any()).build();
+                .apis(RequestHandlerSelectors.basePackage("com.webank.webasebee.core")).paths(PathSelectors.any()).build();
     }
 
     private ApiInfo apiInfo() {
