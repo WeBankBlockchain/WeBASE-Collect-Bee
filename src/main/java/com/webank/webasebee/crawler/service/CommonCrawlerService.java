@@ -92,29 +92,23 @@ public class CommonCrawlerService {
                 blockTaskPoolService.processErrors();
                 // control the batch unit number
                 long end = height + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
-                long batchNo = total < end ? total : end;
-                boolean certainty = batchNo + 1 < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
-                if (height <= batchNo) {
-                    log.info("Try to sync block number {} to {} of {}", height, batchNo, total);
-                    blockTaskPoolService.prepareTask(height, batchNo, certainty);
-                }
-                List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
-                while (!CollectionUtils.isEmpty(taskList)) {
-                    for (Block b : taskList) {
-                        blockAsyncService.handleSingleBlock(b, total);
-
-                    }
-                    log.info("all tasks are dispatched, and waiting...");
-                    Thread.currentThread().join();
-                    log.info("join succeed.");
-                    taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
-                }
-                // single circle sleep time is read from the application.properties
-                Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
-                total = getCurrentBlockHeight();
+                long endNo = total < end ? total : end;
+                boolean certainty = endNo + 1 < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
                 if (!certainty) {
                     blockTaskPoolService.checkForks(total);
                     blockTaskPoolService.checkTaskNumber(startBlockNumber, total);
+                }
+                if (height <= endNo) {
+                    log.info("Try to sync block number {} to {} of {}", height, endNo, total);
+                    blockTaskPoolService.prepareTask(height, endNo, certainty);
+                } else {
+                    // single circle sleep time is read from the application.properties
+                    Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
+                }
+                List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
+                for (Block b : taskList) {
+                    blockAsyncService.handleSingleBlock(b, total);
+
                 }
             }
         } catch (IOException e) {
