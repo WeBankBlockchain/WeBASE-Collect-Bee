@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,21 +92,23 @@ public class CommonCrawlerService {
                 blockTaskPoolService.processErrors();
                 // control the batch unit number
                 long end = height + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
-                long endNo = total < end ? total : end;
-                boolean certainty = endNo + 1 < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
-                if (!certainty) {
-                    blockTaskPoolService.checkForks(total);
-                    blockTaskPoolService.checkTaskNumber(startBlockNumber, total);
-                }
-                if (height <= endNo) {
-                    log.info("Try to sync block number {} to {} of {}", height, endNo, total);
-                    blockTaskPoolService.prepareTask(height, endNo, certainty);
+                long batchNo = total < end ? total : end;
+                boolean certainty = batchNo + 1 < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
+                if (height <= batchNo) {
+                    log.info("Try to sync block number {} to {} of {}", height, batchNo, total);
+                    blockTaskPoolService.prepareTask(height, batchNo, certainty);
                 }
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 for (Block b : taskList) {
                     blockAsyncService.handleSingleBlock(b, total);
                 }
+                // single circle sleep time is read from the application.properties
                 Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
+                total = getCurrentBlockHeight();
+                if (!certainty) {
+                    blockTaskPoolService.checkForks(total);
+                    blockTaskPoolService.checkTaskNumber(startBlockNumber, total);
+                }
             }
         } catch (IOException e) {
             log.error("depot IOError, {}", e.getMessage());
