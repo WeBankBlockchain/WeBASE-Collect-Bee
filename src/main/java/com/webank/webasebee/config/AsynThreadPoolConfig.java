@@ -45,13 +45,14 @@ public class AsynThreadPoolConfig {
         log.info("Begin to init taskExecutor");
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(10);
+        executor.setMaxPoolSize(8);
         executor.setQueueCapacity(1000);
         executor.setKeepAliveSeconds(60);
         executor.setThreadNamePrefix("taskExecutor-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(60);
+        executor.initialize();
         return executor;
     }
 

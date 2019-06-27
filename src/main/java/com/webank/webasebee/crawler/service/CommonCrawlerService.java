@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.constants.BlockForkConstants;
@@ -106,7 +105,9 @@ public class CommonCrawlerService {
                     Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
                 }
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
-                taskList.parallelStream().forEach(t -> blockSyncService.handleSingleBlock(t, total));
+                for (Block b : taskList) {
+                    blockAsyncService.handleSingleBlock(b, total);
+                }
             }
         } catch (IOException e) {
             log.error("depot IOError, {}", e.getMessage());
