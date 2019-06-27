@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -45,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @EnableScheduling
+@ConditionalOnProperty(name = "system.multiLiving", havingValue = "false")
 public class CommonCrawlerService {
 
     @Autowired
@@ -54,13 +56,14 @@ public class CommonCrawlerService {
     @Autowired
     private BlockTaskPoolService blockTaskPoolService;
     @Autowired
+    private BlockAsyncService blockAsyncService;
+    @Autowired
     private BlockSyncService blockSyncService;
-
     @Autowired
     private BlockIndexService blockIndexService;
 
     private long startBlockNumber;
-    
+
     private boolean signal = true;
 
     @PostConstruct
@@ -97,11 +100,11 @@ public class CommonCrawlerService {
                 }
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 while (!CollectionUtils.isEmpty(taskList)) {
-                    if (taskList.size() < systemEnvironmentConfig.getCrawlBatchUnit()) {
-                        blockSyncService.processDataSequence(taskList, total);
-                    } else {
-                        blockSyncService.processDataParallel(taskList, total);
+                    for (Block b : taskList) {
+                        blockAsyncService.handleSingleBlock(b, total);
+                        
                     }
+                    Thread.currentThread().join();
                     taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 }
                 // single circle sleep time is read from the application.properties
