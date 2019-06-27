@@ -21,8 +21,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * BlockAsyncService
  *
@@ -33,14 +31,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @ConditionalOnProperty(name = "system.multiLiving", havingValue = "false")
 @Service
-@Slf4j
 public class BlockAsyncService {
     @Autowired
     private BlockSyncService blockSyncService;
 
     @Async("taskExecutor")
     public void handleSingleBlock(Block b, long total) {
-        log.info("线程-{} 在执行写入block {}", Thread.currentThread().getId(), b.getNumber());
         blockSyncService.handleSingleBlock(b, total);
     }
 }

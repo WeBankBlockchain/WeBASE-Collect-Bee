@@ -97,13 +97,14 @@ public class CommonCrawlerService {
                 if (height <= batchNo) {
                     log.info("Try to sync block number {} to {} of {}", height, batchNo, total);
                     blockTaskPoolService.prepareTask(height, batchNo, certainty);
+                } else {
+                    // single circle sleep time is read from the application.properties
+                    Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
                 }
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 for (Block b : taskList) {
                     blockAsyncService.handleSingleBlock(b, total);
                 }
-                // single circle sleep time is read from the application.properties
-                Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
                 total = getCurrentBlockHeight();
                 if (!certainty) {
                     blockTaskPoolService.checkForks(total);
