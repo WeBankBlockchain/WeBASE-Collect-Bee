@@ -42,7 +42,7 @@ public class BlockAsyncService {
 
     @Async("taskExecutor")
     public void handleSingleBlock(Block b, long total) {
-        log.info("线程-" + Thread.currentThread().getId() + "在执行写入");
+        log.info("线程-{} 在执行写入block {}", Thread.currentThread().getId(), b.getNumber());
         blockSyncService.handleSingleBlock(b, total);
     }
 }
