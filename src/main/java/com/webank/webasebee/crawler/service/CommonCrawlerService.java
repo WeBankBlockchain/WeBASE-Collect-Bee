@@ -106,10 +106,7 @@ public class CommonCrawlerService {
                     Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
                 }
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
-                for (Block b : taskList) {
-                    blockAsyncService.handleSingleBlock(b, total);
-
-                }
+                taskList.parallelStream().forEach(t -> blockSyncService.handleSingleBlock(t, total));
             }
         } catch (IOException e) {
             log.error("depot IOError, {}", e.getMessage());
