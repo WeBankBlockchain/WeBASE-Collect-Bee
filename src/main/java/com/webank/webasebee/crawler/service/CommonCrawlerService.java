@@ -102,9 +102,11 @@ public class CommonCrawlerService {
                 while (!CollectionUtils.isEmpty(taskList)) {
                     for (Block b : taskList) {
                         blockAsyncService.handleSingleBlock(b, total);
-                        
+
                     }
+                    log.info("all tasks are dispatched, and waiting...");
                     Thread.currentThread().join();
+                    log.info("join succeed.");
                     taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 }
                 // single circle sleep time is read from the application.properties
