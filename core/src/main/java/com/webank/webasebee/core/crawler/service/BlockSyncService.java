@@ -26,9 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.core.enums.TxInfoStatusEnum;
-import com.webank.webasebee.core.ods.EthClient;
 import com.webank.webasebee.core.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.core.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.extractor.ods.EthClient;
 
 import lombok.extern.slf4j.Slf4j;
 

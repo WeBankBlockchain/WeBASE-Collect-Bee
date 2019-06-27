@@ -35,9 +35,9 @@ import com.webank.webasebee.core.constants.BlockForkConstants;
 import com.webank.webasebee.core.dao.BlockDetailInfoDAO;
 import com.webank.webasebee.core.enums.BlockCertaintyEnum;
 import com.webank.webasebee.core.enums.TxInfoStatusEnum;
-import com.webank.webasebee.core.ods.EthClient;
 import com.webank.webasebee.core.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.core.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.extractor.ods.EthClient;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;

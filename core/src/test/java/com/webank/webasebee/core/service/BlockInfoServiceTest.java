@@ -36,8 +36,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.webank.webasebee.core.BaseTest;
-import com.webank.webasebee.core.ods.EthClient;
 import com.webank.webasebee.core.tools.JacksonUtils;
+import com.webank.webasebee.extractor.ods.EthClient;
 
 import lombok.extern.slf4j.Slf4j;
 

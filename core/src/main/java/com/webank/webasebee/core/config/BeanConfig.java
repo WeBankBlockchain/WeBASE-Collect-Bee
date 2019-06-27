@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.webank.webasebee.core.crawler.face.BcosEventCrawlerInterface;
+import com.webank.webasebee.extractor.ods.EthClient;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,4 +71,8 @@ public class BeanConfig {
         return new HashMap<String, BcosEventCrawlerInterface>();
     }
 
+    @Bean
+    public EthClient ethClient() {
+        return new EthClient();
+    }
 }

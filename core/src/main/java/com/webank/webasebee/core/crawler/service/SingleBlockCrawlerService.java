@@ -34,7 +34,7 @@ import com.webank.webasebee.core.handler.AccountCrawlerHandler;
 import com.webank.webasebee.core.handler.BlockCrawlerHandler;
 import com.webank.webasebee.core.handler.EventCrawlerHandler;
 import com.webank.webasebee.core.handler.MethodCrawlerHandler;
-import com.webank.webasebee.core.ods.EthClient;
+import com.webank.webasebee.extractor.ods.EthClient;
 
 import lombok.extern.slf4j.Slf4j;
 
