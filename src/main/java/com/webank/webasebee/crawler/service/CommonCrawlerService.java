@@ -105,7 +105,6 @@ public class CommonCrawlerService {
                 for (Block b : taskList) {
                     blockAsyncService.handleSingleBlock(b, currentChainHeight);
                 }
-                currentChainHeight = getCurrentBlockHeight();
                 if (!certainty) {
                     blockTaskPoolService.checkForks(currentChainHeight);
                     blockTaskPoolService.checkTaskCount(startBlockNumber, currentChainHeight);
