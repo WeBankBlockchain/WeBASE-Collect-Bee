@@ -39,7 +39,6 @@ public class SystemEnvironmentConfig {
     private String configPath;
 
     private String privateKey;
-    private int maxBlockHeightThreshold = 10;
     private int crawlBatchUnit = 1000;
 
     private boolean multiLiving;

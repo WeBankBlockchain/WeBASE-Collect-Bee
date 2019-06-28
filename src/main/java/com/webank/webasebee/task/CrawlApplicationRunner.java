@@ -48,9 +48,8 @@ public class CrawlApplicationRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments var1) throws InterruptedException {
-        if (systemEnvironmentConfig.getCrawlBatchUnit() < 1
-                || systemEnvironmentConfig.getMaxBlockHeightThreshold() < 1) {
-            log.error("The batch unit or max block height threshold can't be less than 1!!");
+        if (systemEnvironmentConfig.getCrawlBatchUnit() < 1) {
+            log.error("The batch unit threshold can't be less than 1!!");
             System.exit(1);
         }
         commonCrawlerService.handle();
