@@ -36,12 +36,12 @@ public class BlockTaskPoolServiceTest extends BaseTest {
 
     //@Test
     public void testCheckNumber() {
-        blockTaskPoolService.checkTaskNumber(2, 18);
+        blockTaskPoolService.checkTaskCount(2, 18);
     }
 
     @Test
     public void testCheckTaskNumber() {
-        blockTaskPoolService.checkTaskNumber(0, 200);
+        blockTaskPoolService.checkTaskCount(0, 200);
     }
 
 }

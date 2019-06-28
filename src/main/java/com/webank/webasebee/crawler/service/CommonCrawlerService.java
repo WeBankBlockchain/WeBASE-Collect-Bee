@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,33 +82,36 @@ public class CommonCrawlerService {
      */
     public void handle() {
         try {
-            log.info("The max block height threshold is {}", systemEnvironmentConfig.getMaxBlockHeightThreshold());
             while (signal) {
-                long total = getCurrentBlockHeight();
-                long height = getHeight(blockTaskPoolService.getTaskPoolHeight());
-                log.info("Current depot status: {} of {}, and try to process block {}", height - 1, total, height);
-                blockTaskPoolService.checkTimeOut();
-                blockTaskPoolService.processErrors();
+                long currentChainHeight = getCurrentBlockHeight();
+                long fromHeight = getHeight(blockTaskPoolService.getTaskPoolHeight());
                 // control the batch unit number
-                long end = height + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
-                long batchNo = total < end ? total : end;
-                boolean certainty = batchNo + 1 < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
-                if (height <= batchNo) {
-                    log.info("Try to sync block number {} to {} of {}", height, batchNo, total);
-                    blockTaskPoolService.prepareTask(height, batchNo, certainty);
+                long end = fromHeight + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
+                long toHeight = currentChainHeight < end ? currentChainHeight : end;
+                log.info("Current depot status: {} of {}, and try to process block from {} to {}", fromHeight - 1,
+                        currentChainHeight, fromHeight, toHeight);
+                boolean certainty =
+                        toHeight + 1 < currentChainHeight - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
+                if (fromHeight <= toHeight) {
+                    log.info("Try to sync block number {} to {} of {}", fromHeight, toHeight, currentChainHeight);
+                    blockTaskPoolService.prepareTask(fromHeight, toHeight, certainty);
                 } else {
                     // single circle sleep time is read from the application.properties
+                    log.info("No sync block tasks to prepare, begin to sleep {} s", systemEnvironmentConfig.getFrequency());
                     Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
                 }
+                log.info("Begin to fetch at most {} tasks", systemEnvironmentConfig.getCrawlBatchUnit());
                 List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
                 for (Block b : taskList) {
-                    blockAsyncService.handleSingleBlock(b, total);
+                    blockAsyncService.handleSingleBlock(b, currentChainHeight);
                 }
-                total = getCurrentBlockHeight();
+                currentChainHeight = getCurrentBlockHeight();
                 if (!certainty) {
-                    blockTaskPoolService.checkForks(total);
-                    blockTaskPoolService.checkTaskNumber(startBlockNumber, total);
+                    blockTaskPoolService.checkForks(currentChainHeight);
+                    blockTaskPoolService.checkTaskCount(startBlockNumber, currentChainHeight);
                 }
+                blockTaskPoolService.checkTimeOut();
+                blockTaskPoolService.processErrors();
             }
         } catch (IOException e) {
             log.error("depot IOError, {}", e.getMessage());
