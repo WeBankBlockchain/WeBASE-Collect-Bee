@@ -103,7 +103,7 @@ public class BlockTaskPoolService {
             return;
         } else {
             log.info("sync block detect {} error transactions.", unnormalRecords.size());
-            unnormalRecords.stream().map(b -> b.getBlockHeight()).forEach(e -> {
+            unnormalRecords.parallelStream().map(b -> b.getBlockHeight()).forEach(e -> {
                 log.error("Block {} sync error, and begin to rollback.", e);
                 rollBackService.rollback(e, e + 1);
                 blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.INIT.getStatus(), new Date(), e);
