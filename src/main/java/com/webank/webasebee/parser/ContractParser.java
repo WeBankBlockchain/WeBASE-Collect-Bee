@@ -34,7 +34,6 @@ import com.webank.webasebee.bo.MethodMetaInfo;
 import com.webank.webasebee.config.SystemEnvironmentConfig;
 import com.webank.webasebee.constants.AbiTypeConstants;
 import com.webank.webasebee.tools.ClazzScanUtils;
-import com.webank.webasebee.tools.JacksonUtils;
 import com.webank.webasebee.tools.MethodUtils;
 import com.webank.webasebee.tools.NameValueVO;
 
