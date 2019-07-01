@@ -54,7 +54,6 @@ public class BlockCrawlerHandler {
      */
     public boolean handleBlockDetail(Block block, long blockHeight) {
         BlockDetailInfo blockDetailInfo = new BlockDetailInfo();
-        blockDetailInfo = new BlockDetailInfo();
         blockDetailInfo.setBlockHeight(blockHeight);
         blockDetailInfo.setTxCount(block.getTransactions().size());
         blockDetailInfo.setBlockHash(block.getHash());
