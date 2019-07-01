@@ -74,9 +74,10 @@ subprojects {
   }
 }
 
-project(':core') {
+project(':WeBASE-Collect-Bee-core') {
   dependencies {
-    implementation project(':extractor')
+    implementation project(':WeBASE-Collect-Bee-extractor')
+    implementation project(':WeBASE-Collect-Bee-parser')
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation 'mysql:mysql-connector-java'
     implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0')
