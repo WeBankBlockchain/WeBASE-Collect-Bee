@@ -13,35 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.core.service;
+package com.webank.webasebee.core.crawler.service;
 
-import org.junit.Test;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.webank.webasebee.core.BaseTest;
-import com.webank.webasebee.core.crawler.service.BlockTaskPoolService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 /**
- * BlockTaskPoolServiceTest
+ * BlockAsyncService
  *
- * @Description: BlockTaskPoolServiceTest
+ * @Description: BlockAsyncService
  * @author maojiayu
- * @data May 5, 2019 5:28:13 PM
+ * @data Jun 27, 2019 3:54:56 PM
  *
  */
-public class BlockTaskPoolServiceTest extends BaseTest {
-
+@ConditionalOnProperty(name = "system.multiLiving", havingValue = "false")
+@Service
+public class BlockAsyncService {
     @Autowired
-    BlockTaskPoolService blockTaskPoolService;
+    private BlockSyncService blockSyncService;
 
-    //@Test
-    public void testCheckNumber() {
-        blockTaskPoolService.checkTaskCount(2, 18);
+    @Async("taskExecutor")
+    public void handleSingleBlock(Block b, long total) {
+        blockSyncService.handleSingleBlock(b, total);
     }
-
-    @Test
-    public void testCheckTaskNumber() {
-        blockTaskPoolService.checkTaskCount(0, 200);
-    }
-
 }

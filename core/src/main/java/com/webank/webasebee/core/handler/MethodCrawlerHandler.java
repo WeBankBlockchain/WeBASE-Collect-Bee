@@ -114,7 +114,7 @@ public class MethodCrawlerHandler {
             blockTxDetailInfoDAO.save(receipt, blockTimeStamp, contractName, methodName);
 
             if (!bcosMethodCrawlerMap.containsKey(StringUtils.uncapitalize(methodName) + "MethodCrawlerImpl")) {
-                log.error("The methodName {} doesn't exist, please check it !", methodName);
+                log.info("The methodName {} doesn't exist or is constant, please check it !", methodName);
                 return;
             }
             bcosMethodCrawlerMap.get(StringUtils.uncapitalize(methodName) + "MethodCrawlerImpl")

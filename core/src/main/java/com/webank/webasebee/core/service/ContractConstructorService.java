@@ -24,8 +24,6 @@ import org.springframework.stereotype.Service;
 import com.webank.webasebee.core.bo.ContractMapsInfo;
 import com.webank.webasebee.core.constants.BinConstant;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * ContractConstructorService for querying contract constructor name by input.
  *
@@ -35,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Service
-@Slf4j
 public class ContractConstructorService {
 	
 	/** @Fields contractMapsInfo : contract maps info */
@@ -55,7 +52,6 @@ public class ContractConstructorService {
         for (Map.Entry<String, String> entry : binaryMap.entrySet()) {
             String key = entry.getKey();
             if(input.length() > BinConstant.META_DATA_HASH_LENGTH && key.length() > BinConstant.META_DATA_HASH_LENGTH) {
-                input = input.substring(0, input.length()-1-BinConstant.META_DATA_HASH_LENGTH);
                 key = key.substring(0, key.length()-1-BinConstant.META_DATA_HASH_LENGTH);
             }
             else {

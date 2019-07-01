@@ -78,13 +78,13 @@ public class BlockTaskPoolService {
     public void prepareTask(long begin, long end, boolean certainty) {
         log.info("Begin to prepare sync blocks from {} to {}", begin, end);
         List<BlockTaskPool> list = Lists.newArrayList();
-        for (; begin <= end; begin++) {
+        for (long i = begin; i <= end; i++) {
             BlockTaskPool pool =
-                    new BlockTaskPool().setBlockHeight(begin).setSyncStatus(TxInfoStatusEnum.INIT.getStatus());
+                    new BlockTaskPool().setBlockHeight(i).setSyncStatus(TxInfoStatusEnum.INIT.getStatus());
             if (certainty) {
                 pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
             } else {
-                if (begin <= end - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
+                if (i <= end - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
                     pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
                 } else {
                     pool.setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
@@ -97,6 +97,7 @@ public class BlockTaskPoolService {
     }
 
     public void processErrors() {
+        log.info("Begin to check error records");
         List<BlockTaskPool> unnormalRecords = blockTaskPoolRepository.findUnNormalRecords();
         if (CollectionUtils.isEmpty(unnormalRecords)) {
             return;
@@ -162,8 +163,8 @@ public class BlockTaskPoolService {
 
     }
 
-    public void checkTaskNumber(long startBlockNumber, long currentMaxTaskPoolNumber) {
-        log.info("Check task number from {} to {}", startBlockNumber, currentMaxTaskPoolNumber);
+    public void checkTaskCount(long startBlockNumber, long currentMaxTaskPoolNumber) {
+        log.info("Check task count from {} to {}", startBlockNumber, currentMaxTaskPoolNumber);
         if (isComplete(startBlockNumber, currentMaxTaskPoolNumber)) {
             return;
         }
@@ -210,7 +211,7 @@ public class BlockTaskPoolService {
         long deserveCount = currentMaxTaskPoolNumber - startBlockNumber + 1;
         long actualCount =
                 blockTaskPoolRepository.countByBlockHeightBetween(startBlockNumber, currentMaxTaskPoolNumber);
-        log.info("Begin to scan from block {} to {}, deserve count is {}, and actual count is {}", startBlockNumber,
+        log.info("Check task count from block {} to {}, deserve count is {}, and actual count is {}", startBlockNumber,
                 currentMaxTaskPoolNumber, deserveCount, actualCount);
         if (deserveCount == actualCount) {
             return true;
