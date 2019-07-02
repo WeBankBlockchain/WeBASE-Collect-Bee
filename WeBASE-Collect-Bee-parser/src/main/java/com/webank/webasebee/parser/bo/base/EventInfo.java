@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.core.parser;
+package com.webank.webasebee.parser.bo.base;
+
+import java.util.Date;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * FieldVO
+ * EventInfo
  *
- * @Description: FieldVO
+ * @Description: EventInfo
  * @author maojiayu
- * @date 2018年11月8日 下午4:13:13
- * 
+ * @data Jul 1, 2019 5:25:46 PM
+ *
  */
 @Data
 @Accessors(chain = true)
-public class EventFieldVO {
-    private String sqlName;
-    private String solidityName;
-    private String javaName;
-    private String sqlType;
-    private String solidityType;
-    private String javaType;
-    private String javaCapName;
-    private String typeMethod;
+public abstract class EventInfo {
+    private long blockHeight;
+    private String txHash;
+    private Date blockTimeStamp;
 
 }

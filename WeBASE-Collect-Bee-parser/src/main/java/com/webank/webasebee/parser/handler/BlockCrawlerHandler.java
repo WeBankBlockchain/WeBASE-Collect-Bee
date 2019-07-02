@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.core.handler;
+package com.webank.webasebee.parser.handler;
 
 import java.sql.Date;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.core.dao.BaseDAO;
-import com.webank.webasebee.core.sys.db.entity.BlockDetailInfo;
-import com.webank.webasebee.core.sys.db.entity.BlockDetailInfo.Status;
-import com.webank.webasebee.core.sys.db.repository.BlockDetailInfoRepository;
+import com.webank.webasebee.parser.bo.base.BlockDetailInfo;
+import com.webank.webasebee.parser.bo.base.BlockDetailInfo.Status;
 
 /**
  * BlockCrawlerHandler is responsible for crawling block info.
@@ -40,10 +37,6 @@ import com.webank.webasebee.core.sys.db.repository.BlockDetailInfoRepository;
 @EnableScheduling
 public class BlockCrawlerHandler {
 
-    /** @Fields blockDetailInfoRepository : block detail info repository */
-    @Autowired
-    private BlockDetailInfoRepository blockDetailInfoRepository;
-
     /**
      * Get block detail info form block object, and insert into db. Block detail info contains block height,
      * transaction's count in current block, block hash and block timestamp.
@@ -52,14 +45,13 @@ public class BlockCrawlerHandler {
      * @param blockHeight
      * @return boolean
      */
-    public boolean handleBlockDetail(Block block, long blockHeight) {
+    public BlockDetailInfo handleBlockDetail(Block block, long blockHeight) {
         BlockDetailInfo blockDetailInfo = new BlockDetailInfo();
         blockDetailInfo.setBlockHeight(blockHeight);
         blockDetailInfo.setTxCount(block.getTransactions().size());
         blockDetailInfo.setBlockHash(block.getHash());
         blockDetailInfo.setBlockTimeStamp(new Date(block.getTimestamp().longValue()));
         blockDetailInfo.setStatus(Status.COMPLETED);
-        BaseDAO.saveWithTimeLog(blockDetailInfoRepository, blockDetailInfo);
-        return true;
+        return blockDetailInfo;
     }
 }

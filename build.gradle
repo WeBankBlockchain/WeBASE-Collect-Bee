@@ -76,7 +76,6 @@ subprojects {
 
 project(':WeBASE-Collect-Bee-core') {
   dependencies {
-    implementation project(':WeBASE-Collect-Bee-extractor')
     implementation project(':WeBASE-Collect-Bee-parser')
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation 'mysql:mysql-connector-java'
@@ -95,6 +94,12 @@ project(':WeBASE-Collect-Bee-core') {
         exclude group: 'log4j'
     }
    
+  }
+}
+
+project(':WeBASE-Collect-Bee-parser') {
+  dependencies {
+    implementation project(':WeBASE-Collect-Bee-extractor')   
   }
 }
 

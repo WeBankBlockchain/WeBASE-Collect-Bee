@@ -75,37 +75,6 @@ public class ContractParser {
     }
 
     /**
-     * Translate all contract info of ContractMethodInfo's objects to methodIdMap, methodFiledsMap and
-     * contractBinaryMap.
-     * 
-     * @param contractMethodInfos: contractMethodInfos contains methodIdMap, methodFiledsMap and contractBinaryMap.
-     * @return ContractMapsInfo
-     */
-    @Bean
-    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo(List<ContractMethodInfo> contractMethodInfos) {
-        ContractMapsInfo contractMapsInfo = new ContractMapsInfo();
-        Map<String, NameValueVO<String>> methodIdMap = new HashMap<>();
-        Map<String, List<NamedType>> methodFiledsMap = new HashMap<>();
-        Map<String, String> contractBinaryMap = new HashMap<>();
-        for (ContractMethodInfo contractMethodInfo : contractMethodInfos) {
-            contractBinaryMap.put(contractMethodInfo.getContractBinary(), contractMethodInfo.getContractName());
-            for (MethodMetaInfo methodMetaInfo : contractMethodInfo.getMethodMetaInfos()) {
-                NameValueVO<String> nameValue = new NameValueVO<>();
-                nameValue.setName(contractMethodInfo.getContractName());
-                nameValue.setValue(methodMetaInfo.getMethodName());
-                methodIdMap.put(methodMetaInfo.getMethodId(), nameValue);
-                methodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getFieldsList());
-            }
-        }
-        log.info("Init sync block: find {} contract constructors.", contractBinaryMap.size());
-        contractMapsInfo.setContractBinaryMap(contractBinaryMap);
-        contractMapsInfo.setMethodFiledsMap(methodFiledsMap);
-        log.info("Init sync block: find {} contract methods.", methodIdMap.size());
-        contractMapsInfo.setMethodIdMap(methodIdMap);
-        return contractMapsInfo;
-    }
-
-    /**
      * Parsing single class object of contract java code file, and storage contract info into ContractMethodInfo object,
      * firstly, remove event function, query function and functions that param's null, compute methodId and save method
      * info into ContractMethodInfo object.
@@ -152,5 +121,36 @@ public class ContractParser {
             methodIdList.add(metaInfo);
         }
         return contractMethodInfo;
+    }
+    
+    /**
+     * Translate all contract info of ContractMethodInfo's objects to methodIdMap, methodFiledsMap and
+     * contractBinaryMap.
+     * 
+     * @param contractMethodInfos: contractMethodInfos contains methodIdMap, methodFiledsMap and contractBinaryMap.
+     * @return ContractMapsInfo
+     */
+    @Bean
+    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo(List<ContractMethodInfo> contractMethodInfos) {
+        ContractMapsInfo contractMapsInfo = new ContractMapsInfo();
+        Map<String, NameValueVO<String>> methodIdMap = new HashMap<>();
+        Map<String, List<NamedType>> methodFiledsMap = new HashMap<>();
+        Map<String, String> contractBinaryMap = new HashMap<>();
+        for (ContractMethodInfo contractMethodInfo : contractMethodInfos) {
+            contractBinaryMap.put(contractMethodInfo.getContractBinary(), contractMethodInfo.getContractName());
+            for (MethodMetaInfo methodMetaInfo : contractMethodInfo.getMethodMetaInfos()) {
+                NameValueVO<String> nameValue = new NameValueVO<>();
+                nameValue.setName(contractMethodInfo.getContractName());
+                nameValue.setValue(methodMetaInfo.getMethodName());
+                methodIdMap.put(methodMetaInfo.getMethodId(), nameValue);
+                methodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getFieldsList());
+            }
+        }
+        log.info("Init sync block: find {} contract constructors.", contractBinaryMap.size());
+        contractMapsInfo.setContractBinaryMap(contractBinaryMap);
+        contractMapsInfo.setMethodFiledsMap(methodFiledsMap);
+        log.info("Init sync block: find {} contract methods.", methodIdMap.size());
+        contractMapsInfo.setMethodIdMap(methodIdMap);
+        return contractMapsInfo;
     }
 }

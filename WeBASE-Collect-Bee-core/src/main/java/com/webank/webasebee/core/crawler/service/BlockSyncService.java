@@ -84,12 +84,6 @@ public class BlockSyncService {
         }
     }
 
-    public void processDataParallel(List<Block> data, long total) {
-        data.parallelStream().forEach(b -> {
-            handleSingleBlock(b, total);
-        });
-    }
-
     public void handleSingleBlock(Block b, long total) {
         try {
             singleBlockCrawlerService.handleSingleBlock(b);
