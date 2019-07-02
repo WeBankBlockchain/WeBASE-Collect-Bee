@@ -13,43 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.parser.bo.contract;
+package com.webank.webasebee.common.bo;
 
-import java.util.List;
-
-import org.springframework.stereotype.Component;
+import java.util.Date;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+
+
 /**
- * EventMetaInfo
+ * AccountInfo
  *
- * @Description: EventMetaInfo storages event config data for parsing event data 
+ * @Description: AccountInfo
  * @author maojiayu
- * @author graysonzhang
- * @data 2018-11-08 22:03:20
+ * @data Jul 1, 2019 4:16:20 PM
  *
  */
 @Data
-@NoArgsConstructor
-@Component
 @Accessors(chain = true)
-public class EventMetaInfo {
-    
-    /** @Fields eventName : event name */
-    private String eventName;
-    
-    /** @Fields eventTableCount : for sharding event tables */
-    private int eventTableCount;
-    
-    /** @Fields ignoreParams : when parsing event data, the ignore params will be ignored */
-    private List<String> ignoreParams;
+public class AccountInfo  {
     
     /** @Fields contractName : contract name */
     private String contractName;
     
-    /** @Fields list : event filed list */
-    private List<FieldVO> list;
+    /** @Fields contractAddress : contract address */
+    private String contractAddress;
+    
+    /** @Fields blockTimeStamp : block timestamp */
+    private Date blockTimeStamp;
+    
+
 }

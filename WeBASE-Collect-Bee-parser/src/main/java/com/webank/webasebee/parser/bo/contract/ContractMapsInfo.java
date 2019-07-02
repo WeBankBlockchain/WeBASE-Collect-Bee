@@ -20,9 +20,10 @@ import java.util.Map;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 
-import com.webank.webasebee.parser.vo.NameValueVO;
+import com.webank.webasebee.common.vo.NameValueVO;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * ContractMapsInfo
@@ -33,6 +34,7 @@ import lombok.Data;
  *
  */
 @Data
+@Accessors(chain = true)
 public class ContractMapsInfo {
 
     /** @Fields methodIdMap : use to storage methodId map , key:methodId, value:(contractName, methodName) */

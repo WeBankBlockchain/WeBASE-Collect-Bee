@@ -13,31 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.parser.bo.contract;
+package com.webank.webasebee.common.bo;
 
-import java.util.List;
+import java.util.Date;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * ContractMethodInfo
+ * EventInfo
  *
- * @Description: ContractMethodInfo storages all contracts info for parsing method data.
- * @author graysonzhang
- * @data 2018-12-17 11:48:31
+ * @Description: EventInfo
+ * @author maojiayu
+ * @data Jul 1, 2019 5:25:46 PM
  *
  */
 @Data
 @Accessors(chain = true)
-public class ContractMethodInfo {
-	
-	/** @Fields contractName : contract name */
-	private String contractName;
-	
-	/** @Fields congtractBinary : contract binary */
-	private String contractBinary;
-	
-	/** @Fields methodMetaInfos : methodMetaInfos */
-	private List<MethodMetaInfo> methodMetaInfos;
+public abstract class MethodInfo {
+    private long blockHeight;
+    private String txHash;
+    private Date blockTimeStamp;
+
 }

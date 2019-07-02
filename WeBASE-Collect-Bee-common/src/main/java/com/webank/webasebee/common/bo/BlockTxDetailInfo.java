@@ -13,43 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.parser.bo.contract;
+package com.webank.webasebee.common.bo;
 
-import java.util.List;
+import java.util.Date;
 
-import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+
 /**
- * EventMetaInfo
+ * BlockTxDetailInfo
  *
- * @Description: EventMetaInfo storages event config data for parsing event data 
+ * @Description: BlockTxDetailInfo
  * @author maojiayu
- * @author graysonzhang
- * @data 2018-11-08 22:03:20
+ * @data Jul 1, 2019 4:16:12 PM
  *
  */
 @Data
-@NoArgsConstructor
-@Component
 @Accessors(chain = true)
-public class EventMetaInfo {
-    
-    /** @Fields eventName : event name */
-    private String eventName;
-    
-    /** @Fields eventTableCount : for sharding event tables */
-    private int eventTableCount;
-    
-    /** @Fields ignoreParams : when parsing event data, the ignore params will be ignored */
-    private List<String> ignoreParams;
-    
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class BlockTxDetailInfo {
+
     /** @Fields contractName : contract name */
     private String contractName;
-    
-    /** @Fields list : event filed list */
-    private List<FieldVO> list;
+
+    /** @Fields methodName : contract method name */
+    private String methodName;
+
+    /** @Fields txHash : transaction hash */
+    private String txHash;
+
+    /** @Fields txFrom : transaction' s from */
+    private String txFrom;
+
+    /** @Fields txTo : transaction's to */
+    private String txTo;
+
+    /** @Fields blockTimeStamp : block timestamp */
+    private Date blockTimeStamp;
+
 }

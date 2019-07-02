@@ -17,11 +17,11 @@ package com.webank.webasebee.parser.bo;
 
 import java.util.List;
 
-import com.webank.webasebee.parser.bo.base.AccountInfo;
-import com.webank.webasebee.parser.bo.base.BlockDetailInfo;
-import com.webank.webasebee.parser.bo.base.BlockTxDetailInfo;
-import com.webank.webasebee.parser.bo.base.EventInfo;
-import com.webank.webasebee.parser.bo.base.MethodInfo;
+import com.webank.webasebee.common.bo.AccountInfo;
+import com.webank.webasebee.common.bo.BlockDetailInfo;
+import com.webank.webasebee.common.bo.BlockTxDetailInfo;
+import com.webank.webasebee.common.bo.EventInfo;
+import com.webank.webasebee.common.bo.MethodInfo;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

@@ -21,9 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
+import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.core.BaseTest;
 import com.webank.webasebee.core.api.vo.TimeRangeQueryReq;
-import com.webank.webasebee.core.tools.JacksonUtils;
 
 /**
  * BlockTxDetailInfoControllerTest

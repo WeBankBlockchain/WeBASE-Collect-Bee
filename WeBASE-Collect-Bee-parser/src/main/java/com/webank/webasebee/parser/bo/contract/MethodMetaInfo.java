@@ -20,6 +20,7 @@ import java.util.List;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * MethodMetaInfo
@@ -30,6 +31,7 @@ import lombok.Data;
  *
  */
 @Data
+@Accessors(chain = true)
 public class MethodMetaInfo {
 
     /** @Fields methodId : method id */

@@ -35,7 +35,7 @@ src/main/resources
 
 ## contracts ##
 src/main/java/com/webank/bcosbee/generated
-src/main/java/com/webank/webasebee/generated
+src/main/java/com/webank/webasebee/parser/generated
 src/main/java/com/webank/blockchain/
 src/main/java/org
 my.log*

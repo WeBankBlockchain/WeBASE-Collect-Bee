@@ -21,8 +21,8 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.parser.bo.base.BlockDetailInfo;
-import com.webank.webasebee.parser.bo.base.BlockDetailInfo.Status;
+import com.webank.webasebee.common.bo.BlockDetailInfo;
+import com.webank.webasebee.common.bo.BlockDetailInfo.Status;
 
 /**
  * BlockCrawlerHandler is responsible for crawling block info.

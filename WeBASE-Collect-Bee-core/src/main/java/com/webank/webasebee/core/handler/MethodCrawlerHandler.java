@@ -29,11 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.vo.NameValueVO;
 import com.webank.webasebee.core.bo.ContractMapsInfo;
 import com.webank.webasebee.core.crawler.face.BcosMethodCrawlerInterface;
 import com.webank.webasebee.core.dao.BlockTxDetailInfoDAO;
 import com.webank.webasebee.core.service.ContractConstructorService;
-import com.webank.webasebee.core.tools.NameValueVO;
 
 import lombok.extern.slf4j.Slf4j;
 

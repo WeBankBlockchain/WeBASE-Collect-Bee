@@ -13,31 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.parser.bo.contract;
+package com.webank.webasebee.common.tools;
 
-import java.util.List;
-
-import lombok.Data;
-import lombok.experimental.Accessors;
+import java.math.BigInteger;
 
 /**
- * ContractMethodInfo
+ * BigIntegerUtils
  *
- * @Description: ContractMethodInfo storages all contracts info for parsing method data.
- * @author graysonzhang
- * @data 2018-12-17 11:48:31
+ * @Description: BigIntegerUtils
+ * @author maojiayu
+ * @data Dec 18, 2018 10:55:41 AM
  *
  */
-@Data
-@Accessors(chain = true)
-public class ContractMethodInfo {
-	
-	/** @Fields contractName : contract name */
-	private String contractName;
-	
-	/** @Fields congtractBinary : contract binary */
-	private String contractBinary;
-	
-	/** @Fields methodMetaInfos : methodMetaInfos */
-	private List<MethodMetaInfo> methodMetaInfos;
+public class BigIntegerUtils {
+
+    public static long toLong(BigInteger bi) {
+        return bi.longValue();
+    }
+    
+    public static long toLong(Object obj) {
+        BigInteger bi = (BigInteger) obj;
+        return bi.longValue();
+    }
+
+
+    public static int toInteger(BigInteger bi) {
+        return bi.intValue();
+    }
+    
+    public static int toInteger(Object obj) {
+        BigInteger bi = (BigInteger) obj;
+        return bi.intValue();
+    }
+
+
 }

@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 
-import com.webank.webasebee.core.tools.NameValueVO;
+import com.webank.webasebee.common.vo.NameValueVO;
 
 import lombok.Data;
 

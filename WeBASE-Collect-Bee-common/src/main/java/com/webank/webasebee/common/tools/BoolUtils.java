@@ -13,31 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.parser.bo.contract;
-
-import java.util.List;
-
-import lombok.Data;
-import lombok.experimental.Accessors;
+package com.webank.webasebee.common.tools;
 
 /**
- * ContractMethodInfo
+ * BoolUtils
  *
- * @Description: ContractMethodInfo storages all contracts info for parsing method data.
- * @author graysonzhang
- * @data 2018-12-17 11:48:31
+ * @Description: BoolUtils
+ * @author maojiayu
+ * @data Mar 12, 2019 3:14:31 PM
  *
  */
-@Data
-@Accessors(chain = true)
-public class ContractMethodInfo {
-	
-	/** @Fields contractName : contract name */
-	private String contractName;
-	
-	/** @Fields congtractBinary : contract binary */
-	private String contractBinary;
-	
-	/** @Fields methodMetaInfos : methodMetaInfos */
-	private List<MethodMetaInfo> methodMetaInfos;
+public class BoolUtils {
+
+    public static boolean toBoolean(Boolean bool) {
+        return bool.booleanValue();
+    }
+
+    public static boolean toBoolean(Object obj) {
+        Boolean bool = (Boolean) obj;
+        return bool.booleanValue();
+    }
+
 }

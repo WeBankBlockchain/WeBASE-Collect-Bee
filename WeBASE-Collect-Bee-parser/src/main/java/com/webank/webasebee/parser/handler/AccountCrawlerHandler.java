@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.parser.bo.base.AccountInfo;
+import com.webank.webasebee.common.bo.AccountInfo;
 import com.webank.webasebee.parser.service.ContractConstructorService;
 
 import lombok.extern.slf4j.Slf4j;

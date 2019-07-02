@@ -13,31 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.parser.bo.contract;
+package com.webank.webasebee.common.tools;
 
-import java.util.List;
+import java.math.BigInteger;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
+import org.fisco.bcos.web3j.abi.datatypes.Address;
 
 /**
- * ContractMethodInfo
+ * AddressUtils
  *
- * @Description: ContractMethodInfo storages all contracts info for parsing method data.
- * @author graysonzhang
- * @data 2018-12-17 11:48:31
+ * @Description: AddressUtils
+ * @author maojiayu
+ * @data Jan 30, 2019 6:05:47 PM
  *
  */
-@Data
-@Accessors(chain = true)
-public class ContractMethodInfo {
-	
-	/** @Fields contractName : contract name */
-	private String contractName;
-	
-	/** @Fields congtractBinary : contract binary */
-	private String contractBinary;
-	
-	/** @Fields methodMetaInfos : methodMetaInfos */
-	private List<MethodMetaInfo> methodMetaInfos;
+public class AddressUtils {
+
+    public static String bigIntegerToString(BigInteger bi) {
+        Address address = new Address(bi);
+        return address.toString();
+    }
+
+    public static String bigIntegerToString(Object obj) {
+        return bigIntegerToString((BigInteger) obj);
+    }
+
 }
