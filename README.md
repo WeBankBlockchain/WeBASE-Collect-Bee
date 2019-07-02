@@ -87,7 +87,7 @@ WeBASE-Collect-Bee可与grafana深度集成，支持自动生成dashboard实例�
 
 | 依赖软件 | 说明 |备注|
 | --- | --- | --- |
-| FISCO-BCOS | >= 2.0， 1.x版本请参考V0.5版本 |
+| FISCO-BCOS | >= 2.0， 1.x版本请参考V0.5版本 dev分支 |
 | Bash | 需支持Bash（理论上来说支持所有ksh、zsh等其他unix shell，但未测试）|
 | Java | >= JDK[1.8] | |
 | Git | 下载的安装包使用Git | |
@@ -141,7 +141,7 @@ cd WeBASE-Collect-Bee
 注意： 当修改完配置文件后，需要重新编译代码，然后再执行，编译的命令如下：
 
 ```
-sh gradlew clean bootJar
+./gradlew clean bootJar
 
 ```
 
@@ -310,8 +310,8 @@ sharding.jdbc.config.props.sql.show=true
 但是如果你对配置或代码进行了深度定制，可参考以下步骤：
 
 ```
-sh gradlew clean bootJar
-sh generate_bee.sh build 
+./gradlew clean bootJar
+./generate_bee.sh build 
 cd dist
 chmod +x *.jar
 nohup java -jar *.jar >/dev/null 2>&1 &
