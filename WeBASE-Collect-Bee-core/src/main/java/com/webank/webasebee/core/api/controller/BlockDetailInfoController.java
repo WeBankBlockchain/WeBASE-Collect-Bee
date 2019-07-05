@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.webank.webasebee.common.tools.ResponseUtils;
 import com.webank.webasebee.common.vo.CommonResponse;
 import com.webank.webasebee.core.api.manager.BlockDetailInfoApiManager;
-import com.webank.webasebee.core.sys.db.vo.BlockHeightQueryReq;
-import com.webank.webasebee.core.sys.db.vo.TimeRangeQueryReq;
+import com.webank.webasebee.db.vo.BlockHeightQueryReq;
+import com.webank.webasebee.db.vo.TimeRangeQueryReq;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -29,9 +29,9 @@ import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.common.tools.ResponseUtils;
 import com.webank.webasebee.common.vo.CommonResponse;
 import com.webank.webasebee.core.api.manager.BlockTxDetailInfoApiManager;
-import com.webank.webasebee.core.sys.db.vo.BlockHeightQueryReq;
-import com.webank.webasebee.core.sys.db.vo.TimeRangeQueryReq;
-import com.webank.webasebee.core.sys.db.vo.TxFromQueryReq;
+import com.webank.webasebee.db.vo.BlockHeightQueryReq;
+import com.webank.webasebee.db.vo.TimeRangeQueryReq;
+import com.webank.webasebee.db.vo.TxFromQueryReq;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

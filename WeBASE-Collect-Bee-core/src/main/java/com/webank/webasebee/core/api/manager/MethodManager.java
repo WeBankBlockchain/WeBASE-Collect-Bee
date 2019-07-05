@@ -19,10 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.vo.CommonResponse;
-import com.webank.webasebee.core.sys.db.service.UnitBasicQueryService;
-import com.webank.webasebee.core.sys.db.vo.UnitParaQueryPageReq;
-import com.webank.webasebee.core.sys.db.vo.UnitQueryPageReq;
-import com.webank.webasebee.core.sys.db.vo.UnitTimeRangeQueryPageReq;
+import com.webank.webasebee.db.service.UnitBasicQueryService;
+import com.webank.webasebee.db.vo.UnitParaQueryPageReq;
+import com.webank.webasebee.db.vo.UnitQueryPageReq;
+import com.webank.webasebee.db.vo.UnitTimeRangeQueryPageReq;
 
 /**
  * EventManager

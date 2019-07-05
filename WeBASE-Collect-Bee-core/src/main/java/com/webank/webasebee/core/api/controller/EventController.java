@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.webank.webasebee.common.tools.ResponseUtils;
 import com.webank.webasebee.common.vo.CommonResponse;
 import com.webank.webasebee.core.api.manager.EventManager;
-import com.webank.webasebee.core.sys.db.vo.UnitParaQueryPageReq;
-import com.webank.webasebee.core.sys.db.vo.UnitQueryPageReq;
-import com.webank.webasebee.core.sys.db.vo.UnitTimeRangeQueryPageReq;
+import com.webank.webasebee.db.vo.UnitParaQueryPageReq;
+import com.webank.webasebee.db.vo.UnitQueryPageReq;
+import com.webank.webasebee.db.vo.UnitTimeRangeQueryPageReq;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

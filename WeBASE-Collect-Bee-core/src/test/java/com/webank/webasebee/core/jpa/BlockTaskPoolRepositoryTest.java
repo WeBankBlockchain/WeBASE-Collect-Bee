@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.webank.webasebee.core.WebaseBeeApplicationTests;
-import com.webank.webasebee.core.sys.db.repository.BlockTaskPoolRepository;
+import com.webank.webasebee.db.repository.BlockTaskPoolRepository;
 
 /**
  * BlockTaskPoolRepositoryTest

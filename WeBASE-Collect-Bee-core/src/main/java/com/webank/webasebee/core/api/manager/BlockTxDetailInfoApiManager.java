@@ -19,12 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.vo.CommonResponse;
-import com.webank.webasebee.core.sys.db.repository.BlockTxDetailInfoRepository;
-import com.webank.webasebee.core.sys.db.service.CommonQueryService;
-import com.webank.webasebee.core.sys.db.service.TimeRangeQueryService;
-import com.webank.webasebee.core.sys.db.vo.BlockHeightQueryReq;
-import com.webank.webasebee.core.sys.db.vo.TimeRangeQueryReq;
-import com.webank.webasebee.core.sys.db.vo.TxFromQueryReq;
+import com.webank.webasebee.db.repository.BlockTxDetailInfoRepository;
+import com.webank.webasebee.db.service.CommonQueryService;
+import com.webank.webasebee.db.service.TimeRangeQueryService;
+import com.webank.webasebee.db.vo.BlockHeightQueryReq;
+import com.webank.webasebee.db.vo.TimeRangeQueryReq;
+import com.webank.webasebee.db.vo.TxFromQueryReq;
 
 /**
  * BlockTxDetailInfoApiManager

@@ -20,12 +20,12 @@ import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.tools.ResponseUtils;
 import com.webank.webasebee.common.vo.CommonResponse;
-import com.webank.webasebee.core.sys.db.dao.AccountInfoDAO;
-import com.webank.webasebee.core.sys.db.repository.AccountInfoRepository;
-import com.webank.webasebee.core.sys.db.service.CommonQueryService;
-import com.webank.webasebee.core.sys.db.service.TimeRangeQueryService;
-import com.webank.webasebee.core.sys.db.vo.ContractNameQueryReq;
-import com.webank.webasebee.core.sys.db.vo.TimeRangeQueryReq;
+import com.webank.webasebee.db.dao.AccountInfoDAO;
+import com.webank.webasebee.db.repository.AccountInfoRepository;
+import com.webank.webasebee.db.service.CommonQueryService;
+import com.webank.webasebee.db.service.TimeRangeQueryService;
+import com.webank.webasebee.db.vo.ContractNameQueryReq;
+import com.webank.webasebee.db.vo.TimeRangeQueryReq;
 
 /**
  * AccountInfoApiService is a service for querying account info.

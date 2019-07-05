@@ -23,7 +23,7 @@ import org.springframework.http.MediaType;
 
 import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.core.BaseTest;
-import com.webank.webasebee.core.api.vo.TimeRangeQueryReq;
+import com.webank.webasebee.db.vo.TimeRangeQueryReq;
 
 /**
  * BlockTxDetailInfoControllerTest
