@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.webank.webasebee.core.BaseTest;
-import com.webank.webasebee.core.crawler.service.BlockTaskPoolService;
+import com.webank.webasebee.core.service.BlockCheckService;
 
 /**
  * BlockTaskPoolServiceTest
@@ -32,7 +32,7 @@ import com.webank.webasebee.core.crawler.service.BlockTaskPoolService;
 public class BlockTaskPoolServiceTest extends BaseTest {
 
     @Autowired
-    BlockTaskPoolService blockTaskPoolService;
+    BlockCheckService blockTaskPoolService;
 
     //@Test
     public void testCheckNumber() {

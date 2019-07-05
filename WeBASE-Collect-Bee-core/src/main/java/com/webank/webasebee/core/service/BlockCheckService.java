@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.core.crawler.service;
+package com.webank.webasebee.core.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -26,10 +26,8 @@ import java.util.stream.Collectors;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import com.google.common.collect.Lists;
 import com.webank.webasebee.common.constants.BlockForkConstants;
 import com.webank.webasebee.common.enums.BlockCertaintyEnum;
 import com.webank.webasebee.common.enums.TxInfoStatusEnum;
@@ -52,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class BlockTaskPoolService {
+public class BlockCheckService {
 
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
@@ -64,37 +62,6 @@ public class BlockTaskPoolService {
     private EthClient ethClient;
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
-
-    public long getTaskPoolHeight() {
-        Optional<BlockTaskPool> item = blockTaskPoolRepository.findTopByOrderByBlockHeightDesc();
-        long height = 0;
-        if (item.isPresent()) {
-            height = item.get().getBlockHeight() + 1;
-        }
-        return height;
-    }
-
-    @Transactional
-    public void prepareTask(long begin, long end, boolean certainty) {
-        log.info("Begin to prepare sync blocks from {} to {}", begin, end);
-        List<BlockTaskPool> list = Lists.newArrayList();
-        for (long i = begin; i <= end; i++) {
-            BlockTaskPool pool =
-                    new BlockTaskPool().setBlockHeight(i).setSyncStatus(TxInfoStatusEnum.INIT.getStatus());
-            if (certainty) {
-                pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
-            } else {
-                if (i <= end - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
-                    pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
-                } else {
-                    pool.setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
-                }
-            }
-            list.add(pool);
-        }
-        blockTaskPoolRepository.saveAll(list);
-        log.info("Sync blocks from {} to {} are prepared.", begin, end);
-    }
 
     public void processErrors() {
         log.info("Begin to check error records");

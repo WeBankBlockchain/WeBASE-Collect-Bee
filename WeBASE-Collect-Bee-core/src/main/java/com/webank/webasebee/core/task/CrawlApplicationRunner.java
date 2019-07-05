@@ -15,6 +15,11 @@
  */
 package com.webank.webasebee.core.task;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.List;
+
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -22,8 +27,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.webank.webasebee.common.constants.BlockForkConstants;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
-import com.webank.webasebee.core.crawler.service.CommonCrawlerService;
+import com.webank.webasebee.core.service.BlockAsyncService;
+import com.webank.webasebee.core.service.BlockCheckService;
+import com.webank.webasebee.core.service.BlockIndexService;
+import com.webank.webasebee.core.service.BlockPrepareService;
+import com.webank.webasebee.core.service.BlockDepotService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,9 +52,74 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CrawlApplicationRunner implements ApplicationRunner {
     @Autowired
-    private CommonCrawlerService commonCrawlerService;
-    @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
+    @Autowired
+    private BlockCheckService blockTaskPoolService;
+    @Autowired
+    private BlockAsyncService blockAsyncService;
+    @Autowired
+    private BlockDepotService blockSyncService;
+    @Autowired
+    private BlockIndexService blockIndexService;
+    @Autowired
+    private BlockPrepareService blockPrepareService;
+
+    private long startBlockNumber;
+    private boolean signal = true;
+
+    public long getHeight(long height) {
+        return height > startBlockNumber ? height : startBlockNumber;
+    }
+
+    /**
+     * The key driving entrance of single instance depot: 1. check timeout txs and process errors; 2. produce tasks; 3.
+     * consume tasks; 4. check the fork status; 5. rollback; 6. continue and circle;
+     * 
+     */
+    public void handle() {
+        try {
+            startBlockNumber = blockIndexService.getStartBlockIndex();
+            log.info("Start succeed, and the block number is {}", startBlockNumber);
+            while (signal) {
+                long currentChainHeight = blockPrepareService.getCurrentBlockHeight();
+                long fromHeight = getHeight(blockPrepareService.getTaskPoolHeight());
+                // control the batch unit number
+                long end = fromHeight + systemEnvironmentConfig.getCrawlBatchUnit() - 1;
+                long toHeight = currentChainHeight < end ? currentChainHeight : end;
+                log.info("Current depot status: {} of {}, and try to process block from {} to {}", fromHeight - 1,
+                        currentChainHeight, fromHeight, toHeight);
+                boolean certainty =
+                        toHeight + 1 < currentChainHeight - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
+                if (fromHeight <= toHeight) {
+                    log.info("Try to sync block number {} to {} of {}", fromHeight, toHeight, currentChainHeight);
+                    blockPrepareService.prepareTask(fromHeight, toHeight, certainty);
+                } else {
+                    // single circle sleep time is read from the application.properties
+                    log.info("No sync block tasks to prepare, begin to sleep {} s",
+                            systemEnvironmentConfig.getFrequency());
+                    Thread.sleep(systemEnvironmentConfig.getFrequency() * 1000);
+                }
+                log.info("Begin to fetch at most {} tasks", systemEnvironmentConfig.getCrawlBatchUnit());
+                List<Block> taskList = blockSyncService.fetchData(systemEnvironmentConfig.getCrawlBatchUnit());
+                for (Block b : taskList) {
+                    blockAsyncService.handleSingleBlock(b, currentChainHeight);
+                }
+                if (!certainty) {
+                    blockTaskPoolService.checkForks(currentChainHeight);
+                    blockTaskPoolService.checkTaskCount(startBlockNumber, currentChainHeight);
+                }
+                blockTaskPoolService.checkTimeOut();
+                blockTaskPoolService.processErrors();
+            }
+        } catch (IOException e) {
+            log.error("depot IOError, {}", e.getMessage());
+        } catch (InterruptedException e) {
+            log.error("depot InterruptedException, {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        } catch (ParseException e) {
+            log.error("depot ParseException, {}", e.getMessage());
+        }
+    }
 
     @Override
     public void run(ApplicationArguments var1) throws InterruptedException {
@@ -52,6 +127,6 @@ public class CrawlApplicationRunner implements ApplicationRunner {
             log.error("The batch unit threshold can't be less than 1!!");
             System.exit(1);
         }
-        //commonCrawlerService.handle();
+        handle();
     }
 }

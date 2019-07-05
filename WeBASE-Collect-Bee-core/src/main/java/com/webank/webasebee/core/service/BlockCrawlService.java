@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.core.crawler.service;
+package com.webank.webasebee.core.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Stopwatch;
+import com.webank.webasebee.common.bo.data.BlockInfoBO;
+import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.extractor.ods.EthClient;
+import com.webank.webasebee.parser.facade.ParseInterface;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,14 +42,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class SingleBlockCrawlerService {
-
-    @Autowired
-    private Web3j web3j;
+public class BlockCrawlService {
     @Autowired
     private EthClient ethClient;
-    
-  
+    @Autowired
+    private ParseInterface parser;
 
     /**
      * handle a single block: 1. download a new block. 2. handle event. 3. handle method. 4. handle account. 5. insert
@@ -62,31 +56,18 @@ public class SingleBlockCrawlerService {
      * @return transaction size.
      * @throws IOException
      */
-    public long handleSingleBlock(long blockHeight) throws IOException {
+    public void handleSingleBlock(long blockHeight) throws IOException {
         BigInteger bigBlockHeight = new BigInteger(Long.toString(blockHeight));
         Block block = ethClient.getBlock(bigBlockHeight);
-        return handleSingleBlock(block);
+        handleSingleBlock(block);
     }
 
-    public long handleSingleBlock(Block block) throws IOException {
+    public void handleSingleBlock(Block block) throws IOException {
         Stopwatch st1 = Stopwatch.createStarted();
-        log.debug("Begin to sync block {}", block.getNumber().longValue());
-        List<TransactionResult> transactionResults = block.getTransactions();
-        for (TransactionResult result : transactionResults) {
-            BcosTransactionReceipt bcosTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();
-            Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
-            if (opt.isPresent()) {
-                TransactionReceipt tr = opt.get();
-
-                
-
-           
-            }
-        }
-
+        BlockInfoBO blockInfo = parser.parse(block);
+        System.out.println(JacksonUtils.toJson(blockInfo));
         log.info("bcosCrawlerMap block:{} succeed, bcosCrawlerMap.handleReceipt useTime: {}",
                 block.getNumber().longValue(), st1.stop().elapsed(TimeUnit.MILLISECONDS));
-        return transactionResults.size();
     }
 
 }

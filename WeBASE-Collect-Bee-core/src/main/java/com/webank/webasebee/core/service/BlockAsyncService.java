@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.core.crawler.service;
+package com.webank.webasebee.core.service;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +33,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class BlockAsyncService {
     @Autowired
-    private BlockSyncService blockSyncService;
+    private BlockDepotService blockSyncService;
 
     @Async("taskExecutor")
     public void handleSingleBlock(Block b, long total) {
-        blockSyncService.handleSingleBlock(b, total);
+        blockSyncService.process(b, total);
     }
 }

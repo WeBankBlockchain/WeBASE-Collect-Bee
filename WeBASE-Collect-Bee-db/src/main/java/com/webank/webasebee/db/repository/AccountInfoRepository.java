@@ -39,32 +39,31 @@ import com.webank.webasebee.db.entity.AccountInfo;
 public interface AccountInfoRepository extends JpaRepository<AccountInfo, Long>, JpaSpecificationExecutor<AccountInfo>,
         RollbackInterface, CommonHeightFindInterface {
 
-    /**    
-     * Query account info according to contract address, return AccountInfo object.  
+    /**
+     * Query account info according to contract address, return AccountInfo object.
      * 
-     * @param contractAddress: contract address     
-     * @return AccountInfo       
+     * @param contractAddress: contract address
+     * @return AccountInfo
      */
     public AccountInfo findByContractAddress(String contractAddress);
 
-    /**    
-     * Query account info according to contract name, return AccountInfo object list.  
+    /**
+     * Query account info according to contract name, return AccountInfo object list.
      * 
-     * @param contractName: contract name     
-     * @return List<AccountInfo>       
+     * @param contractName: contract name
+     * @return List<AccountInfo>
      */
     public List<AccountInfo> findByContractName(String contractName);
 
-    
-    /* 
+    /*
      * @see com.webank.webasebee.sys.db.repository.RollbackInterface#rollback(long)
      */
     @Transactional
     @Modifying
     @Query(value = "delete from  #{#entityName} where block_height >= ?1", nativeQuery = true)
     public void rollback(long blockHeight);
-    
-    /* 
+
+    /*
      * @see com.webank.webasebee.sys.db.repository.RollbackInterface#rollback(long, long)
      */
     @Transactional

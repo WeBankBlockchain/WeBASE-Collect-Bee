@@ -30,7 +30,7 @@ import org.springframework.util.CollectionUtils;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
 import com.webank.webasebee.common.enums.TxInfoStatusEnum;
-import com.webank.webasebee.core.crawler.service.BlockSyncService;
+import com.webank.webasebee.core.service.BlockDepotService;
 import com.webank.webasebee.db.entity.BlockTaskPool;
 import com.webank.webasebee.db.repository.BlockTaskPoolRepository;
 
@@ -52,7 +52,7 @@ public class DepotJob implements DataflowJob<Block> {
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
     @Autowired
-    private BlockSyncService blockSyncService;
+    private BlockDepotService blockSyncService;
     @Autowired
     private Web3j web3j;
 

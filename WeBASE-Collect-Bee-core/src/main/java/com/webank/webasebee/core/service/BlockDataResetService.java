@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.core.crawler.service;
+package com.webank.webasebee.core.service;
 
 import java.io.IOException;
 import java.util.Date;
@@ -47,7 +47,7 @@ public class BlockDataResetService {
     @Autowired
     private RollBackService rollBackService;
     @Autowired
-    private SingleBlockCrawlerService singleBlockCrawlerService;
+    private BlockCrawlService singleBlockCrawlerService;
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
 

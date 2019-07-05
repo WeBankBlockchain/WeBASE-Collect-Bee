@@ -30,8 +30,9 @@ import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.webank.webasebee.common.constants.BlockForkConstants;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
-import com.webank.webasebee.core.crawler.service.BlockIndexService;
-import com.webank.webasebee.core.crawler.service.BlockTaskPoolService;
+import com.webank.webasebee.core.service.BlockIndexService;
+import com.webank.webasebee.core.service.BlockPrepareService;
+import com.webank.webasebee.core.service.BlockCheckService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,9 +51,11 @@ public class PrepareTaskJob implements SimpleJob {
     @Autowired
     private Web3j web3j;
     @Autowired
-    private BlockTaskPoolService blockTaskPoolService;
+    private BlockCheckService blockCheckService;
     @Autowired
     private BlockIndexService blockIndexService;
+    @Autowired
+    private BlockPrepareService blockPrepareService;
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
     private long startBlockNumber;
@@ -77,16 +80,16 @@ public class PrepareTaskJob implements SimpleJob {
             BigInteger blockNumber = web3j.getBlockNumber().send().getBlockNumber();
             long total = blockNumber.longValue();
             log.info("Current chain block number is:{}", total);
-            long height = blockTaskPoolService.getTaskPoolHeight();
+            long height = blockPrepareService.getTaskPoolHeight();
             height = height > startBlockNumber ? height : startBlockNumber;
 
-            blockTaskPoolService.checkTimeOut();
-            blockTaskPoolService.processErrors();
+            blockCheckService.checkTimeOut();
+            blockCheckService.processErrors();
             long end = height + systemEnvironmentConfig.getCrawlBatchUnit();
             long batchNo = total < end ? total : end;
             boolean certainty = end < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
-            blockTaskPoolService.prepareTask(height, batchNo, certainty);
-            blockTaskPoolService.checkForks(total);
+            blockPrepareService.prepareTask(height, batchNo, certainty);
+            blockCheckService.checkForks(total);
 
         } catch (IOException e) {
             log.error("Job {}, exception occur in job processing: {}", shardingContext.getTaskId(), e.getMessage());

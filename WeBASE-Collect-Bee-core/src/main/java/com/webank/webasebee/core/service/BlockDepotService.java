@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.core.crawler.service;
+package com.webank.webasebee.core.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -42,9 +42,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class BlockSyncService {
+public class BlockDepotService {
     @Autowired
-    private SingleBlockCrawlerService singleBlockCrawlerService;
+    private BlockCrawlService BlockCrawlService;
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
     @Autowired
@@ -80,13 +80,13 @@ public class BlockSyncService {
 
     public void processDataSequence(List<Block> data, long total) {
         for (Block b : data) {
-            handleSingleBlock(b, total);
+            process(b, total);
         }
     }
 
-    public void handleSingleBlock(Block b, long total) {
+    public void process(Block b, long total) {
         try {
-            singleBlockCrawlerService.handleSingleBlock(b);
+            BlockCrawlService.handleSingleBlock(b);
             blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(),
                     b.getNumber().longValue());
             log.info("Block {} of {} sync block succeed.", b.getNumber().longValue(), total);

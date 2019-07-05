@@ -27,7 +27,9 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +42,8 @@ import lombok.extern.slf4j.Slf4j;
  * @data Dec 28, 2018 4:15:20 PM
  *
  */
-@SpringBootApplication(scanBasePackages = { "com.webank.webasebee" })
+@SpringBootApplication
+@ComponentScan(basePackages = { "com.webank.webasebee" })
 @Slf4j
 public class WebasebeeApplication {
 
