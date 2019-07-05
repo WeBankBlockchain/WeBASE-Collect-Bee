@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  * @data Dec 28, 2018 4:15:20 PM
  *
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = { "com.webank.webasebee" })
 @Slf4j
 public class WebasebeeApplication {
 

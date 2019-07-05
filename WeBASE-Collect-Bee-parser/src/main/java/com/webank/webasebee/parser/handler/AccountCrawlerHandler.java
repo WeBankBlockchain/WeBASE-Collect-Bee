@@ -16,18 +16,24 @@
 package com.webank.webasebee.parser.handler;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.bo.AccountInfo;
+import com.webank.webasebee.common.bo.data.AccountInfo;
 import com.webank.webasebee.parser.service.ContractConstructorService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +60,20 @@ public class AccountCrawlerHandler {
     @Autowired
     private ContractConstructorService contractConstructorService;
 
+    public List<AccountInfo> crawl(Block block) throws IOException {
+        List<AccountInfo> accountInfoList = new ArrayList<>();
+        List<TransactionResult> transactionResults = block.getTransactions();
+        for (TransactionResult result : transactionResults) {
+            BcosTransactionReceipt bcosTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();
+            Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
+            if (opt.isPresent()) {
+                TransactionReceipt tr = opt.get();
+                handle(tr, block.getTimestamp()).ifPresent(e -> accountInfoList.add(e));
+            }
+        }
+        return accountInfoList;
+    }
+
     /**
      * Get transaction from TransactionReceipt object firstly, then will get transaction input param, and get
      * constructor function transaction by judging if transaction's param named to is null, parsing transaction data and
@@ -66,7 +86,7 @@ public class AccountCrawlerHandler {
      * @return void
      * @throws IOException
      */
-    public Optional<AccountInfo> handle(TransactionReceipt receipt, Date blockTimeStamp) throws IOException {
+    public Optional<AccountInfo> handle(TransactionReceipt receipt, BigInteger blockTimeStamp) throws IOException {
         Optional<Transaction> optt = web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
         if (optt.isPresent()) {
             Transaction transaction = optt.get();
@@ -80,8 +100,8 @@ public class AccountCrawlerHandler {
                     return Optional.empty();
                 }
                 AccountInfo accountInfo = new AccountInfo();
-                accountInfo.setBlockTimeStamp(blockTimeStamp).setContractAddress(receipt.getContractAddress())
-                        .setContractName(entry.getValue());
+                accountInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()))
+                        .setContractAddress(receipt.getContractAddress()).setContractName(entry.getValue());
                 return Optional.of(accountInfo);
             }
         }

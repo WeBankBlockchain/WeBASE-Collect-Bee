@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.webank.webasebee.core.entity.CommonResponse;
-import com.webank.webasebee.core.tools.ResponseUtils;
+import com.webank.webasebee.common.tools.ResponseUtils;
+import com.webank.webasebee.common.vo.CommonResponse;
 
 import lombok.extern.slf4j.Slf4j;
 

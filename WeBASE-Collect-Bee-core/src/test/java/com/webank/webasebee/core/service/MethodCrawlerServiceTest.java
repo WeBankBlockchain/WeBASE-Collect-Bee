@@ -19,8 +19,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.webank.webasebee.core.BaseTest;
-import com.webank.webasebee.core.handler.MethodCrawlerHandler;
 import com.webank.webasebee.core.parser.ContractParser;
+import com.webank.webasebee.parser.handler.MethodCrawlerHandler;
 
 import lombok.extern.slf4j.Slf4j;
 

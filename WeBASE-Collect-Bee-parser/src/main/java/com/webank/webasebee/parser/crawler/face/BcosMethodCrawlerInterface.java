@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 
-import com.webank.webasebee.parser.bo.output.MethodBo;
+import com.webank.webasebee.common.bo.data.MethodBO;
 
 /**
  * BcosMethodCrawlerInterface
@@ -40,6 +40,6 @@ public interface BcosMethodCrawlerInterface {
      * @param methodName
      * @return void
      */
-    MethodBo transactionHandler(Transaction transaction, BigInteger blockTimeStamp, Map.Entry<String, String> entry,
+    MethodBO transactionHandler(Transaction transaction, BigInteger blockTimeStamp, Map.Entry<String, String> entry,
             String methodName);
 }

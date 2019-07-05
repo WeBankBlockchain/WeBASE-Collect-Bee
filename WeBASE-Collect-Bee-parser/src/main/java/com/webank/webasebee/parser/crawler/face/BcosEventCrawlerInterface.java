@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 
-import com.webank.webasebee.parser.bo.output.EventBo;
+import com.webank.webasebee.common.bo.data.EventBO;
 
 /**
  * BcosEventCrawlerInterface
@@ -41,5 +41,5 @@ public interface BcosEventCrawlerInterface {
      * @return boolean   
      * @throws   
      */
-    List<EventBo> handleReceipt(TransactionReceipt receipt, BigInteger blockTimeStamp);
+    List<EventBO> handleReceipt(TransactionReceipt receipt, BigInteger blockTimeStamp);
 }

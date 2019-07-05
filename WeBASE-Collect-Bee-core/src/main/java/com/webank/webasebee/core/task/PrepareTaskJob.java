@@ -28,8 +28,8 @@ import org.springframework.stereotype.Service;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
+import com.webank.webasebee.common.constants.BlockForkConstants;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
-import com.webank.webasebee.core.constants.BlockForkConstants;
 import com.webank.webasebee.core.crawler.service.BlockIndexService;
 import com.webank.webasebee.core.crawler.service.BlockTaskPoolService;
 

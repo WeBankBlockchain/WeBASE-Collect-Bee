@@ -30,11 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.google.common.collect.Lists;
+import com.webank.webasebee.common.constants.BlockForkConstants;
+import com.webank.webasebee.common.enums.BlockCertaintyEnum;
+import com.webank.webasebee.common.enums.TxInfoStatusEnum;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
-import com.webank.webasebee.core.constants.BlockForkConstants;
-import com.webank.webasebee.core.dao.BlockDetailInfoDAO;
-import com.webank.webasebee.core.enums.BlockCertaintyEnum;
-import com.webank.webasebee.core.enums.TxInfoStatusEnum;
+import com.webank.webasebee.core.sys.db.dao.BlockDetailInfoDAO;
 import com.webank.webasebee.core.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.core.sys.db.repository.BlockTaskPoolRepository;
 import com.webank.webasebee.extractor.ods.EthClient;

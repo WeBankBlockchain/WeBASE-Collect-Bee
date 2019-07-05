@@ -18,14 +18,14 @@ package com.webank.webasebee.core.api.manager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.core.api.service.CommonQueryService;
-import com.webank.webasebee.core.api.service.TimeRangeQueryService;
-import com.webank.webasebee.core.api.vo.BlockHeightQueryReq;
-import com.webank.webasebee.core.api.vo.TimeRangeQueryReq;
-import com.webank.webasebee.core.dao.BlockDetailInfoDAO;
-import com.webank.webasebee.core.entity.CommonResponse;
+import com.webank.webasebee.common.tools.ResponseUtils;
+import com.webank.webasebee.common.vo.CommonResponse;
+import com.webank.webasebee.core.sys.db.dao.BlockDetailInfoDAO;
 import com.webank.webasebee.core.sys.db.repository.BlockDetailInfoRepository;
-import com.webank.webasebee.core.tools.ResponseUtils;
+import com.webank.webasebee.core.sys.db.service.CommonQueryService;
+import com.webank.webasebee.core.sys.db.service.TimeRangeQueryService;
+import com.webank.webasebee.core.sys.db.vo.BlockHeightQueryReq;
+import com.webank.webasebee.core.sys.db.vo.TimeRangeQueryReq;
 
 /**
  * BlockDetailInfoApiManager

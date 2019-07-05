@@ -30,10 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Stopwatch;
-import com.webank.webasebee.core.handler.AccountCrawlerHandler;
-import com.webank.webasebee.core.handler.BlockCrawlerHandler;
-import com.webank.webasebee.core.handler.EventCrawlerHandler;
-import com.webank.webasebee.core.handler.MethodCrawlerHandler;
 import com.webank.webasebee.extractor.ods.EthClient;
 
 import lombok.extern.slf4j.Slf4j;
@@ -54,15 +50,9 @@ public class SingleBlockCrawlerService {
     @Autowired
     private Web3j web3j;
     @Autowired
-    private BlockCrawlerHandler blockCrawlerHandler;
-    @Autowired
     private EthClient ethClient;
-    @Autowired
-    private EventCrawlerHandler eventCrawlerHandler;
-    @Autowired
-    private MethodCrawlerHandler methodCrawlerHandler;
-    @Autowired
-    private AccountCrawlerHandler accountCrawlerHandler;
+    
+  
 
     /**
      * handle a single block: 1. download a new block. 2. handle event. 3. handle method. 4. handle account. 5. insert
@@ -88,20 +78,14 @@ public class SingleBlockCrawlerService {
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
 
-                // crawler block event data
-                eventCrawlerHandler.handle(tr, block.getTimestamp());
+                
 
-                // crawler transaction data
-                methodCrawlerHandler.handle(tr, block.getTimestamp());
-
-                // crawler account data
-                accountCrawlerHandler.handle(tr, block.getTimestamp());
+           
             }
         }
 
         log.info("bcosCrawlerMap block:{} succeed, bcosCrawlerMap.handleReceipt useTime: {}",
                 block.getNumber().longValue(), st1.stop().elapsed(TimeUnit.MILLISECONDS));
-        blockCrawlerHandler.handleBlockDetail(block, block.getNumber().longValue());
         return transactionResults.size();
     }
 

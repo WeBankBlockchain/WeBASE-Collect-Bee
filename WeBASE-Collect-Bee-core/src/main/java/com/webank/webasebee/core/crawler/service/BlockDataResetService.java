@@ -22,11 +22,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.core.entity.CommonResponse;
-import com.webank.webasebee.core.enums.TxInfoStatusEnum;
+import com.webank.webasebee.common.enums.TxInfoStatusEnum;
+import com.webank.webasebee.common.tools.ResponseUtils;
+import com.webank.webasebee.common.vo.CommonResponse;
 import com.webank.webasebee.core.sys.db.entity.BlockTaskPool;
 import com.webank.webasebee.core.sys.db.repository.BlockTaskPoolRepository;
-import com.webank.webasebee.core.tools.ResponseUtils;
 
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;

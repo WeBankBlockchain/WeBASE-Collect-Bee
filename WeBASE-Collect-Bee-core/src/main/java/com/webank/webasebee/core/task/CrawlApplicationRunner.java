@@ -52,6 +52,6 @@ public class CrawlApplicationRunner implements ApplicationRunner {
             log.error("The batch unit threshold can't be less than 1!!");
             System.exit(1);
         }
-        commonCrawlerService.handle();
+        //commonCrawlerService.handle();
     }
 }

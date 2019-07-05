@@ -18,11 +18,11 @@ package com.webank.webasebee.core.api.manager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.core.api.service.UnitBasicQueryService;
-import com.webank.webasebee.core.api.vo.UnitParaQueryPageReq;
-import com.webank.webasebee.core.api.vo.UnitQueryPageReq;
-import com.webank.webasebee.core.api.vo.UnitTimeRangeQueryPageReq;
-import com.webank.webasebee.core.entity.CommonResponse;
+import com.webank.webasebee.common.vo.CommonResponse;
+import com.webank.webasebee.core.sys.db.service.UnitBasicQueryService;
+import com.webank.webasebee.core.sys.db.vo.UnitParaQueryPageReq;
+import com.webank.webasebee.core.sys.db.vo.UnitQueryPageReq;
+import com.webank.webasebee.core.sys.db.vo.UnitTimeRangeQueryPageReq;
 
 /**
  * EventManager

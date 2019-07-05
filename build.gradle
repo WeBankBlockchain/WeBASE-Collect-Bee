@@ -78,9 +78,7 @@ project(':WeBASE-Collect-Bee-core') {
   dependencies {
     implementation project(':WeBASE-Collect-Bee-parser')
     implementation project(':WeBASE-Collect-Bee-common')
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    implementation 'mysql:mysql-connector-java'
-    implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0')
+    implementation project(':WeBASE-Collect-Bee-db')
 
     implementation "io.springfox:springfox-swagger2:2.9.2"
     implementation "io.springfox:springfox-swagger-ui:2.9.2"
@@ -102,6 +100,16 @@ project(':WeBASE-Collect-Bee-parser') {
   dependencies {
     implementation project(':WeBASE-Collect-Bee-extractor')   
     implementation project(':WeBASE-Collect-Bee-common')
+  }
+}
+
+project(':WeBASE-Collect-Bee-db') {
+  dependencies {
+    implementation project(':WeBASE-Collect-Bee-extractor')   
+    implementation project(':WeBASE-Collect-Bee-common')
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation 'mysql:mysql-connector-java'
+    implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0')
   }
 }
 

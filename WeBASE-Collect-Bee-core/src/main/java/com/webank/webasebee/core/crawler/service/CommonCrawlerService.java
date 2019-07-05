@@ -29,8 +29,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.constants.BlockForkConstants;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
-import com.webank.webasebee.core.constants.BlockForkConstants;
 
 import lombok.extern.slf4j.Slf4j;
 

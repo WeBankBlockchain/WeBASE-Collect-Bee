@@ -20,8 +20,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.enums.TxInfoStatusEnum;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
-import com.webank.webasebee.core.enums.TxInfoStatusEnum;
 import com.webank.webasebee.core.sys.db.repository.RollbackInterface;
 
 import lombok.extern.slf4j.Slf4j;

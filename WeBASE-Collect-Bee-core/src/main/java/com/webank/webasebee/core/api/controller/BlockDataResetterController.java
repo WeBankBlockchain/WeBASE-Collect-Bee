@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.webank.webasebee.common.tools.ResponseUtils;
+import com.webank.webasebee.common.vo.CommonResponse;
 import com.webank.webasebee.core.crawler.service.BlockDataResetService;
-import com.webank.webasebee.core.entity.CommonResponse;
-import com.webank.webasebee.core.tools.ResponseUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

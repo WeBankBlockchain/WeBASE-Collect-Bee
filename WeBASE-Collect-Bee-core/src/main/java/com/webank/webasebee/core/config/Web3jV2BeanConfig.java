@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.google.common.collect.Lists;
-import com.webank.webasebee.core.constants.GasConstants;
+import com.webank.webasebee.common.constants.GasConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
