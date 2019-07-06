@@ -25,6 +25,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.bo.data.BlockInfoBO;
 import com.webank.webasebee.common.enums.TxInfoStatusEnum;
 import com.webank.webasebee.db.entity.BlockTaskPool;
 import com.webank.webasebee.db.repository.BlockTaskPoolRepository;
@@ -47,6 +48,9 @@ public class BlockDepotService {
     private BlockCrawlService BlockCrawlService;
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
+    @Autowired
+    private BlockStoreService blockStoreService;
+    
     @Autowired
     private EthClient ethClient;
 
@@ -86,7 +90,8 @@ public class BlockDepotService {
 
     public void process(Block b, long total) {
         try {
-            BlockCrawlService.handleSingleBlock(b);
+            BlockInfoBO blockInfo = BlockCrawlService.parse(b);
+            blockStoreService.store(blockInfo);
             blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(),
                     b.getNumber().longValue());
             log.info("Block {} of {} sync block succeed.", b.getNumber().longValue(), total);

@@ -18,8 +18,11 @@ package com.webank.webasebee.db.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.bo.data.BlockDetailInfoBO;
 import com.webank.webasebee.db.entity.BlockDetailInfo;
 import com.webank.webasebee.db.repository.BlockDetailInfoRepository;
+
+import cn.hutool.core.bean.BeanUtil;
 
 /**
  * BlockDetailInfoDAO
@@ -32,6 +35,12 @@ import com.webank.webasebee.db.repository.BlockDetailInfoRepository;
 public class BlockDetailInfoDAO implements SaveInterface<BlockDetailInfo> {
     @Autowired
     private BlockDetailInfoRepository blockDetailInfoRepository;
+    
+    public void save(BlockDetailInfoBO bo) {
+        BlockDetailInfo blockDetailInfo = new BlockDetailInfo();
+        BeanUtil.copyProperties(bo, blockDetailInfo, true);
+        save(blockDetailInfo);
+    }
 
     public void save(BlockDetailInfo blockDetailInfo) {
         BaseDAO.saveWithTimeLog(blockDetailInfoRepository, blockDetailInfo);

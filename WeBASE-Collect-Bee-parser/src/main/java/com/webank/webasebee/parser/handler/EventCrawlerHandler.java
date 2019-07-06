@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
@@ -29,7 +28,9 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.aspect.UseTime;
 import com.webank.webasebee.common.bo.data.EventBO;
+import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
 
 /**
@@ -43,15 +44,16 @@ import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
 @Service
 public class EventCrawlerHandler {
     @Autowired
-    private Web3j web3j;
+    private EthClient ethClient;
     @Autowired
     private Map<String, BcosEventCrawlerInterface> bcosEventCrawlerMap;
 
+    @UseTime
     public List<EventBO> crawl(Block block) throws IOException {
         List<EventBO> boList = new ArrayList<>();
         List<TransactionResult> transactionResults = block.getTransactions();
         for (TransactionResult result : transactionResults) {
-            BcosTransactionReceipt bcosTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();
+            BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
             Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();

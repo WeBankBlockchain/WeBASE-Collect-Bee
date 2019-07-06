@@ -13,32 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.common.bo.data;
+package com.webank.webasebee.extractor.config;
 
-import java.util.List;
-
-import lombok.Data;
-import lombok.experimental.Accessors;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * BlockInfoBO
+ * ExtracorBeanConfig
  *
- * @Description: BlockInfoBO
+ * @Description: ExtracorBeanConfig
  * @author maojiayu
- * @data Jul 1, 2019 8:55:51 PM
+ * @data Jul 5, 2019 5:15:21 PM
  *
  */
-@Data
-@Accessors(chain = true)
-public class BlockInfoBO {
-    private BlockDetailInfoBO blockDetailInfo;
-
-    private List<AccountInfoBO> accountInfoList;
-
-    private List<BlockTxDetailInfoBO> blockTxDetailInfoList;
-
-    private List<EventBO> eventInfoList;
-
-    private List<MethodBO> methodInfoList;
+@Configuration
+@EnableCaching
+public class ExtracorBeanConfig {
 
 }

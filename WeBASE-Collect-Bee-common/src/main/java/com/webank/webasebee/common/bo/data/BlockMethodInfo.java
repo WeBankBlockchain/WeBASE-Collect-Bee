@@ -31,7 +31,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class BlockMethodInfo {
-    private List<BlockTxDetailInfo> blockTxDetailInfoList;
+    private List<BlockTxDetailInfoBO> blockTxDetailInfoList;
 
     private List<MethodBO> methodInfoList;
 

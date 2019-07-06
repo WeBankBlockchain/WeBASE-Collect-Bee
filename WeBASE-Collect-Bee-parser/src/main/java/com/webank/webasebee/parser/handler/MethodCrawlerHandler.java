@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
@@ -33,12 +32,14 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.aspect.UseTime;
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
 import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.bo.data.BlockMethodInfo;
-import com.webank.webasebee.common.bo.data.BlockTxDetailInfo;
+import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
 import com.webank.webasebee.common.bo.data.MethodBO;
 import com.webank.webasebee.common.vo.NameValueVO;
+import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.crawler.face.BcosMethodCrawlerInterface;
 import com.webank.webasebee.parser.service.ContractConstructorService;
 
@@ -55,9 +56,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class MethodCrawlerHandler {
-
     @Autowired
-    private Web3j web3j;
+    private EthClient ethClient;
     @Autowired
     private Map<String, BcosMethodCrawlerInterface> bcosMethodCrawlerMap;
     @Autowired
@@ -65,18 +65,18 @@ public class MethodCrawlerHandler {
     @Autowired
     private ContractMapsInfo contractMapsInfo;
 
+    @UseTime
     public BlockMethodInfo crawl(Block block) throws IOException {
         BlockMethodInfo blockMethodInfo = new BlockMethodInfo();
-        List<BlockTxDetailInfo> blockTxDetailInfoList = new ArrayList<>();
+        List<BlockTxDetailInfoBO> blockTxDetailInfoList = new ArrayList<>();
         List<MethodBO> methodInfoList = new ArrayList();
         List<TransactionResult> transactionResults = block.getTransactions();
         for (TransactionResult result : transactionResults) {
-            BcosTransactionReceipt bcosTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();
+            BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
             Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt receipt = opt.get();
-                Optional<Transaction> optt =
-                        web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
+                Optional<Transaction> optt = ethClient.getTransactionByHash(receipt);
                 if (optt.isPresent()) {
                     Transaction transaction = optt.get();
                     Entry<String, String> entry =
@@ -106,9 +106,9 @@ public class MethodCrawlerHandler {
 
     }
 
-    public BlockTxDetailInfo getBlockTxDetailInfo(Block block, Transaction transaction, TransactionReceipt receipt,
+    public BlockTxDetailInfoBO getBlockTxDetailInfo(Block block, Transaction transaction, TransactionReceipt receipt,
             MethodMetaInfo methodMetaInfo) {
-        BlockTxDetailInfo blockTxDetailInfo = new BlockTxDetailInfo();
+        BlockTxDetailInfoBO blockTxDetailInfo = new BlockTxDetailInfoBO();
         blockTxDetailInfo.setBlockHash(receipt.getBlockHash()).setBlockHeight(receipt.getBlockNumber().longValue())
                 .setContractName(methodMetaInfo.getContractName())
                 .setMethodName(methodMetaInfo.getMethodName().substring(methodMetaInfo.getContractName().length()))

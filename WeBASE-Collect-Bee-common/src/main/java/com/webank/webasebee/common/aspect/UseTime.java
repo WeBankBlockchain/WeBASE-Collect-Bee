@@ -13,35 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.common.bo.data;
+package com.webank.webasebee.common.aspect;
 
-import java.util.Date;
-
-import lombok.Data;
-import lombok.experimental.Accessors;
-
-
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * AccountInfo
+ * UseTime
  *
- * @Description: AccountInfo
+ * @Description: UseTime
  * @author maojiayu
- * @data Jul 1, 2019 4:16:20 PM
+ * @data Jul 5, 2019 5:57:29 PM
  *
  */
-@Data
-@Accessors(chain = true)
-public class AccountInfo  {
-    
-    /** @Fields contractName : contract name */
-    private String contractName;
-    
-    /** @Fields contractAddress : contract address */
-    private String contractAddress;
-    
-    /** @Fields blockTimeStamp : block timestamp */
-    private Date blockTimeStamp;
-    
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+@Documented
+public @interface UseTime {
+    String value() default "";
 }

@@ -17,12 +17,18 @@ package com.webank.webasebee.extractor.ods;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Stopwatch;
@@ -43,6 +49,7 @@ public class EthClient {
     @Autowired
     private Web3j web3j;
 
+    @Cacheable(cacheNames = { "block" })
     public Block getBlock(BigInteger blockHeightNumber) throws IOException {
         Stopwatch stopwatch = Stopwatch.createStarted();
         log.debug("get block number: {}", blockHeightNumber);
@@ -53,4 +60,18 @@ public class EthClient {
         return block;
     }
 
+    public BcosTransactionReceipt getTransactionReceipt(TransactionResult result) throws IOException {
+        return getTransactionReceipt((String) result.get());
+    }
+
+    @Cacheable(cacheNames = { "transactionReceipt" })
+    public BcosTransactionReceipt getTransactionReceipt(String hash) throws IOException {
+        return web3j.getTransactionReceipt(hash).send();
+    }
+
+    @Cacheable(cacheNames = { "transaction" })
+    public Optional<Transaction> getTransactionByHash(TransactionReceipt receipt) throws IOException {
+        return web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
+
+    }
 }

@@ -17,44 +17,27 @@ package com.webank.webasebee.common.bo.data;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * BlockTxDetailInfo
+ * AccountInfo
  *
- * @Description: BlockTxDetailInfo
+ * @Description: AccountInfo
  * @author maojiayu
- * @data Jul 1, 2019 4:16:12 PM
+ * @data Jul 1, 2019 4:16:20 PM
  *
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class BlockTxDetailInfo {
-
-    /** @Fields blockHeight : block height */
+public class AccountInfoBO {
     private long blockHeight;
-
-    /** @Fields blockHash : block hash */
-    private String blockHash;
 
     /** @Fields contractName : contract name */
     private String contractName;
 
-    /** @Fields methodName : contract method name */
-    private String methodName;
-
-    /** @Fields txHash : transaction hash */
-    private String txHash;
-
-    /** @Fields txFrom : transaction' s from */
-    private String txFrom;
-
-    /** @Fields txTo : transaction's to */
-    private String txTo;
+    /** @Fields contractAddress : contract address */
+    private String contractAddress;
 
     /** @Fields blockTimeStamp : block timestamp */
     private Date blockTimeStamp;

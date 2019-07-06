@@ -18,6 +18,7 @@ package com.webank.webasebee.db.dao;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Date;
+import java.util.List;
 
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
@@ -25,8 +26,11 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
 import com.webank.webasebee.db.entity.BlockTxDetailInfo;
 import com.webank.webasebee.db.repository.BlockTxDetailInfoRepository;
+
+import cn.hutool.core.bean.BeanUtil;
 
 /**
  * BlockTxDetailInfoDAO
@@ -72,6 +76,16 @@ public class BlockTxDetailInfoDAO {
         blockTxDetailInfo.setTxHash(receipt.getTransactionHash());
         blockTxDetailInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()));
         blockTxDetailInfoRepository.save(blockTxDetailInfo);
+    }
+
+    public void save(BlockTxDetailInfoBO bo) {
+        BlockTxDetailInfo blockTxDetailInfo = new BlockTxDetailInfo();
+        BeanUtil.copyProperties(bo, blockTxDetailInfo, true);
+        blockTxDetailInfoRepository.save(blockTxDetailInfo);
+    }
+
+    public void save(List<BlockTxDetailInfoBO> list) {
+        list.forEach(this::save);
     }
 
 }

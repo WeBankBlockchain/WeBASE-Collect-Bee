@@ -30,7 +30,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class BlockDetailInfo {
+public class BlockDetailInfoBO {
 
     /** @Fields blockHeight : block height */
     private long blockHeight;

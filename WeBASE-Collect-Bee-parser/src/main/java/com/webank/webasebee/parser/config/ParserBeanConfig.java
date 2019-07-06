@@ -18,10 +18,16 @@ package com.webank.webasebee.parser.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.fisco.bcos.web3j.crypto.Credentials;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.webank.blockchain.wecredit.contracts.Member;
+import com.webank.blockchain.wecredit.contracts.Rule;
 import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,12 +43,16 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Slf4j
 public class ParserBeanConfig {
-    
+   
+
     @Bean
-    @ConditionalOnMissingBean(type="BcosEventCrawlerInterface")
-    public Map<String, BcosEventCrawlerInterface> getEmptyEventMap(){
+    @ConditionalOnMissingBean(type = "BcosEventCrawlerInterface")
+    public Map<String, BcosEventCrawlerInterface> getEmptyEventMap() {
         log.info("Doesn't detect any object of BcosEventCrawlerInterface, return an empty bean.");
         return new HashMap<String, BcosEventCrawlerInterface>();
     }
 
+    
+    
+   
 }

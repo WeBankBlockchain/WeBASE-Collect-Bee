@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
@@ -33,7 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.bo.data.AccountInfo;
+import com.webank.webasebee.common.aspect.UseTime;
+import com.webank.webasebee.common.bo.data.AccountInfoBO;
+import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.service.ContractConstructorService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -52,19 +53,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccountCrawlerHandler {
 
-    /** @Fields web3j : web3j */
     @Autowired
-    private Web3j web3j;
+    private EthClient ethClient;
 
     /** @Fields contractConstructorService : contract constructor service */
     @Autowired
     private ContractConstructorService contractConstructorService;
 
-    public List<AccountInfo> crawl(Block block) throws IOException {
-        List<AccountInfo> accountInfoList = new ArrayList<>();
+    @UseTime
+    public List<AccountInfoBO> crawl(Block block) throws IOException {
+        List<AccountInfoBO> accountInfoList = new ArrayList<>();
         List<TransactionResult> transactionResults = block.getTransactions();
         for (TransactionResult result : transactionResults) {
-            BcosTransactionReceipt bcosTransactionReceipt = web3j.getTransactionReceipt((String) result.get()).send();
+            BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
             Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
@@ -86,8 +87,8 @@ public class AccountCrawlerHandler {
      * @return void
      * @throws IOException
      */
-    public Optional<AccountInfo> handle(TransactionReceipt receipt, BigInteger blockTimeStamp) throws IOException {
-        Optional<Transaction> optt = web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
+    public Optional<AccountInfoBO> handle(TransactionReceipt receipt, BigInteger blockTimeStamp) throws IOException {
+        Optional<Transaction> optt = ethClient.getTransactionByHash(receipt);
         if (optt.isPresent()) {
             Transaction transaction = optt.get();
             String input = transaction.getInput();
@@ -99,8 +100,9 @@ public class AccountCrawlerHandler {
                     log.info("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());
                     return Optional.empty();
                 }
-                AccountInfo accountInfo = new AccountInfo();
+                AccountInfoBO accountInfo = new AccountInfoBO();
                 accountInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()))
+                        .setBlockHeight(receipt.getBlockNumber().longValue())
                         .setContractAddress(receipt.getContractAddress()).setContractName(entry.getValue());
                 return Optional.of(accountInfo);
             }

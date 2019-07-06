@@ -17,13 +17,17 @@ package com.webank.webasebee.db.dao;
 
 import java.math.BigInteger;
 import java.sql.Date;
+import java.util.List;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.bo.data.AccountInfoBO;
 import com.webank.webasebee.db.entity.AccountInfo;
 import com.webank.webasebee.db.repository.AccountInfoRepository;
+
+import cn.hutool.core.bean.BeanUtil;
 
 /**
  * AccountInfoDAO
@@ -36,34 +40,45 @@ import com.webank.webasebee.db.repository.AccountInfoRepository;
 @Service
 public class AccountInfoDAO {
 
-	/** @Fields accountInfoRepository : account info repository */
-	@Autowired
-	private AccountInfoRepository accountInfoRepository;
+    /** @Fields accountInfoRepository : account info repository */
+    @Autowired
+    private AccountInfoRepository accountInfoRepository;
 
-	/**    
-	 * Get account info from transaction receipt and insert AccountInfo object into db.  
-	 * 
-	 * @param receipt:TransactionReceipt
-	 * @param blockTimeStamp: block timestamp
-	 * @param contractName: contract name    
-	 * @return void       
-	 */
-	public void save(TransactionReceipt receipt, BigInteger blockTimeStamp, String contractName) {
-		AccountInfo accountInfo = new AccountInfo();
-		accountInfo.setBlockHeight(receipt.getBlockNumber().longValue());
-		accountInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()));
-		accountInfo.setContractAddress(receipt.getContractAddress());
-		accountInfo.setContractName(contractName);
-		accountInfoRepository.save(accountInfo);
-	}
-	
-	/**    
-	 * Get account info by contract address  from db.
-	 * 
-	 * @param contractAddress: contract address     
-	 * @return AccountInfo       
-	 */
-	public AccountInfo getAccountInfoByContractAddress(String contractAddress){
-		return accountInfoRepository.findByContractAddress(contractAddress);
-	}
+    /**
+     * Get account info from transaction receipt and insert AccountInfo object into db.
+     * 
+     * @param receipt:TransactionReceipt
+     * @param blockTimeStamp: block timestamp
+     * @param contractName: contract name
+     * @return void
+     */
+    public void save(TransactionReceipt receipt, BigInteger blockTimeStamp, String contractName) {
+        AccountInfo accountInfo = new AccountInfo();
+        accountInfo.setBlockHeight(receipt.getBlockNumber().longValue());
+        accountInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()));
+        accountInfo.setContractAddress(receipt.getContractAddress());
+        accountInfo.setContractName(contractName);
+        accountInfoRepository.save(accountInfo);
+    }
+
+    public void save(List<AccountInfoBO> list) {
+        list.forEach(this::save);
+
+    }
+
+    public void save(AccountInfoBO bo) {
+        AccountInfo accountInfo = new AccountInfo();
+        BeanUtil.copyProperties(bo, accountInfo, true);
+        accountInfoRepository.save(accountInfo);
+    }
+
+    /**
+     * Get account info by contract address from db.
+     * 
+     * @param contractAddress: contract address
+     * @return AccountInfo
+     */
+    public AccountInfo getAccountInfoByContractAddress(String contractAddress) {
+        return accountInfoRepository.findByContractAddress(contractAddress);
+    }
 }

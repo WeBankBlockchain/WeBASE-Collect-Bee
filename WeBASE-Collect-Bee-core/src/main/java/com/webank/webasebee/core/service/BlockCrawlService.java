@@ -25,19 +25,17 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Stopwatch;
 import com.webank.webasebee.common.bo.data.BlockInfoBO;
-import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.facade.ParseInterface;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * SingleBlockCrawlerService
+ * BlockCrawlService
  *
- * @Description: SingleBlockCrawlerService
+ * @Description: BlockCrawlService
  * @author maojiayu
- * @author graysonzhang
- * @data 2019-03-21 15:00:30
+ * @data 2019-07-05 16:06:12
  *
  */
 @Service
@@ -49,25 +47,24 @@ public class BlockCrawlService {
     private ParseInterface parser;
 
     /**
-     * handle a single block: 1. download a new block. 2. handle event. 3. handle method. 4. handle account. 5. insert
-     * block detail.
+     * parse a Block to BlockInfoBO by using parser tools.
      * 
      * @param blockHeight
-     * @return transaction size.
+     * @return BlockInfoBO, which include all the structs of a block containing contract info.
      * @throws IOException
      */
-    public void handleSingleBlock(long blockHeight) throws IOException {
+    public BlockInfoBO parse(long blockHeight) throws IOException {
         BigInteger bigBlockHeight = new BigInteger(Long.toString(blockHeight));
         Block block = ethClient.getBlock(bigBlockHeight);
-        handleSingleBlock(block);
+        return parse(block);
     }
 
-    public void handleSingleBlock(Block block) throws IOException {
+    public BlockInfoBO parse(Block block) throws IOException {
         Stopwatch st1 = Stopwatch.createStarted();
         BlockInfoBO blockInfo = parser.parse(block);
-        System.out.println(JacksonUtils.toJson(blockInfo));
         log.info("bcosCrawlerMap block:{} succeed, bcosCrawlerMap.handleReceipt useTime: {}",
                 block.getNumber().longValue(), st1.stop().elapsed(TimeUnit.MILLISECONDS));
+        return blockInfo;
     }
 
 }

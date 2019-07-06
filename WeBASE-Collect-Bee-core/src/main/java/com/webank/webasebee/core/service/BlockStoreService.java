@@ -15,28 +15,35 @@
  */
 package com.webank.webasebee.core.service;
 
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.bo.data.BlockInfoBO;
+import com.webank.webasebee.db.dao.AccountInfoDAO;
+import com.webank.webasebee.db.dao.BlockDetailInfoDAO;
+import com.webank.webasebee.db.dao.BlockTxDetailInfoDAO;
+
 /**
- * BlockAsyncService
+ * BlockStoreService
  *
- * @Description: BlockAsyncService
+ * @Description: BlockStoreService
  * @author maojiayu
- * @data Jun 27, 2019 3:54:56 PM
+ * @data Jul 5, 2019 4:09:23 PM
  *
  */
-@ConditionalOnProperty(name = "system.multiLiving", havingValue = "false")
 @Service
-public class BlockAsyncService {
+public class BlockStoreService {
     @Autowired
-    private BlockDepotService blockDepotService;
+    private BlockDetailInfoDAO blockDetailInfoDao;
+    @Autowired
+    private AccountInfoDAO accountInfoDAO;
+    @Autowired
+    private BlockTxDetailInfoDAO blockTxDetailInfoDao;
 
-    @Async("taskExecutor")
-    public void handleSingleBlock(Block b, long total) {
-        blockDepotService.process(b, total);
+    public void store(BlockInfoBO blockInfo) {
+        blockDetailInfoDao.save(blockInfo.getBlockDetailInfo());
+        accountInfoDAO.save(blockInfo.getAccountInfoList());
+        blockTxDetailInfoDao.save(blockInfo.getBlockTxDetailInfoList());
     }
+
 }

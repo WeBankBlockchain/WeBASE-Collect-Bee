@@ -20,8 +20,9 @@ import java.sql.Date;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.bo.data.BlockDetailInfo;
-import com.webank.webasebee.common.bo.data.BlockDetailInfo.Status;
+import com.webank.webasebee.common.aspect.UseTime;
+import com.webank.webasebee.common.bo.data.BlockDetailInfoBO;
+import com.webank.webasebee.common.bo.data.BlockDetailInfoBO.Status;
 
 /**
  * BlockCrawlerHandler is responsible for crawling block info.
@@ -43,8 +44,9 @@ public class BlockCrawlerHandler {
      * @param blockHeight
      * @return boolean
      */
-    public BlockDetailInfo handleBlockDetail(Block block) {
-        BlockDetailInfo blockDetailInfo = new BlockDetailInfo();
+    @UseTime
+    public BlockDetailInfoBO handleBlockDetail(Block block) {
+        BlockDetailInfoBO blockDetailInfo = new BlockDetailInfoBO();
         blockDetailInfo.setBlockHeight(block.getNumber().longValue());
         blockDetailInfo.setTxCount(block.getTransactions().size());
         blockDetailInfo.setBlockHash(block.getHash());
