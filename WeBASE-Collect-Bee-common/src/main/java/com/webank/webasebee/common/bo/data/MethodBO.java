@@ -18,6 +18,7 @@ package com.webank.webasebee.common.bo.data;
 import java.util.Date;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
@@ -30,6 +31,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
+@EqualsAndHashCode(callSuper = false)
 public class MethodBO extends CommonBO {
     private long blockHeight;
     private String txHash;
