@@ -15,25 +15,19 @@
  */
 package com.webank.webasebee.common.bo.data;
 
-import java.util.Date;
-
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 /**
- * EventBo
+ * CommonBO
  *
- * @Description: EventBo
+ * @Description: CommonBO
  * @author maojiayu
- * @data Jul 2, 2019 3:34:31 PM
+ * @data Jul 7, 2019 3:05:17 PM
  *
  */
 @Data
-@EqualsAndHashCode(callSuper=false)
-@Accessors(chain = true)
-public class EventBO extends CommonBO {
-    private long blockHeight;
-    private String txHash;
-    private Date blockTimeStamp;
+public class CommonBO {
+    private String identifier;
+    private String metaType;
+
 }

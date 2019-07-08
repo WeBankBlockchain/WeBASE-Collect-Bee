@@ -60,7 +60,6 @@ subprojects {
     compileOnly "org.projectlombok:lombok"
     implementation "org.springframework.boot:spring-boot-starter-web" 
     implementation "org.springframework.boot:spring-boot-starter-aop" 
-    implementation "com.alibaba:fastjson:1.2.29"
     implementation "com.google.guava:guava:20.0"
     implementation "commons-io:commons-io:2.6"
     implementation ('org.apache.commons:commons-lang3:3.8.1')
@@ -108,6 +107,7 @@ project(':WeBASE-Collect-Bee-db') {
   dependencies {
     implementation project(':WeBASE-Collect-Bee-extractor')   
     implementation project(':WeBASE-Collect-Bee-common')
+    implementation project(':WeBASE-Collect-Bee-parser')   
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation 'mysql:mysql-connector-java'
     implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0')

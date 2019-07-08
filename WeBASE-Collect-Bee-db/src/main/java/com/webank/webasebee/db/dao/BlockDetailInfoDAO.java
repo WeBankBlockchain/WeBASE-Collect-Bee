@@ -16,7 +16,7 @@
 package com.webank.webasebee.db.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.webank.webasebee.common.bo.data.BlockDetailInfoBO;
 import com.webank.webasebee.db.entity.BlockDetailInfo;
@@ -31,7 +31,7 @@ import cn.hutool.core.bean.BeanUtil;
  * @data Dec 12, 2018 2:45:13 PM
  *
  */
-@Service
+@Component
 public class BlockDetailInfoDAO implements SaveInterface<BlockDetailInfo> {
     @Autowired
     private BlockDetailInfoRepository blockDetailInfoRepository;

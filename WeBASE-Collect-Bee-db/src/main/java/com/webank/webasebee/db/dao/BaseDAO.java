@@ -15,6 +15,7 @@
  */
 package com.webank.webasebee.db.dao;
 
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
@@ -43,6 +44,10 @@ public class BaseDAO {
 
     public static <T, ID> void saveWithTimeLog(CrudRepository<T, ID> cr, T t) {
         saveWithTimeLog((CrudRepository<T, ID> r, T t1) -> r.save(t1), cr, t);
+    }
+
+    public static <T, ID> void saveAllWithTimeLog(CrudRepository<T, ID> cr, Collection<T> t) {
+        saveWithTimeLog((CrudRepository<T, ID> r, Collection<T> t1) -> r.saveAll(t1), cr, t);
     }
 
 }

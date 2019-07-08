@@ -30,8 +30,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class MethodBO {
-    private String identifier;
+public class MethodBO extends CommonBO {
     private long blockHeight;
     private String txHash;
     private Date blockTimeStamp;

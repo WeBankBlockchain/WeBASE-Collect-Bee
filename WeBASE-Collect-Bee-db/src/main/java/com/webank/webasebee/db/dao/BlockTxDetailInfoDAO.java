@@ -24,11 +24,12 @@ import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
 import com.webank.webasebee.db.entity.BlockTxDetailInfo;
 import com.webank.webasebee.db.repository.BlockTxDetailInfoRepository;
+import com.webank.webasebee.extractor.ods.EthClient;
 
 import cn.hutool.core.bean.BeanUtil;
 
@@ -40,12 +41,10 @@ import cn.hutool.core.bean.BeanUtil;
  * @data 2018-12-20 15:01:27
  *
  */
-@Service
+@Component
 public class BlockTxDetailInfoDAO {
-
-    /** @Fields web3j : web3j */
     @Autowired
-    private Web3j web3j;
+    private EthClient ethClient;
 
     /** @Fields blockTxDetailInfoRepository : block transaction detail info repository */
     @Autowired
@@ -67,10 +66,8 @@ public class BlockTxDetailInfoDAO {
         blockTxDetailInfo.setBlockHash(receipt.getBlockHash());
         blockTxDetailInfo.setBlockHeight(receipt.getBlockNumber().longValue());
         blockTxDetailInfo.setContractName(contractName);
-
         blockTxDetailInfo.setMethodName(methodName.substring(contractName.length()));
-        Transaction transaction =
-                web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction().get();
+        Transaction transaction = ethClient.getTransactionByHash(receipt).get();
         blockTxDetailInfo.setTxFrom(transaction.getFrom());
         blockTxDetailInfo.setTxTo(transaction.getTo());
         blockTxDetailInfo.setTxHash(receipt.getTransactionHash());

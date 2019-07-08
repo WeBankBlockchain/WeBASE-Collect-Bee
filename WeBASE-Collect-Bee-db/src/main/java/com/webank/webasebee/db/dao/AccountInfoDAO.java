@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.webank.webasebee.common.bo.data.AccountInfoBO;
 import com.webank.webasebee.db.entity.AccountInfo;
@@ -37,7 +37,7 @@ import cn.hutool.core.bean.BeanUtil;
  * @data 2018-12-19 17:53:29
  *
  */
-@Service
+@Component
 public class AccountInfoDAO {
 
     /** @Fields accountInfoRepository : account info repository */
