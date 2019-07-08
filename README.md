@@ -129,10 +129,10 @@ WeBASE-Collect-Bee的工程使用gradle进行构建，是一个SpringBoot工程�
 当完整地按照[WeBASE-Codegen-Monkey](https://github.com/WeBankFinTech/WeBASE-Codegen-Monkey/tree/master)的操作手册进行操作获得WeBASE-Collect-Bee工程后，会得到WeBASE-Collect-Bee工程，主要的基础配置都将会在配置中自动生成，无需额外配置。但是，基于已生成的配置文件，你可以继续按照需求进行深入的个性化高级配置，例如配置集群部署、分库分表、读写分离等等。
 
 
-在得到WeBASE-Collect-Bee工程后，进入WeBASE-Collect-Bee的目录：
+在得到WeBASE-Collect-Bee工程后，进入WeBASE-Collect-Bee-core的目录：
 
 ```
-cd WeBASE-Collect-Bee
+cd WeBASE-Collect-Bee/WeBASE-Collect-Bee-core
 
 ```
 
