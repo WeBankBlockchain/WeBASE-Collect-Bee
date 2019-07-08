@@ -32,7 +32,6 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.aspect.UseTime;
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
 import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.bo.data.BlockMethodInfo;
@@ -65,7 +64,7 @@ public class MethodCrawlerHandler {
     @Autowired
     private ContractMapsInfo contractMapsInfo;
 
-    @UseTime
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public BlockMethodInfo crawl(Block block) throws IOException {
         BlockMethodInfo blockMethodInfo = new BlockMethodInfo();
         List<BlockTxDetailInfoBO> blockTxDetailInfoList = new ArrayList<>();

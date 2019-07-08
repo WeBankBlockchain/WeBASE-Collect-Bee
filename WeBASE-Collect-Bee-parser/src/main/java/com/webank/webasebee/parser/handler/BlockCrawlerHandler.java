@@ -20,7 +20,6 @@ import java.sql.Date;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.aspect.UseTime;
 import com.webank.webasebee.common.bo.data.BlockDetailInfoBO;
 import com.webank.webasebee.common.bo.data.BlockDetailInfoBO.Status;
 
@@ -44,7 +43,6 @@ public class BlockCrawlerHandler {
      * @param blockHeight
      * @return boolean
      */
-    @UseTime
     public BlockDetailInfoBO handleBlockDetail(Block block) {
         BlockDetailInfoBO blockDetailInfo = new BlockDetailInfoBO();
         blockDetailInfo.setBlockHeight(block.getNumber().longValue());

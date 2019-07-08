@@ -28,7 +28,6 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.aspect.UseTime;
 import com.webank.webasebee.common.bo.data.EventBO;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
@@ -48,7 +47,7 @@ public class EventCrawlerHandler {
     @Autowired
     private Map<String, BcosEventCrawlerInterface> bcosEventCrawlerMap;
 
-    @UseTime
+    @SuppressWarnings("rawtypes")
     public List<EventBO> crawl(Block block) throws IOException {
         List<EventBO> boList = new ArrayList<>();
         List<TransactionResult> transactionResults = block.getTransactions();

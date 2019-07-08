@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.aspect.UseTime;
 import com.webank.webasebee.common.bo.data.AccountInfoBO;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.service.ContractConstructorService;
@@ -60,7 +59,7 @@ public class AccountCrawlerHandler {
     @Autowired
     private ContractConstructorService contractConstructorService;
 
-    @UseTime
+    @SuppressWarnings("rawtypes")
     public List<AccountInfoBO> crawl(Block block) throws IOException {
         List<AccountInfoBO> accountInfoList = new ArrayList<>();
         List<TransactionResult> transactionResults = block.getTransactions();

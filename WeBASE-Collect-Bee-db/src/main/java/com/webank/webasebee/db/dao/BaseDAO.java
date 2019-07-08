@@ -39,7 +39,7 @@ public class BaseDAO {
         Stopwatch st = Stopwatch.createStarted();
         bi.accept(t, u);
         Stopwatch st1 = st.stop();
-        log.info("{} save succeed, use time {}ms", u.getClass().getName(), st1.elapsed(TimeUnit.MILLISECONDS));
+        log.debug("{} save succeed, use time {}ms", u.getClass().getName(), st1.elapsed(TimeUnit.MILLISECONDS));
     }
 
     public static <T, ID> void saveWithTimeLog(CrudRepository<T, ID> cr, T t) {

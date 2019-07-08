@@ -47,7 +47,6 @@ public class BlockStoreService {
     private BlockCommonDAO blockEventDao;
 
     public void store(BlockInfoBO blockInfo) {
-        System.out.println(blockInfo);
         blockDetailInfoDao.save(blockInfo.getBlockDetailInfo());
         accountInfoDao.save(blockInfo.getAccountInfoList());
         blockTxDetailInfoDao.save(blockInfo.getBlockTxDetailInfoList());
