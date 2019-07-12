@@ -21,105 +21,9 @@ import org.fisco.bcos.web3j.abi.datatypes.Bool;
 import org.fisco.bcos.web3j.abi.datatypes.Bytes;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicBytes;
-import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
 import org.fisco.bcos.web3j.abi.datatypes.Uint;
 import org.fisco.bcos.web3j.abi.datatypes.Utf8String;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes1;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes10;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes11;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes12;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes13;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes14;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes15;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes16;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes17;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes18;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes19;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes2;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes20;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes21;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes22;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes23;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes24;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes25;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes26;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes27;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes28;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes29;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes3;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes30;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes31;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes32;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes4;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes5;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes6;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes7;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes8;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes9;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int104;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int112;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int120;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int128;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int136;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int144;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int152;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int16;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int160;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int168;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int176;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int184;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int192;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int200;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int208;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int216;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int224;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int232;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int24;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int240;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int248;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int256;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int32;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int40;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int48;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int56;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int64;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int72;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int8;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int80;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int88;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int96;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint104;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint112;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint120;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint128;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint136;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint144;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint152;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint16;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint160;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint168;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint176;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint184;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint192;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint200;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint208;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint216;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint224;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint232;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint24;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint240;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint248;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint32;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint40;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint48;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint56;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint64;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint72;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint8;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint80;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint88;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint96;
+import org.fisco.bcos.web3j.abi.datatypes.generated.*;
 
 
 /**
@@ -345,37 +249,37 @@ public final class AbiTypeRefUtils{
           return (TypeReference) new TypeReference<Bytes32>() {};
       /* StaticArray should be dealed in a different way */
       case "bytes32[1]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(1) {};
+          return new TypeReference<StaticArray1<Bytes32>>(false) {};
       case "bytes32[2]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(2) {};
+          return new TypeReference<StaticArray2<Bytes32>>(false) {};
       case "bytes32[3]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(3) {};
+          return new TypeReference<StaticArray3<Bytes32>>(false) {};
       case "bytes32[4]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(4) {};
+          return new TypeReference<StaticArray4<Bytes32>>(false) {};
       case "bytes32[5]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(5) {};
+          return new TypeReference<StaticArray5<Bytes32>>(false) {};
       case "bytes32[6]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(6) {};
+          return new TypeReference<StaticArray6<Bytes32>>(false) {};
       case "bytes32[7]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(7) {};
+          return new TypeReference<StaticArray7<Bytes32>>(false) {};
       case "bytes32[8]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(8) {};
+          return new TypeReference<StaticArray8<Bytes32>>(false) {};
       case "bytes32[9]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(9) {};
+          return new TypeReference<StaticArray9<Bytes32>>(false) {};
       case "bytes32[10]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(10) {};
+          return new TypeReference<StaticArray10<Bytes32>>(false) {};
       case "bytes32[11]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(11) {};
+          return new TypeReference<StaticArray11<Bytes32>>(false) {};
       case "bytes32[12]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(12) {};
+          return new TypeReference<StaticArray12<Bytes32>>(false) {};
       case "bytes32[13]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(13) {};
+          return new TypeReference<StaticArray13<Bytes32>>(false) {};
       case "bytes32[14]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(14) {};
+          return new TypeReference<StaticArray14<Bytes32>>(false) {};
       case "bytes32[15]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(15) {};
+          return new TypeReference<StaticArray15<Bytes32>>(false) {};
       case "bytes32[16]":
-          return new TypeReference.StaticArrayTypeReference<StaticArray<Bytes32>>(16) {};
+          return new TypeReference<StaticArray16<Bytes32>>(false) {};
       default:
           throw new UnsupportedOperationException("Unsupported type encountered: " + type);
     }

@@ -82,14 +82,15 @@ public class PrepareTaskJob implements SimpleJob {
             log.info("Current chain block number is:{}", total);
             long height = blockPrepareService.getTaskPoolHeight();
             height = height > startBlockNumber ? height : startBlockNumber;
-
-            blockCheckService.checkTimeOut();
-            blockCheckService.processErrors();
             long end = height + systemEnvironmentConfig.getCrawlBatchUnit();
             long batchNo = total < end ? total : end;
             boolean certainty = end < total - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
             blockPrepareService.prepareTask(height, batchNo, certainty);
-            blockCheckService.checkForks(total);
+            if (!certainty) {
+                blockCheckService.checkForks(total);
+            }
+            blockCheckService.checkTimeOut();
+            blockCheckService.processErrors();
 
         } catch (IOException e) {
             log.error("Job {}, exception occur in job processing: {}", shardingContext.getTaskId(), e.getMessage());

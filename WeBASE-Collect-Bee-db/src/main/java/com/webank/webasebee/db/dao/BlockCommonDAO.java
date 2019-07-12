@@ -51,7 +51,7 @@ public class BlockCommonDAO {
                     oldValueList.addAll(newValueList);
                     return oldValueList;
                 }));
-        String postfix = type.equalsIgnoreCase("event") ? "Repository" : "MethodRepository";
+        String postfix = type.equalsIgnoreCase("event") ? "EventRepository" : "MethodRepository";
         map.forEach((k, v) -> {
             List<IdEntity> entities = beanConverter.convertToEntities(bos, type);
             BaseDAO.saveAllWithTimeLog(repositories.get(StringUtils.uncapitalize(k) + postfix), entities);

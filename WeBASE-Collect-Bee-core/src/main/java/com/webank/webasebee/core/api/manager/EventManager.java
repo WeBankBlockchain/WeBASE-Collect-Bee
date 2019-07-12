@@ -36,7 +36,7 @@ import com.webank.webasebee.db.vo.UnitTimeRangeQueryPageReq;
 public class EventManager {
     @Autowired
     private UnitBasicQueryService unitBasicQueryService;
-    private final String type = "Repository";
+    private final String type = "EventRepository";
 
     public CommonResponse getPageListByReq(UnitParaQueryPageReq<String> req) {
         return unitBasicQueryService.getPageListByReq(req, type);
