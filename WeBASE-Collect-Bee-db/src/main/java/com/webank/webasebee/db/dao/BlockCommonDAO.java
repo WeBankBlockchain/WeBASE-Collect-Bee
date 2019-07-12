@@ -59,8 +59,8 @@ public class BlockCommonDAO {
         map.forEach((k, v) -> {
             List<IdEntity> entities = beanConverter.convertToEntities(bos, type);
             if (repositories.get(StringUtils.uncapitalize(k) + postfix) == null) {
-                log.error("{} not existed", k);
-                log.info("{}", JacksonUtils.toJson(repositories));
+                log.error("{} not existed", StringUtils.uncapitalize(k) + postfix);
+                log.info("{}", JacksonUtils.toJson(repositories.keySet()));
             }
             BaseDAO.saveAllWithTimeLog(repositories.get(StringUtils.uncapitalize(k) + postfix), entities);
         });
