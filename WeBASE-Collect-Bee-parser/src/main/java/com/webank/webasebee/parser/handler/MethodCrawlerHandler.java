@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -39,8 +38,8 @@ import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
 import com.webank.webasebee.common.bo.data.MethodBO;
 import com.webank.webasebee.common.vo.NameValueVO;
 import com.webank.webasebee.extractor.ods.EthClient;
-import com.webank.webasebee.parser.crawler.face.BcosMethodCrawlerInterface;
 import com.webank.webasebee.parser.service.ContractConstructorService;
+import com.webank.webasebee.parser.service.MethodCrawlService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,11 +57,11 @@ public class MethodCrawlerHandler {
     @Autowired
     private EthClient ethClient;
     @Autowired
-    private Map<String, BcosMethodCrawlerInterface> bcosMethodCrawlerMap;
-    @Autowired
     private ContractConstructorService contractConstructorService;
     @Autowired
     private ContractMapsInfo contractMapsInfo;
+    @Autowired
+    private MethodCrawlService methodCrawlService;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public BlockMethodInfo crawl(Block block) throws IOException {
@@ -86,16 +85,19 @@ public class MethodCrawlerHandler {
                     }
                     // get block tx detail info
                     blockTxDetailInfoList.add(getBlockTxDetailInfo(block, transaction, receipt, methodMetaInfo));
-                    if (!bcosMethodCrawlerMap.containsKey(
-                            StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")) {
+                    if (!methodCrawlService
+                            .getMethodCrawler(
+                                    StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
+                            .isPresent()) {
                         log.info("The methodName {} doesn't exist or is constant, please check it !",
                                 methodMetaInfo.getMethodName());
                         continue;
                     }
                     // get method bo
-                    methodInfoList.add(bcosMethodCrawlerMap
-                            .get(StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
-                            .transactionHandler(transaction, block.getTimestamp(), entry,
+                    methodInfoList.add(methodCrawlService
+                            .getMethodCrawler(
+                                    StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
+                            .get().transactionHandler(transaction, block.getTimestamp(), entry,
                                     methodMetaInfo.getMethodName()));
                 }
             }
