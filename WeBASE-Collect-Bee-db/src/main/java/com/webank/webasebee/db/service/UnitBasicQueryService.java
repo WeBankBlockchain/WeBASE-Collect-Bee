@@ -15,8 +15,6 @@
  */
 package com.webank.webasebee.db.service;
 
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,9 +42,7 @@ public class UnitBasicQueryService {
     @Autowired
     private CommonQueryService commonQueryService;
     @Autowired
-    private Map<String, JpaSpecificationExecutor> repositories;
-    @Autowired
-    private Map<String, JpaRepository> jpaRepositories;
+    private RepositoryService repositoryService;
     @Autowired
     private TimeRangeQueryService timeRangeQueryService;
 
@@ -59,8 +55,8 @@ public class UnitBasicQueryService {
      */
     public CommonResponse getPageListByReq(UnitParaQueryPageReq<String> req, String unitType) {
         String repositoryName = StringUtils.uncapitalize(req.getUnitName() + unitType);
-        if (repositories.containsKey(repositoryName)) {
-            JpaSpecificationExecutor j = repositories.get(repositoryName);
+        if (repositoryService.getJpaSpecificationExecutor(repositoryName).isPresent()) {
+            JpaSpecificationExecutor j = repositoryService.getJpaSpecificationExecutor(repositoryName).get();
             return commonQueryService.getPageListByCommonReq(req, j);
         } else {
             return ResponseUtils.paramError("The unit name is invalid: " + req.getUnitName());
@@ -76,8 +72,8 @@ public class UnitBasicQueryService {
      */
     public CommonResponse getPageListByReq(UnitTimeRangeQueryPageReq req, String unitType) {
         String repositoryName = StringUtils.uncapitalize(req.getUnitName() + unitType);
-        if (repositories.containsKey(repositoryName)) {
-            JpaSpecificationExecutor j = repositories.get(repositoryName);
+        if (repositoryService.getJpaSpecificationExecutor(repositoryName).isPresent()) {
+            JpaSpecificationExecutor j = repositoryService.getJpaSpecificationExecutor(repositoryName).get();
             return timeRangeQueryService.getPageListByTimeRange(req, j);
         } else {
             return ResponseUtils.paramError("The unit name is invalid: " + req.getUnitName());
@@ -93,8 +89,8 @@ public class UnitBasicQueryService {
      */
     public <T> CommonResponse find(UnitQueryPageReq<String> req, String unitType) {
         String repositoryName = StringUtils.uncapitalize(req.getUnitName() + unitType);
-        if (jpaRepositories.containsKey(repositoryName)) {
-            JpaRepository j = jpaRepositories.get(repositoryName);
+        if (repositoryService.getRepository(repositoryName).isPresent()) {
+            JpaRepository j = repositoryService.getRepository(repositoryName).get();
             Page<T> page = j.findAll(req.convert());
             CommonPageRes<T> ret = new CommonPageRes<>(req);
             ret.setResult(page.getContent()).setTotalCount(page.getTotalElements()).setPageNo(req.getPageNo())

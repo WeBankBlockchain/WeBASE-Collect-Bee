@@ -21,14 +21,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.webank.webasebee.common.bo.data.CommonBO;
-import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.db.converter.BeanConverter;
 import com.webank.webasebee.db.entity.IdEntity;
+import com.webank.webasebee.db.service.RepositoryService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,9 +44,8 @@ import lombok.extern.slf4j.Slf4j;
 public class BlockCommonDAO {
     @Autowired
     private BeanConverter beanConverter;
-    @SuppressWarnings("rawtypes")
     @Autowired
-    private Map<String, JpaRepository> repositories;
+    private RepositoryService repositoryService;
 
     public void save(List<CommonBO> bos, String type) {
         Map<String, List<CommonBO>> map = bos.stream().collect(Collectors.toMap(k -> k.getIdentifier(),
@@ -58,11 +56,12 @@ public class BlockCommonDAO {
         String postfix = type.equalsIgnoreCase("event") ? "EventRepository" : "MethodRepository";
         map.forEach((k, v) -> {
             List<IdEntity> entities = beanConverter.convertToEntities(bos, type);
-            if (repositories.get(StringUtils.uncapitalize(k) + postfix) == null) {
+            if (!repositoryService.getRepository(StringUtils.uncapitalize(k) + postfix).isPresent()) {
                 log.error("{} not existed", StringUtils.uncapitalize(k) + postfix);
-                log.info("{}", JacksonUtils.toJson(repositories.keySet()));
+                return;
             }
-            BaseDAO.saveAllWithTimeLog(repositories.get(StringUtils.uncapitalize(k) + postfix), entities);
+            BaseDAO.saveAllWithTimeLog(repositoryService.getRepository(StringUtils.uncapitalize(k) + postfix).get(),
+                    entities);
         });
 
     }
