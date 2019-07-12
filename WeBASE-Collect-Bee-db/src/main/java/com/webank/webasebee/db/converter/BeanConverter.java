@@ -17,16 +17,12 @@ package com.webank.webasebee.db.converter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.data.CommonBO;
-import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.db.entity.IdEntity;
-import com.webank.webasebee.parser.generated.bo.event.MemberNewMemberEventBO;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.exceptions.UtilException;
@@ -62,18 +58,6 @@ public class BeanConverter {
             }
         });
         return list;
-    }
-
-    public static void main(String[] args) throws InstantiationException, IllegalAccessException, UtilException {
-        MemberNewMemberEventBO bo = new MemberNewMemberEventBO();
-        bo.setAddr("addr").setBlockHeight(5).setBlockTimeStamp(new Date()).setTxHash("hash")
-                .setIdentifier("MemberNewMemberEventBO");
-        CommonBO b = bo;
-        Object m = ClassLoaderUtil.loadClass("com.webank.webasebee.db.generated.entity.event.MemberNewMemberEvent")
-                .newInstance();
-        BeanUtil.copyProperties(b, m);
-        System.out.println(JacksonUtils.toJson(m));
-
     }
 
 }
