@@ -18,16 +18,10 @@ package com.webank.webasebee.parser.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.fisco.bcos.web3j.crypto.Credentials;
-import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.webank.blockchain.wecredit.contracts.Member;
-import com.webank.blockchain.wecredit.contracts.Rule;
 import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
 
 import lombok.extern.slf4j.Slf4j;
