@@ -26,8 +26,11 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.webank.webasebee.common.bo.data.CommonBO;
+import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.db.converter.BeanConverter;
 import com.webank.webasebee.db.entity.IdEntity;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * BlockEventDAO
@@ -38,6 +41,7 @@ import com.webank.webasebee.db.entity.IdEntity;
  *
  */
 @Component
+@Slf4j
 public class BlockCommonDAO {
     @Autowired
     private BeanConverter beanConverter;
@@ -54,6 +58,10 @@ public class BlockCommonDAO {
         String postfix = type.equalsIgnoreCase("event") ? "EventRepository" : "MethodRepository";
         map.forEach((k, v) -> {
             List<IdEntity> entities = beanConverter.convertToEntities(bos, type);
+            if (repositories.get(StringUtils.uncapitalize(k) + postfix) == null) {
+                log.error("{} not existed", k);
+                log.info("{}", JacksonUtils.toJson(repositories));
+            }
             BaseDAO.saveAllWithTimeLog(repositories.get(StringUtils.uncapitalize(k) + postfix), entities);
         });
 
