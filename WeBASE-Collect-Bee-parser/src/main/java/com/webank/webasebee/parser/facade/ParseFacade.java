@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.data.BlockInfoBO;
+import com.webank.webasebee.common.bo.data.BlockMethodInfo;
 import com.webank.webasebee.parser.handler.AccountCrawlerHandler;
 import com.webank.webasebee.parser.handler.BlockCrawlerHandler;
 import com.webank.webasebee.parser.handler.EventCrawlerHandler;
@@ -49,11 +50,11 @@ public class ParseFacade implements ParseInterface {
     @Override
     public BlockInfoBO parse(Block block) throws IOException {
         BlockInfoBO blockInfo = new BlockInfoBO();
+        BlockMethodInfo blockMethodInfo = methodCrawlerHandler.crawl(block);
         blockInfo.setAccountInfoList(accountCrawlerHandler.crawl(block))
                 .setBlockDetailInfo(blockCrawlerHandler.handleBlockDetail(block))
-                .setEventInfoList(eventCrawlHandler.crawl(block))
-                .setMethodInfoList(methodCrawlerHandler.crawl(block).getMethodInfoList())
-                .setBlockTxDetailInfoList(methodCrawlerHandler.crawl(block).getBlockTxDetailInfoList());
+                .setEventInfoList(eventCrawlHandler.crawl(block)).setMethodInfoList(blockMethodInfo.getMethodInfoList())
+                .setBlockTxDetailInfoList(blockMethodInfo.getBlockTxDetailInfoList());
         return blockInfo;
     }
 
