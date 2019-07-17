@@ -16,30 +16,28 @@
 package com.webank.webasebee.db.vo;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * CommonParaQueryPageReq
+ * UnitBiParaQueryPageReq
  *
- * @Description: CommonParaQueryPageReq as a request object for unsure paras.
+ * @Description: UnitBiParaQueryPageReq
  * @author maojiayu
- * @data 2018-12-24 10:55:06
+ * @data Jul 17, 2019 5:53:34 PM
  *
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper=true)
-public class CommonParaQueryPageReq<T> extends CommonPageReq {
-    
-    /** @Fields reqParaName : request para name */
+@EqualsAndHashCode(callSuper = true)
+public class UnitBiParaQueryPageReq<T> extends CommonBiParaQueryPageReq<T> {
+    /** @Fields unitName : eg. event or method, HelloWorldSet */
     @NotBlank
-    private String reqParaName;
-    
-    /** @Fields reqParaValue : request para value */
-    @NotNull
-    private T reqParaValue;
+    private String unitName;
 }

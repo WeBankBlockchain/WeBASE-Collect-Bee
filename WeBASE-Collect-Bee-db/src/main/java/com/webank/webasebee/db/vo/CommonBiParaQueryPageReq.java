@@ -23,23 +23,30 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * CommonParaQueryPageReq
+ * CommonBiParaQueryPageReq
  *
- * @Description: CommonParaQueryPageReq as a request object for unsure paras.
+ * @Description: CommonBiParaQueryPageReq
  * @author maojiayu
- * @data 2018-12-24 10:55:06
+ * @data Jul 17, 2019 5:14:31 PM
  *
  */
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper=true)
-public class CommonParaQueryPageReq<T> extends CommonPageReq {
-    
+@EqualsAndHashCode(callSuper = true)
+public class CommonBiParaQueryPageReq<T> extends CommonPageReq {
+
     /** @Fields reqParaName : request para name */
     @NotBlank
-    private String reqParaName;
-    
+    private String reqParaName1;
+
     /** @Fields reqParaValue : request para value */
     @NotNull
-    private T reqParaValue;
+    private T reqParaValue1;
+
+    /** @Fields reqParaName : request para name */
+    private String reqParaName2;
+
+    /** @Fields reqParaValue : request para value */
+    private T reqParaValue2;
+
 }

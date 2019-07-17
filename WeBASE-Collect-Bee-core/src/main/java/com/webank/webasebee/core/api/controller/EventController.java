@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.webank.webasebee.common.tools.ResponseUtils;
 import com.webank.webasebee.common.vo.CommonResponse;
 import com.webank.webasebee.core.api.manager.EventManager;
+import com.webank.webasebee.db.vo.UnitBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitQueryPageReq;
 import com.webank.webasebee.db.vo.UnitTimeRangeQueryPageReq;
@@ -51,8 +52,18 @@ public class EventController {
     private EventManager eventManager;
 
     @PostMapping("paras/get")
-    @ApiOperation(value = "get by event and paras", httpMethod = "POST")
+    @ApiOperation(value = "get by event and paras. The unit name means your event name, eg. xxContractxxEvent.", httpMethod = "POST")
     public CommonResponse getByEventParas(@RequestBody @Valid UnitParaQueryPageReq<String> req, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseUtils.validateError(result);
+        }
+        return eventManager.getPageListByReq(req);
+    }
+
+    @PostMapping("biparas/get")
+    @ApiOperation(value = "get by event and paras, the first para name and value is required, and the second para name and value is optional.This means if your second para name or value is empty, then it will only return the result equals to the first para name and value. The unit name means your event name, eg. xxContractxxEvent.", httpMethod = "POST")
+    public CommonResponse getByEventBiParas(@RequestBody @Valid UnitBiParaQueryPageReq<String> req,
+            BindingResult result) {
         if (result.hasErrors()) {
             return ResponseUtils.validateError(result);
         }

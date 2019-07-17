@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.vo.CommonResponse;
 import com.webank.webasebee.db.service.UnitBasicQueryService;
+import com.webank.webasebee.db.vo.UnitBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitQueryPageReq;
 import com.webank.webasebee.db.vo.UnitTimeRangeQueryPageReq;
@@ -42,6 +43,10 @@ public class EventManager {
         return unitBasicQueryService.getPageListByReq(req, type);
     }
 
+    public CommonResponse getPageListByReq(UnitBiParaQueryPageReq<String> req) {
+        return unitBasicQueryService.getPageListByReq(req, type);
+    }
+    
     public CommonResponse getPageListByReq(UnitTimeRangeQueryPageReq req) {
         return unitBasicQueryService.getPageListByReq(req, type);
     }

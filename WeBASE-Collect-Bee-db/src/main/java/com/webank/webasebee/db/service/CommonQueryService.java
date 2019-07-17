@@ -15,6 +15,7 @@
  */
 package com.webank.webasebee.db.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,9 +25,11 @@ import org.springframework.stereotype.Service;
 import com.webank.webasebee.common.tools.ResponseUtils;
 import com.webank.webasebee.common.vo.CommonResponse;
 import com.webank.webasebee.db.specification.CommonReqParaSpecification;
+import com.webank.webasebee.db.vo.CommonBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.CommonPageRes;
 import com.webank.webasebee.db.vo.CommonParaQueryPageReq;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateException;
 
 /**
@@ -49,8 +52,8 @@ public class CommonQueryService {
      */
     public <T> CommonResponse getPageListByCommonReq(CommonParaQueryPageReq<String> req,
             JpaSpecificationExecutor<T> repository) {
-        PageRequest pr = (PageRequest) req.convert();
         try {
+            PageRequest pr = (PageRequest) req.convert();
             Specification<T> spec = CommonReqParaSpecification.queryByCriteriaEqual(req);
             Page<T> page = repository.findAll(spec, pr);
             CommonPageRes<T> ret = new CommonPageRes<>(req);
@@ -61,4 +64,29 @@ public class CommonQueryService {
             return ResponseUtils.paramError("invalid date format " + e.getMessage());
         }
     }
+
+    public <T> CommonResponse getPageListByCommonReq(CommonBiParaQueryPageReq<String> req,
+            JpaSpecificationExecutor<T> repository) {
+        PageRequest pr = (PageRequest) req.convert();
+        try {
+            if (StringUtils.isEmpty(req.getReqParaValue1()) || StringUtils.isEmpty(req.getReqParaName1())) {
+                return ResponseUtils.paramError("para1 should not be empty");
+            }
+            if (StringUtils.isEmpty(req.getReqParaValue2()) || StringUtils.isEmpty(req.getReqParaName2())) {
+                CommonParaQueryPageReq<String> uniReq = new CommonParaQueryPageReq<>();
+                BeanUtil.copyProperties(req, uniReq);
+                uniReq.setReqParaName(req.getReqParaName1()).setReqParaValue(req.getReqParaValue1());
+                return getPageListByCommonReq(uniReq, repository);
+            }
+            Specification<T> spec = CommonReqParaSpecification.queryByCriteriaEqual(req);
+            Page<T> page = repository.findAll(spec, pr);
+            CommonPageRes<T> ret = new CommonPageRes<>(req);
+            ret.setResult(page.getContent()).setTotalCount(page.getTotalElements()).setPageNo(req.getPageNo())
+                    .setPageSize(req.getPageSize());
+            return ResponseUtils.data(ret);
+        } catch (DateException e) {
+            return ResponseUtils.paramError("invalid date format " + e.getMessage());
+        }
+    }
+
 }

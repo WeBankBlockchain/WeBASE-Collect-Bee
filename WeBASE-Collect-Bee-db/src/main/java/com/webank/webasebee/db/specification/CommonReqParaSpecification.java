@@ -15,10 +15,15 @@
  */
 package com.webank.webasebee.db.specification;
 
-import java.util.Date;
+import java.util.List;
 
+import javax.persistence.criteria.Predicate;
+
+import org.assertj.core.util.Lists;
 import org.springframework.data.jpa.domain.Specification;
 
+import com.webank.webasebee.db.tools.JpaUtils;
+import com.webank.webasebee.db.vo.CommonBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.CommonParaQueryPageReq;
 
 import cn.hutool.core.date.DateException;
@@ -36,11 +41,30 @@ public class CommonReqParaSpecification {
 
     public static <T> Specification queryByCriteriaEqual(CommonParaQueryPageReq<T> req) throws DateException {
         return (root, query, cb) -> {
-            if (req.getReqParaName().endsWith("TimeStamp") || req.getReqParaName().endsWith("Updatetime")) {
-                Date value = DateUtil.parseDate((String) req.getReqParaValue());
-                return cb.equal(root.get(req.getReqParaName()), value);
-            }
-            return cb.equal(root.get(req.getReqParaName()), req.getReqParaValue());
+
+            return cb.equal(root.get(req.getReqParaName()),
+                    transformValue(req.getReqParaName(), req.getReqParaValue()));
         };
+    }
+
+    public static <T> Specification queryByCriteriaEqual(CommonBiParaQueryPageReq<T> req) throws DateException {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = Lists.newArrayList(
+                    cb.equal(root.get(req.getReqParaName1()),
+                            transformValue(req.getReqParaName1(), req.getReqParaValue1())),
+                    cb.equal(root.get(req.getReqParaName2()),
+                            transformValue(req.getReqParaName2(), req.getReqParaValue2())));
+            return JpaUtils.andTogether(predicates, cb);
+
+        };
+    }
+
+    public static <T> Object transformValue(String paraName, T paraValue) {
+        if (paraName.endsWith("TimeStamp") || paraName.endsWith("Updatetime")) {
+            return DateUtil.parseDate((String) paraValue);
+        } else {
+            return paraValue;
+        }
+
     }
 }
