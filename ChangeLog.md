@@ -7,6 +7,8 @@
 - 修改了自动生成的函数和事件的表名规则
 - 修改了Java文件包名和类名映射的检查，修改了报错提示的方式
 - 新增两个Event API查询，支持通过指定任意and和or条件或任意两个参数进行查询。
+- 增加对method解析中selector方法忽略的判断
+- 适配DynamicBytes和Boolean的支持
 
 ---
 
