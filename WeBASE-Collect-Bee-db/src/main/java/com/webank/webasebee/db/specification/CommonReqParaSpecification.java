@@ -19,10 +19,10 @@ import java.util.List;
 
 import javax.persistence.criteria.Predicate;
 
-import org.assertj.core.util.Lists;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 
+import com.google.common.collect.Lists;
 import com.webank.webasebee.db.tools.JpaUtils;
 import com.webank.webasebee.db.vo.CommonBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.CommonParaQueryPageReq;

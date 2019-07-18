@@ -30,10 +30,11 @@ import lombok.experimental.Accessors;
  *
  */
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 public class EventBO extends CommonBO {
     private long blockHeight;
     private String txHash;
     private Date blockTimeStamp;
+    private String eventContractAddress;
 }
