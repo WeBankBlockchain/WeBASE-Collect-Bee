@@ -312,7 +312,7 @@ sharding.jdbc.config.props.sql.show=true
 ```
 cd WeBASE-Collect-Bee
 bash gradlew clean bootJar
-cd dist
+cd WeBASE-Collect-Bee-core/dist
 chmod +x *.jar
 chmod +x *.sh
 bash start.sh
