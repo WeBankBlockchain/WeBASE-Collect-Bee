@@ -307,15 +307,19 @@ sharding.jdbc.config.props.sql.show=true
 
 如果你已经按照[WeBASE-Codegen-Monkey](https://github.com/WeBankFinTech/WeBASE-Codegen-Monkey/tree/master)的操作手册进行操作，那么可跳过此章节。
 
-但是如果你对配置或代码进行了深度定制，可参考以下步骤：
+但是如果你对WeBASE-Collect-Bee的工程配置或代码进行了深度定制，当修改完成后，可参考以下步骤进行编译和启动， 这样可以省去重新下载代码库和重新生成代码，而且避免了你的个性化改动被覆盖：
 
 ```
-sh gradlew clean bootJar
-sh generate_bee.sh build 
+cd WeBASE-Collect-Bee
+bash gradlew clean bootJar
 cd dist
 chmod +x *.jar
-nohup java -jar *.jar >/dev/null 2>&1 &
+chmod +x *.sh
+bash start.sh
 tail -f *.log
+
+# 停止进程
+bash stop.sh
 ```
 
 当然，你也可以使用supervisor来守护和管理进程，supervisor能将一个普通的命令行进程变为后台daemon，并监控进程状态，异常退出时能自动重启。
