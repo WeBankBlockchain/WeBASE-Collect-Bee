@@ -21,10 +21,12 @@ import javax.persistence.criteria.Predicate;
 
 import org.assertj.core.util.Lists;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.CollectionUtils;
 
 import com.webank.webasebee.db.tools.JpaUtils;
 import com.webank.webasebee.db.vo.CommonBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.CommonParaQueryPageReq;
+import com.webank.webasebee.db.vo.CommonSpecificationQueryPageReq;
 
 import cn.hutool.core.date.DateException;
 import cn.hutool.core.date.DateUtil;
@@ -41,7 +43,6 @@ public class CommonReqParaSpecification {
 
     public static <T> Specification queryByCriteriaEqual(CommonParaQueryPageReq<T> req) throws DateException {
         return (root, query, cb) -> {
-
             return cb.equal(root.get(req.getReqParaName()),
                     transformValue(req.getReqParaName(), req.getReqParaValue()));
         };
@@ -56,6 +57,31 @@ public class CommonReqParaSpecification {
                             transformValue(req.getReqParaName2(), req.getReqParaValue2())));
             return JpaUtils.andTogether(predicates, cb);
 
+        };
+    }
+
+    public static <T> Specification queryByCriteriaEqual(CommonSpecificationQueryPageReq req) throws DateException {
+        return (root, query, cb) -> {
+            List<Predicate> andPredicates = Lists.newArrayList();
+            if (!CollectionUtils.isEmpty(req.getAndConditions())) {
+                req.getAndConditions().forEach((k, v) -> {
+                    andPredicates.add(cb.equal(root.get(k), transformValue(k, v)));
+                });
+            }
+            List<Predicate> orPredicates = Lists.newArrayList();
+            if (!CollectionUtils.isEmpty(req.getOrConditions())) {
+                req.getOrConditions().forEach((k, v) -> {
+                    orPredicates.add(cb.equal(root.get(k), transformValue(k, v)));
+                });
+            }
+            if (CollectionUtils.isEmpty(andPredicates)) {
+                return JpaUtils.orTogether(orPredicates, cb);
+            }
+            if (CollectionUtils.isEmpty(orPredicates)) {
+                return JpaUtils.andTogether(andPredicates, cb);
+            }
+            return query.where(JpaUtils.andTogether(andPredicates, cb), JpaUtils.orTogether(orPredicates, cb))
+                    .getRestriction();
         };
     }
 

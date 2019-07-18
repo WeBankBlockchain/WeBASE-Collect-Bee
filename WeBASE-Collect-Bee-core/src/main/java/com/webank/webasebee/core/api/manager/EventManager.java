@@ -23,6 +23,7 @@ import com.webank.webasebee.db.service.UnitBasicQueryService;
 import com.webank.webasebee.db.vo.UnitBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitQueryPageReq;
+import com.webank.webasebee.db.vo.UnitSpecificationQueryPageReq;
 import com.webank.webasebee.db.vo.UnitTimeRangeQueryPageReq;
 
 /**
@@ -46,7 +47,11 @@ public class EventManager {
     public CommonResponse getPageListByReq(UnitBiParaQueryPageReq<String> req) {
         return unitBasicQueryService.getPageListByReq(req, type);
     }
-    
+
+    public CommonResponse getPageListByReq(UnitSpecificationQueryPageReq req) {
+        return unitBasicQueryService.getPageListByReq(req, type);
+    }
+
     public CommonResponse getPageListByReq(UnitTimeRangeQueryPageReq req) {
         return unitBasicQueryService.getPageListByReq(req, type);
     }

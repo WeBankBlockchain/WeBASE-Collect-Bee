@@ -18,6 +18,7 @@ package com.webank.webasebee.core.api.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ import com.webank.webasebee.core.api.manager.EventManager;
 import com.webank.webasebee.db.vo.UnitBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitQueryPageReq;
+import com.webank.webasebee.db.vo.UnitSpecificationQueryPageReq;
 import com.webank.webasebee.db.vo.UnitTimeRangeQueryPageReq;
 
 import io.swagger.annotations.Api;
@@ -66,6 +68,19 @@ public class EventController {
             BindingResult result) {
         if (result.hasErrors()) {
             return ResponseUtils.validateError(result);
+        }
+        return eventManager.getPageListByReq(req);
+    }
+
+    @PostMapping("specification/get")
+    @ApiOperation(value = "get by event and paras specification.", httpMethod = "POST")
+    public CommonResponse getByEventBiParas(@RequestBody @Valid UnitSpecificationQueryPageReq req,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseUtils.validateError(result);
+        }
+        if (CollectionUtils.isEmpty(req.getAndConditions()) && CollectionUtils.isEmpty(req.getOrConditions())) {
+            return ResponseUtils.paramError("The query conditions can't be null");
         }
         return eventManager.getPageListByReq(req);
     }

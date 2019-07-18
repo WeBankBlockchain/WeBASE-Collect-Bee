@@ -28,6 +28,7 @@ import com.webank.webasebee.db.specification.CommonReqParaSpecification;
 import com.webank.webasebee.db.vo.CommonBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.CommonPageRes;
 import com.webank.webasebee.db.vo.CommonParaQueryPageReq;
+import com.webank.webasebee.db.vo.CommonSpecificationQueryPageReq;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateException;
@@ -78,6 +79,21 @@ public class CommonQueryService {
                 uniReq.setReqParaName(req.getReqParaName1()).setReqParaValue(req.getReqParaValue1());
                 return getPageListByCommonReq(uniReq, repository);
             }
+            Specification<T> spec = CommonReqParaSpecification.queryByCriteriaEqual(req);
+            Page<T> page = repository.findAll(spec, pr);
+            CommonPageRes<T> ret = new CommonPageRes<>(req);
+            ret.setResult(page.getContent()).setTotalCount(page.getTotalElements()).setPageNo(req.getPageNo())
+                    .setPageSize(req.getPageSize());
+            return ResponseUtils.data(ret);
+        } catch (DateException e) {
+            return ResponseUtils.paramError("invalid date format " + e.getMessage());
+        }
+    }
+
+    public <T> CommonResponse getPageListByCommonReq(CommonSpecificationQueryPageReq req,
+            JpaSpecificationExecutor<T> repository) {
+        PageRequest pr = (PageRequest) req.convert();
+        try {
             Specification<T> spec = CommonReqParaSpecification.queryByCriteriaEqual(req);
             Page<T> page = repository.findAll(spec, pr);
             CommonPageRes<T> ret = new CommonPageRes<>(req);

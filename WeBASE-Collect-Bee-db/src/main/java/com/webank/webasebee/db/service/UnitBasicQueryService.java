@@ -28,6 +28,7 @@ import com.webank.webasebee.db.vo.CommonPageRes;
 import com.webank.webasebee.db.vo.UnitBiParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitParaQueryPageReq;
 import com.webank.webasebee.db.vo.UnitQueryPageReq;
+import com.webank.webasebee.db.vo.UnitSpecificationQueryPageReq;
 import com.webank.webasebee.db.vo.UnitTimeRangeQueryPageReq;
 
 /**
@@ -65,6 +66,16 @@ public class UnitBasicQueryService {
     }
 
     public CommonResponse getPageListByReq(UnitBiParaQueryPageReq<String> req, String unitType) {
+        String repositoryName = StringUtils.uncapitalize(req.getUnitName() + unitType);
+        if (repositoryService.getJpaSpecificationExecutor(repositoryName).isPresent()) {
+            JpaSpecificationExecutor j = repositoryService.getJpaSpecificationExecutor(repositoryName).get();
+            return commonQueryService.getPageListByCommonReq(req, j);
+        } else {
+            return ResponseUtils.paramError("The unit name is invalid: " + req.getUnitName());
+        }
+    }
+
+    public CommonResponse getPageListByReq(UnitSpecificationQueryPageReq req, String unitType) {
         String repositoryName = StringUtils.uncapitalize(req.getUnitName() + unitType);
         if (repositoryService.getJpaSpecificationExecutor(repositoryName).isPresent()) {
             JpaSpecificationExecutor j = repositoryService.getJpaSpecificationExecutor(repositoryName).get();
