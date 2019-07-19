@@ -24,6 +24,7 @@ import com.webank.webasebee.db.dao.AccountInfoDAO;
 import com.webank.webasebee.db.repository.AccountInfoRepository;
 import com.webank.webasebee.db.service.CommonQueryService;
 import com.webank.webasebee.db.service.TimeRangeQueryService;
+import com.webank.webasebee.db.vo.CommonSpecificationQueryPageReq;
 import com.webank.webasebee.db.vo.ContractNameQueryReq;
 import com.webank.webasebee.db.vo.TimeRangeQueryReq;
 
@@ -83,6 +84,10 @@ public class AccountInfoApiManager {
      */
     public CommonResponse getAccountsPageListByReq(ContractNameQueryReq req) {
         return commonQueryService.getPageListByCommonReq(req.toCommonParaQueryPageReq(), repository);
+    }
+    
+    public CommonResponse getPageListBySpecification(CommonSpecificationQueryPageReq req) {
+        return commonQueryService.getPageListByCommonReq(req, repository);
     }
 
 }

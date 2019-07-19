@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.webank.webasebee.common.tools.ResponseUtils;
 import com.webank.webasebee.common.vo.CommonResponse;
 import com.webank.webasebee.core.api.manager.AccountInfoApiManager;
+import com.webank.webasebee.db.vo.CommonSpecificationQueryPageReq;
 import com.webank.webasebee.db.vo.ContractNameQueryReq;
 import com.webank.webasebee.db.vo.TimeRangeQueryReq;
 
@@ -48,37 +49,48 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "AccountInfoController", tags = "Account Infomation Query")
 public class AccountInfoController {
 
-	@Autowired
-	private AccountInfoApiManager accountInfoApiManager;
+    @Autowired
+    private AccountInfoApiManager accountInfoApiManager;
 
-	@PostMapping("address/get")
-	@ApiOperation(value = "get by address", httpMethod = "POST")
-	public CommonResponse getAccountInfoByContractAddress(@RequestBody @Valid String contractAddress,
-			BindingResult result) {
-		if (result.hasErrors()) {
-			return ResponseUtils.validateError(result);
-		}
-		return accountInfoApiManager.getAccountInfoByContractAddresss(contractAddress);
-	}
+    @PostMapping("address/get")
+    @ApiOperation(value = "get by address", httpMethod = "POST")
+    public CommonResponse getAccountInfoByContractAddress(@RequestBody @Valid String contractAddress,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseUtils.validateError(result);
+        }
+        return accountInfoApiManager.getAccountInfoByContractAddresss(contractAddress);
+    }
 
-	@ResponseBody
-	@RequestMapping("/time/get")
-	@ApiOperation(value = "Base on time range", httpMethod = "POST")
-	public CommonResponse getAccountInfoListByTimeRange(@RequestBody @Valid TimeRangeQueryReq req,
-			BindingResult result) {
-		if (result.hasErrors()) {
-			return ResponseUtils.validateError(result);
-		}
-		return accountInfoApiManager.getPageListByTimeRange(req);
-	}
+    @ResponseBody
+    @RequestMapping("time/get")
+    @ApiOperation(value = "Base on time range", httpMethod = "POST")
+    public CommonResponse getAccountInfoListByTimeRange(@RequestBody @Valid TimeRangeQueryReq req,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseUtils.validateError(result);
+        }
+        return accountInfoApiManager.getPageListByTimeRange(req);
+    }
 
-	@PostMapping("name/get")
-	@ApiOperation(value = "get by contract name", httpMethod = "POST")
-	public CommonResponse getAccountInfoListByContractName(@RequestBody @Valid ContractNameQueryReq req,
-			BindingResult result) {
-		if (result.hasErrors()) {
-			return ResponseUtils.validateError(result);
-		}
-		return accountInfoApiManager.getAccountsPageListByReq(req);
-	}
+    @PostMapping("name/get")
+    @ApiOperation(value = "get by contract name", httpMethod = "POST")
+    public CommonResponse getAccountInfoListByContractName(@RequestBody @Valid ContractNameQueryReq req,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseUtils.validateError(result);
+        }
+        return accountInfoApiManager.getAccountsPageListByReq(req);
+    }
+
+    @ResponseBody
+    @RequestMapping("specification/get")
+    @ApiOperation(value = "Base on time range", httpMethod = "POST")
+    public CommonResponse getAccountInfoListBySpecification(@RequestBody @Valid CommonSpecificationQueryPageReq req,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseUtils.validateError(result);
+        }
+        return accountInfoApiManager.getPageListBySpecification(req);
+    }
 }
