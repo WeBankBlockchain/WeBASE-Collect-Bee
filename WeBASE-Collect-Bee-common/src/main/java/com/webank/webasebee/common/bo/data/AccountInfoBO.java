@@ -42,4 +42,6 @@ public class AccountInfoBO {
     /** @Fields blockTimeStamp : block timestamp */
     private Date blockTimeStamp;
 
+    private String txHash;
+
 }

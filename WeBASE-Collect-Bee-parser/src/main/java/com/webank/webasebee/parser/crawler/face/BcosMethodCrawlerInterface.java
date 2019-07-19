@@ -38,8 +38,9 @@ public interface BcosMethodCrawlerInterface {
      * @param blockTimeStamp
      * @param entry
      * @param methodName
+     * @param txHashContractAddressMapping (to get the constructor method address)
      * @return void
      */
     MethodBO transactionHandler(Transaction transaction, BigInteger blockTimeStamp, Map.Entry<String, String> entry,
-            String methodName);
+            String methodName, Map<String, String> txHashContractAddressMapping);
 }

@@ -15,26 +15,25 @@
  */
 package com.webank.webasebee.common.bo.data;
 
-import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * EventBo
+ * BlockAccountsInfoBO
  *
- * @Description: EventBo
+ * @Description: BlockAccountsInfoBO
  * @author maojiayu
- * @data Jul 2, 2019 3:34:31 PM
+ * @data Jul 19, 2019 10:49:53 PM
  *
  */
 @Data
+@AllArgsConstructor
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
-public class MethodBO extends CommonBO {
-    private long blockHeight;
-    private String txHash;
-    private Date blockTimeStamp;
-    private String contractAddress;
+public class BlockAccountsInfoBO {
+    private List<AccountInfoBO> accounts;
+    private Map<String, String> txHashContractAddressMapping;
 }

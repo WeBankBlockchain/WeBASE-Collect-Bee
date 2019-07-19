@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -64,7 +65,7 @@ public class MethodCrawlerHandler {
     private MethodCrawlService methodCrawlService;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public BlockMethodInfo crawl(Block block) throws IOException {
+    public BlockMethodInfo crawl(Block block, Map<String, String> txHashContractAddressMapping) throws IOException {
         BlockMethodInfo blockMethodInfo = new BlockMethodInfo();
         List<BlockTxDetailInfoBO> blockTxDetailInfoList = new ArrayList<>();
         List<MethodBO> methodInfoList = new ArrayList();
@@ -98,7 +99,7 @@ public class MethodCrawlerHandler {
                             .getMethodCrawler(
                                     StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
                             .get().transactionHandler(transaction, block.getTimestamp(), entry,
-                                    methodMetaInfo.getMethodName()));
+                                    methodMetaInfo.getMethodName(), txHashContractAddressMapping));
                 }
             }
         }

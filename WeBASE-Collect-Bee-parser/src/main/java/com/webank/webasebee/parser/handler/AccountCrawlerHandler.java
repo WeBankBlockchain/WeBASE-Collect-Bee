@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -33,6 +35,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.data.AccountInfoBO;
+import com.webank.webasebee.common.bo.data.BlockAccountsInfoBO;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.service.ContractConstructorService;
 
@@ -60,18 +63,23 @@ public class AccountCrawlerHandler {
     private ContractConstructorService contractConstructorService;
 
     @SuppressWarnings("rawtypes")
-    public List<AccountInfoBO> crawl(Block block) throws IOException {
+    public BlockAccountsInfoBO crawl(Block block) throws IOException {
         List<AccountInfoBO> accountInfoList = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
         List<TransactionResult> transactionResults = block.getTransactions();
         for (TransactionResult result : transactionResults) {
             BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
             Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
-                handle(tr, block.getTimestamp()).ifPresent(e -> accountInfoList.add(e));
+                handle(tr, block.getTimestamp()).ifPresent(e -> {
+                    accountInfoList.add(e);
+                    map.putIfAbsent(e.getTxHash(), e.getContractAddress());
+                });
+
             }
         }
-        return accountInfoList;
+        return new BlockAccountsInfoBO(accountInfoList, map);
     }
 
     /**
@@ -102,7 +110,8 @@ public class AccountCrawlerHandler {
                 AccountInfoBO accountInfo = new AccountInfoBO();
                 accountInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()))
                         .setBlockHeight(receipt.getBlockNumber().longValue())
-                        .setContractAddress(receipt.getContractAddress()).setContractName(entry.getValue());
+                        .setContractAddress(receipt.getContractAddress()).setContractName(entry.getValue())
+                        .setTxHash(receipt.getTransactionHash());
                 return Optional.of(accountInfo);
             }
         }

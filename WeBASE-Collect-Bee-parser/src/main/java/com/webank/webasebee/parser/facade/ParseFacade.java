@@ -21,6 +21,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.bo.data.BlockAccountsInfoBO;
 import com.webank.webasebee.common.bo.data.BlockInfoBO;
 import com.webank.webasebee.common.bo.data.BlockMethodInfo;
 import com.webank.webasebee.parser.handler.AccountCrawlerHandler;
@@ -50,8 +51,9 @@ public class ParseFacade implements ParseInterface {
     @Override
     public BlockInfoBO parse(Block block) throws IOException {
         BlockInfoBO blockInfo = new BlockInfoBO();
-        BlockMethodInfo blockMethodInfo = methodCrawlerHandler.crawl(block);
-        blockInfo.setAccountInfoList(accountCrawlerHandler.crawl(block))
+        BlockAccountsInfoBO accountsBo = accountCrawlerHandler.crawl(block);
+        BlockMethodInfo blockMethodInfo = methodCrawlerHandler.crawl(block, accountsBo.getTxHashContractAddressMapping());
+        blockInfo.setAccountInfoList(accountsBo.getAccounts())
                 .setBlockDetailInfo(blockCrawlerHandler.handleBlockDetail(block))
                 .setEventInfoList(eventCrawlHandler.crawl(block)).setMethodInfoList(blockMethodInfo.getMethodInfoList())
                 .setBlockTxDetailInfoList(blockMethodInfo.getBlockTxDetailInfoList());
