@@ -9,6 +9,8 @@
 - 新增两个Event API查询，支持通过指定任意and和or条件或任意两个参数进行查询。
 - 增加对method解析中selector方法忽略的判断
 - 适配DynamicBytes和Boolean的支持
+- 对所有method表，增加了contractAddress字段
+- 修复了sharding-jdbc-spring-boot-starter分页查询的问题
 
 ---
 

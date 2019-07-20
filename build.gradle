@@ -67,7 +67,6 @@ subprojects {
      // web3j依赖
     implementation ('org.fisco-bcos:web3sdk:2.0.5')
 
-    implementation fileTree(dir: 'libs', includes: ['*.jar'])
     testAnnotationProcessor "org.projectlombok:lombok"
     testCompileOnly "org.projectlombok:lombok"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
@@ -86,7 +85,11 @@ project(':WeBASE-Collect-Bee-core') {
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation 'mysql:mysql-connector-java'
-    implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0')
+    implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0') {
+        exclude group: 'io.shardingsphere:', module: 'sharding-core'
+    }
+    
+    compile fileTree(dir: '../libs', includes: ['*.jar'])
 
     // elastic-job
     implementation('com.dangdang:elastic-job-lite-core:2.1.5')
@@ -115,7 +118,11 @@ project(':WeBASE-Collect-Bee-db') {
     implementation project(':WeBASE-Collect-Bee-parser')   
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation 'mysql:mysql-connector-java'
-    implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0')
+    implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0') {
+        exclude group: 'io.shardingsphere:', module: 'sharding-core'
+    }
+    implementation fileTree(dir: '../libs', includes: ['*.jar'])
+
   }
 }
 
