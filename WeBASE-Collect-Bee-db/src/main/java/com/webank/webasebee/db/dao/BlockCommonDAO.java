@@ -54,8 +54,8 @@ public class BlockCommonDAO {
                     return oldValueList;
                 }));
         String postfix = type.equalsIgnoreCase("event") ? "EventRepository" : "MethodRepository";
+        List<IdEntity> entities = beanConverter.convertToEntities(bos, type);
         map.forEach((k, v) -> {
-            List<IdEntity> entities = beanConverter.convertToEntities(bos, type);
             if (!repositoryService.getRepository(StringUtils.uncapitalize(k) + postfix).isPresent()) {
                 log.error("{} not existed", StringUtils.uncapitalize(k) + postfix);
                 return;
