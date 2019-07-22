@@ -76,7 +76,6 @@ public class MethodCrawlerHandler {
         List<BlockTxDetailInfoBO> blockTxDetailInfoList = new ArrayList<>();
         List<MethodBO> methodInfoList = new ArrayList();
         List<TransactionResult> transactionResults = block.getTransactions();
-        log.info("transactionResults: {}", transactionResults);
         Map<String, String> txHashContractNameMapping = new HashMap<>();
         for (TransactionResult result : transactionResults) {
             BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
@@ -93,18 +92,15 @@ public class MethodCrawlerHandler {
                     } else {
                         contractAddress = transaction.getTo();
                     }
-                    log.info("contractAddress is {}", contractAddress);
                     String input =
                             web3j.getCode(contractAddress, DefaultBlockParameterName.LATEST).sendForReturnString();
-                    log.info("code: {}", JacksonUtils.toJson(input));
+                    log.debug("code: {}", JacksonUtils.toJson(input));
                     Entry<String, String> contractEntry = contractConstructorService.getConstructorNameByCode(input);
                     if (contractEntry == null) {
-                        log.info("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());
+                        log.error("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());
                         continue;
                     }
-                    log.info(contractEntry.getValue());
-
-                    log.info("Block{} contractAddress{} input: {}", block.getNumber(), contractAddress,
+                    log.debug("Block{} contractAddress{} input: {}", block.getNumber(), contractAddress,
                             transaction.getInput());
 
                     MethodMetaInfo methodMetaInfo = getMethodMetaInfo(transaction, contractEntry);
