@@ -61,8 +61,6 @@ public class EventCrawlerHandler {
             Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
-                log.info("{}", JacksonUtils.toJson(tr));
-                log.info("{}", txHashContractNameMapping);
                 String contractName = txHashContractNameMapping.get(tr.getTransactionHash());
                 if (StringUtils.isEmpty(contractName)) {
                     log.error("TxHash {} is Empty! Please check it. ", tr.getTransactionHash());
