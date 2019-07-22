@@ -48,14 +48,20 @@ public class ParseFacade implements ParseInterface {
     @Autowired
     private MethodCrawlerHandler methodCrawlerHandler;
 
+    /*
+     * dependency: P1) getAccounts-> Accounts. P2) depend on 1, txHashContractAddress(in order to get method address) ->
+     * methods. P3) depend on 2, txHashContractName.
+     */
     @Override
     public BlockInfoBO parse(Block block) throws IOException {
         BlockInfoBO blockInfo = new BlockInfoBO();
         BlockAccountsInfoBO accountsBo = accountCrawlerHandler.crawl(block);
-        BlockMethodInfo blockMethodInfo = methodCrawlerHandler.crawl(block, accountsBo.getTxHashContractAddressMapping());
+        BlockMethodInfo blockMethodInfo =
+                methodCrawlerHandler.crawl(block, accountsBo.getTxHashContractAddressMapping());
         blockInfo.setAccountInfoList(accountsBo.getAccounts())
                 .setBlockDetailInfo(blockCrawlerHandler.handleBlockDetail(block))
-                .setEventInfoList(eventCrawlHandler.crawl(block)).setMethodInfoList(blockMethodInfo.getMethodInfoList())
+                .setEventInfoList(eventCrawlHandler.crawl(block, blockMethodInfo.getTxHashContractNameMapping()))
+                .setMethodInfoList(blockMethodInfo.getMethodInfoList())
                 .setBlockTxDetailInfoList(blockMethodInfo.getBlockTxDetailInfoList());
         return blockInfo;
     }

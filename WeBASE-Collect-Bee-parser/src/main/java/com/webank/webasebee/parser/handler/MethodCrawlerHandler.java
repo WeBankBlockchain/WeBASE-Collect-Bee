@@ -18,6 +18,7 @@ package com.webank.webasebee.parser.handler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,6 +71,7 @@ public class MethodCrawlerHandler {
         List<BlockTxDetailInfoBO> blockTxDetailInfoList = new ArrayList<>();
         List<MethodBO> methodInfoList = new ArrayList();
         List<TransactionResult> transactionResults = block.getTransactions();
+        Map<String, String> txHashContractNameMapping = new HashMap<>();
         for (TransactionResult result : transactionResults) {
             BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
             Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
@@ -85,7 +87,11 @@ public class MethodCrawlerHandler {
                         continue;
                     }
                     // get block tx detail info
-                    blockTxDetailInfoList.add(getBlockTxDetailInfo(block, transaction, receipt, methodMetaInfo));
+                    BlockTxDetailInfoBO blockTxDetailInfo =
+                            getBlockTxDetailInfo(block, transaction, receipt, methodMetaInfo);
+                    blockTxDetailInfoList.add(blockTxDetailInfo);
+                    txHashContractNameMapping.putIfAbsent(blockTxDetailInfo.getTxHash(),
+                            blockTxDetailInfo.getContractName());
                     if (!methodCrawlService
                             .getMethodCrawler(
                                     StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
@@ -103,7 +109,8 @@ public class MethodCrawlerHandler {
                 }
             }
         }
-        blockMethodInfo.setBlockTxDetailInfoList(blockTxDetailInfoList).setMethodInfoList(methodInfoList);
+        blockMethodInfo.setBlockTxDetailInfoList(blockTxDetailInfoList).setMethodInfoList(methodInfoList)
+                .setTxHashContractNameMapping(txHashContractNameMapping);
         return blockMethodInfo;
 
     }

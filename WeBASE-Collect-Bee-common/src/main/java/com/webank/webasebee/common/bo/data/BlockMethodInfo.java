@@ -16,6 +16,7 @@
 package com.webank.webasebee.common.bo.data;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -34,5 +35,7 @@ public class BlockMethodInfo {
     private List<BlockTxDetailInfoBO> blockTxDetailInfoList;
 
     private List<MethodBO> methodInfoList;
+
+    private Map<String, String> txHashContractNameMapping;
 
 }

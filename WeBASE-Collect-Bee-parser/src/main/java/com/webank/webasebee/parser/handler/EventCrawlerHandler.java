@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
@@ -29,8 +30,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.data.EventBO;
+import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * EventCrawlerHandler
@@ -41,6 +45,7 @@ import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
  *
  */
 @Service
+@Slf4j
 public class EventCrawlerHandler {
     @Autowired
     private EthClient ethClient;
@@ -48,7 +53,7 @@ public class EventCrawlerHandler {
     private Map<String, BcosEventCrawlerInterface> bcosEventCrawlerMap;
 
     @SuppressWarnings("rawtypes")
-    public List<EventBO> crawl(Block block) throws IOException {
+    public List<EventBO> crawl(Block block, Map<String, String> txHashContractNameMapping) throws IOException {
         List<EventBO> boList = new ArrayList<>();
         List<TransactionResult> transactionResults = block.getTransactions();
         for (TransactionResult result : transactionResults) {
@@ -56,7 +61,17 @@ public class EventCrawlerHandler {
             Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
+                log.info("{}", JacksonUtils.toJson(tr));
+                log.info("{}", txHashContractNameMapping);
+                String contractName = txHashContractNameMapping.get(tr.getTransactionHash());
+                if (StringUtils.isEmpty(contractName)) {
+                    log.error("TxHash {} is Empty! Please check it. ", tr.getTransactionHash());
+                    continue;
+                }
                 bcosEventCrawlerMap.forEach((k, v) -> {
+                    if (!StringUtils.startsWithIgnoreCase(k, contractName)) {
+                        return;
+                    }
                     boList.addAll(v.handleReceipt(tr, block.getTimestamp()));
                 });
             }
