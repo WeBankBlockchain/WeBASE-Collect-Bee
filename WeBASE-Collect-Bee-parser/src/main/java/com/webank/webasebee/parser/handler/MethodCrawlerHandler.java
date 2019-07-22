@@ -25,6 +25,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
@@ -38,6 +40,7 @@ import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.bo.data.BlockMethodInfo;
 import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
 import com.webank.webasebee.common.bo.data.MethodBO;
+import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.common.vo.NameValueVO;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.service.ContractConstructorService;
@@ -59,6 +62,8 @@ public class MethodCrawlerHandler {
     @Autowired
     private EthClient ethClient;
     @Autowired
+    private Web3j web3j;
+    @Autowired
     private ContractConstructorService contractConstructorService;
     @Autowired
     private ContractMapsInfo contractMapsInfo;
@@ -71,6 +76,7 @@ public class MethodCrawlerHandler {
         List<BlockTxDetailInfoBO> blockTxDetailInfoList = new ArrayList<>();
         List<MethodBO> methodInfoList = new ArrayList();
         List<TransactionResult> transactionResults = block.getTransactions();
+        log.info("transactionResults: {}", transactionResults);
         Map<String, String> txHashContractNameMapping = new HashMap<>();
         for (TransactionResult result : transactionResults) {
             BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
@@ -80,9 +86,28 @@ public class MethodCrawlerHandler {
                 Optional<Transaction> optt = ethClient.getTransactionByHash(receipt);
                 if (optt.isPresent()) {
                     Transaction transaction = optt.get();
-                    Entry<String, String> entry =
-                            contractConstructorService.getConstructorNameByBinary(transaction.getInput());
-                    MethodMetaInfo methodMetaInfo = getMethodMetaInfo(transaction, entry);
+                    String contractAddress;
+                    if (transaction.getTo() == null
+                            || transaction.getTo().equals("0x0000000000000000000000000000000000000000")) {
+                        contractAddress = txHashContractAddressMapping.get(transaction.getHash());
+                    } else {
+                        contractAddress = transaction.getTo();
+                    }
+                    log.info("contractAddress is {}", contractAddress);
+                    String input =
+                            web3j.getCode(contractAddress, DefaultBlockParameterName.LATEST).sendForReturnString();
+                    log.info("code: {}", JacksonUtils.toJson(input));
+                    Entry<String, String> contractEntry = contractConstructorService.getConstructorNameByCode(input);
+                    if (contractEntry == null) {
+                        log.info("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());
+                        continue;
+                    }
+                    log.info(contractEntry.getValue());
+
+                    log.info("Block{} contractAddress{} input: {}", block.getNumber(), contractAddress,
+                            transaction.getInput());
+
+                    MethodMetaInfo methodMetaInfo = getMethodMetaInfo(transaction, contractEntry);
                     if (methodMetaInfo == null) {
                         continue;
                     }
@@ -104,7 +129,7 @@ public class MethodCrawlerHandler {
                     methodInfoList.add(methodCrawlService
                             .getMethodCrawler(
                                     StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
-                            .get().transactionHandler(transaction, block.getTimestamp(), entry,
+                            .get().transactionHandler(transaction, block.getTimestamp(), contractEntry,
                                     methodMetaInfo.getMethodName(), txHashContractAddressMapping));
                 }
             }
@@ -140,7 +165,7 @@ public class MethodCrawlerHandler {
         if (transaction.getInput() != null && contractMapsInfo.getMethodIdMap().containsKey(methodId)) {
             NameValueVO<String> nameValue = contractMapsInfo.getMethodIdMap().get(methodId);
             MethodMetaInfo methodMetaInfo = new MethodMetaInfo();
-            methodMetaInfo.setContractName(nameValue.getName()).setMethodName(nameValue.getValue());
+            methodMetaInfo.setContractName(entry.getValue()).setMethodName(nameValue.getValue());
             return methodMetaInfo;
 
         } else {

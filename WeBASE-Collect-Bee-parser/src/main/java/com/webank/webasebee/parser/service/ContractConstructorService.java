@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
 import com.webank.webasebee.common.constants.BinConstant;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * ContractConstructorService for querying contract constructor name by input.
  *
@@ -33,31 +35,56 @@ import com.webank.webasebee.common.constants.BinConstant;
  *
  */
 @Service
+@Slf4j
 public class ContractConstructorService {
-	
-	/** @Fields contractMapsInfo : contract maps info */
-	@Autowired
+
+    /** @Fields contractMapsInfo : contract maps info */
+    @Autowired
     private ContractMapsInfo contractMapsInfo;
-	
-	/**    
-	 * Get entry that contains contract binary and contract constructor name.
-	 * If prefix string of input matches some binary of entry in binaryMap, return entry
-	 * else return null. 
-	 * 
-	 * @param input     
-	 * @return Map.Entry<String,String>       
-	 */
-	public Map.Entry<String, String> getConstructorNameByBinary(String input) {
+
+    /**
+     * Get entry that contains contract binary and contract constructor name. If prefix string of input matches some
+     * binary of entry in binaryMap, return entry else return null.
+     * 
+     * @param input
+     * @return Map.Entry<String,String>
+     */
+    public Map.Entry<String, String> getConstructorNameByBinary(String input) {
+
         Map<String, String> binaryMap = contractMapsInfo.getContractBinaryMap();
         for (Map.Entry<String, String> entry : binaryMap.entrySet()) {
             String key = entry.getKey();
-            if(input.length() > BinConstant.META_DATA_HASH_LENGTH && key.length() > BinConstant.META_DATA_HASH_LENGTH) {
-                key = key.substring(0, key.length()-1-BinConstant.META_DATA_HASH_LENGTH);
-            }
-            else {
+            if (input.length() > BinConstant.META_DATA_HASH_LENGTH
+                    && key.length() > BinConstant.META_DATA_HASH_LENGTH) {
+                key = key.substring(0, key.length() - 1 - BinConstant.META_DATA_HASH_LENGTH);
+            } else {
                 continue;
             }
             if (StringUtils.startsWithIgnoreCase(input.substring(2), key)) {
+                log.info("key: {}", key);
+                log.info("input {}", input.substring(2));
+                log.info("binaryMap: {}", binaryMap);
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    public Map.Entry<String, String> getConstructorNameByCode(String input) {
+
+        Map<String, String> binaryMap = contractMapsInfo.getContractBinaryMap();
+        for (Map.Entry<String, String> entry : binaryMap.entrySet()) {
+            String key = entry.getKey();
+            if (input.length() > BinConstant.META_DATA_HASH_LENGTH
+                    && key.length() > BinConstant.META_DATA_HASH_LENGTH) {
+                input = input.substring(2, input.length() - 1 - BinConstant.META_DATA_HASH_LENGTH);
+            } else {
+                continue;
+            }
+            if (StringUtils.containsIgnoreCase(key, input)) {
+                log.info("key: {}", key);
+                log.info("input {}", input.substring(2));
+                log.info("binaryMap: {}", binaryMap);
                 return entry;
             }
         }
