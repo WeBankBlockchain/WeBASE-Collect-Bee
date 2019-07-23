@@ -84,12 +84,21 @@ public class MethodCrawlerHandler {
                 Optional<Transaction> optt = ethClient.getTransactionByHash(receipt);
                 if (optt.isPresent()) {
                     Transaction transaction = optt.get();
-                    String contractAddress = transactionService.getContractAddressByTransaction(transaction, txHashContractAddressMapping);                 
+                    String contractAddress = transactionService.getContractAddressByTransaction(transaction,
+                            txHashContractAddressMapping);
+                    if (StringUtils.isEmpty(contractAddress)) {
+                        log.error(
+                                "block:{} , unrecognized transaction, maybe the contract is not registered! See the DIR of contractPath.",
+                                receipt.getBlockNumber().longValue());
+                        continue;
+                    }
                     String input = ethClient.getCodeByContractAddress(contractAddress);
                     log.debug("code: {}", JacksonUtils.toJson(input));
                     Entry<String, String> contractEntry = contractConstructorService.getConstructorNameByCode(input);
                     if (contractEntry == null) {
-                        log.error("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());
+                        log.error(
+                                "block:{} constructor code can't be find, maybe the contract is not registered! See the DIR of contractPath.",
+                                receipt.getBlockNumber().longValue());
                         continue;
                     }
                     log.debug("Block{} contractAddress{} transactionInput: {}", block.getNumber(), contractAddress,
