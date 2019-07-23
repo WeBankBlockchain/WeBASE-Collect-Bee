@@ -61,9 +61,6 @@ public class ContractConstructorService {
                 continue;
             }
             if (StringUtils.startsWithIgnoreCase(input.substring(2), key)) {
-                log.info("key: {}", key);
-                log.info("input {}", input.substring(2));
-                log.info("binaryMap: {}", binaryMap);
                 return entry;
             }
         }
@@ -82,9 +79,6 @@ public class ContractConstructorService {
                 continue;
             }
             if (StringUtils.containsIgnoreCase(key, input)) {
-                log.info("key: {}", key);
-                log.info("input {}", input.substring(2));
-                log.info("binaryMap: {}", binaryMap);
                 return entry;
             }
         }

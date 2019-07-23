@@ -70,13 +70,11 @@ public class EthClient {
         return web3j.getTransactionReceipt(hash).send();
     }
 
-    @Cacheable(cacheNames = { "transaction" })
     public Optional<Transaction> getTransactionByHash(TransactionReceipt receipt) throws IOException {
         return web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
 
     }
 
-    @Cacheable(cacheNames = { "code" })
     public String getCodeByContractAddress(String contractAddress) throws IOException {
         return web3j.getCode(contractAddress, DefaultBlockParameterName.LATEST).sendForReturnString();
     }
