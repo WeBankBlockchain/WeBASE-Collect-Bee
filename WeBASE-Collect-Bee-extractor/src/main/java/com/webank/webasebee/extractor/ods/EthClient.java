@@ -75,6 +75,7 @@ public class EthClient {
 
     }
 
+    @Cacheable(cacheNames = { "code" })
     public String getCodeByContractAddress(String contractAddress) throws IOException {
         return web3j.getCode(contractAddress, DefaultBlockParameterName.LATEST).sendForReturnString();
     }
