@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.data.EventBO;
-import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
 
@@ -63,7 +62,8 @@ public class EventCrawlerHandler {
                 TransactionReceipt tr = opt.get();
                 String contractName = txHashContractNameMapping.get(tr.getTransactionHash());
                 if (StringUtils.isEmpty(contractName)) {
-                    log.error("TxHash {} is Empty! Please check it. ", tr.getTransactionHash());
+                    log.error("TxHash {} is Empty, and the blockNumber is {}! Please check it. ",
+                            tr.getTransactionHash(), block.getNumber());
                     continue;
                 }
                 bcosEventCrawlerMap.forEach((k, v) -> {
