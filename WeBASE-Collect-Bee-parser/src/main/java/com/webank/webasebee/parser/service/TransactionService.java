@@ -54,6 +54,8 @@ public class TransactionService {
 
     public String getContractAddressByTransaction(Transaction transaction,
             Map<String, String> txHashContractAddressMapping) {
+        log.debug("blocknumber: {} , to: {}, map: {}", transaction.getBlockNumber(), transaction.getTo(),
+                JacksonUtils.toJson(txHashContractAddressMapping));
         if (transaction.getTo() == null || transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
             return txHashContractAddressMapping.get(transaction.getHash());
         } else {
