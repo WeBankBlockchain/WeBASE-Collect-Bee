@@ -100,6 +100,7 @@ public class AccountCrawlerHandler {
         if (optt.isPresent()) {
             Transaction transaction = optt.get();
             String input = transaction.getInput();
+            log.debug("blockNumber: {}, input: {}", receipt.getBlockNumber(), input);
             // get constructor function transaction by judging if transaction's param named to is null
             if (transaction.getTo() == null || transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
                 Entry<String, String> entry = contractConstructorService.getConstructorNameByBinary(input);
