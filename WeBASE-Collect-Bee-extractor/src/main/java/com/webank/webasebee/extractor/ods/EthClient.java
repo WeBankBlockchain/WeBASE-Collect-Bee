@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
+import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
@@ -73,5 +74,10 @@ public class EthClient {
     public Optional<Transaction> getTransactionByHash(TransactionReceipt receipt) throws IOException {
         return web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
 
+    }
+
+    @Cacheable(cacheNames = { "code" })
+    public String getCodeByContractAddress(String contractAddress) throws IOException {
+        return web3j.getCode(contractAddress, DefaultBlockParameterName.LATEST).sendForReturnString();
     }
 }

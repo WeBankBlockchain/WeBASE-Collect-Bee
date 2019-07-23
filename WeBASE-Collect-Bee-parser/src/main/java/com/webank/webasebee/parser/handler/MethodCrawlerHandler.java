@@ -25,8 +25,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
@@ -45,6 +43,7 @@ import com.webank.webasebee.common.vo.NameValueVO;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.service.ContractConstructorService;
 import com.webank.webasebee.parser.service.MethodCrawlService;
+import com.webank.webasebee.parser.service.TransactionService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,9 +61,9 @@ public class MethodCrawlerHandler {
     @Autowired
     private EthClient ethClient;
     @Autowired
-    private Web3j web3j;
-    @Autowired
     private ContractConstructorService contractConstructorService;
+    @Autowired
+    private TransactionService transactionService;
     @Autowired
     private ContractMapsInfo contractMapsInfo;
     @Autowired
@@ -85,22 +84,15 @@ public class MethodCrawlerHandler {
                 Optional<Transaction> optt = ethClient.getTransactionByHash(receipt);
                 if (optt.isPresent()) {
                     Transaction transaction = optt.get();
-                    String contractAddress;
-                    if (transaction.getTo() == null
-                            || transaction.getTo().equals("0x0000000000000000000000000000000000000000")) {
-                        contractAddress = txHashContractAddressMapping.get(transaction.getHash());
-                    } else {
-                        contractAddress = transaction.getTo();
-                    }
-                    String input =
-                            web3j.getCode(contractAddress, DefaultBlockParameterName.LATEST).sendForReturnString();
+                    String contractAddress = transactionService.getContractAddressByTransaction(transaction, txHashContractAddressMapping);                 
+                    String input = ethClient.getCodeByContractAddress(contractAddress);
                     log.debug("code: {}", JacksonUtils.toJson(input));
                     Entry<String, String> contractEntry = contractConstructorService.getConstructorNameByCode(input);
                     if (contractEntry == null) {
                         log.error("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());
                         continue;
                     }
-                    log.debug("Block{} contractAddress{} input: {}", block.getNumber(), contractAddress,
+                    log.debug("Block{} contractAddress{} transactionInput: {}", block.getNumber(), contractAddress,
                             transaction.getInput());
 
                     MethodMetaInfo methodMetaInfo = getMethodMetaInfo(transaction, contractEntry);
