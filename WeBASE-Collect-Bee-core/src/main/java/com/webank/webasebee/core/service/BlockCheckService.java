@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,7 +97,7 @@ public class BlockCheckService {
                 }
                 Block block = ethClient.getBlock(BigInteger.valueOf(pool.getBlockHeight()));
                 String newHash = block.getHash();
-                if (!newHash.equals(
+                if (!StringUtils.equals(newHash,
                         blockDetailInfoDAO.getBlockDetailInfoByBlockHeight(pool.getBlockHeight()).getBlockHash())) {
                     log.info("Block {} is forked!!! ready to resync", pool.getBlockHeight());
                     rollBackService.rollback(pool.getBlockHeight(), pool.getBlockHeight() + 1);
@@ -122,8 +123,8 @@ public class BlockCheckService {
             log.info("Detect {} timeout transactions.", list.size());
         }
         list.forEach(p -> {
-            log.error("Block {} sync block timeout!!, the depot_time is {}, and the threshold time is {}", p.getBlockHeight(),
-                    p.getDepotUpdatetime(), offsetDate);
+            log.error("Block {} sync block timeout!!, the depot_time is {}, and the threshold time is {}",
+                    p.getBlockHeight(), p.getDepotUpdatetime(), offsetDate);
             blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.TIMEOUT.getStatus(), new Date(),
                     p.getBlockHeight());
         });
@@ -186,5 +187,5 @@ public class BlockCheckService {
             return false;
         }
     }
-    
+
 }
