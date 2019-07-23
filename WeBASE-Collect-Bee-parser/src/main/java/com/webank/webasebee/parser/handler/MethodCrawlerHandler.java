@@ -33,15 +33,11 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
 import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.bo.data.BlockMethodInfo;
 import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
 import com.webank.webasebee.common.bo.data.MethodBO;
-import com.webank.webasebee.common.tools.JacksonUtils;
-import com.webank.webasebee.common.vo.NameValueVO;
 import com.webank.webasebee.extractor.ods.EthClient;
-import com.webank.webasebee.parser.service.ContractConstructorService;
 import com.webank.webasebee.parser.service.MethodCrawlService;
 import com.webank.webasebee.parser.service.TransactionService;
 
@@ -61,11 +57,8 @@ public class MethodCrawlerHandler {
     @Autowired
     private EthClient ethClient;
     @Autowired
-    private ContractConstructorService contractConstructorService;
-    @Autowired
     private TransactionService transactionService;
-    @Autowired
-    private ContractMapsInfo contractMapsInfo;
+
     @Autowired
     private MethodCrawlService methodCrawlService;
 
@@ -84,27 +77,14 @@ public class MethodCrawlerHandler {
                 Optional<Transaction> optt = ethClient.getTransactionByHash(receipt);
                 if (optt.isPresent()) {
                     Transaction transaction = optt.get();
-                    String contractAddress = transactionService.getContractAddressByTransaction(transaction,
-                            txHashContractAddressMapping);
-                    if (StringUtils.isEmpty(contractAddress)) {
-                        log.error(
-                                "block:{} , unrecognized transaction, maybe the contract is not registered! See the DIR of contractPath.",
-                                receipt.getBlockNumber().longValue());
+                    Optional<Entry<String, String>> optional =
+                            transactionService.getContractNameByTransaction(transaction, txHashContractAddressMapping);
+                    if (!optional.isPresent()) {
                         continue;
                     }
-                    String input = ethClient.getCodeByContractAddress(contractAddress);
-                    log.debug("code: {}", JacksonUtils.toJson(input));
-                    Entry<String, String> contractEntry = contractConstructorService.getConstructorNameByCode(input);
-                    if (contractEntry == null) {
-                        log.error(
-                                "block:{} constructor code can't be find, maybe the contract is not registered! See the DIR of contractPath.",
-                                receipt.getBlockNumber().longValue());
-                        continue;
-                    }
-                    log.debug("Block{} contractAddress{} transactionInput: {}", block.getNumber(), contractAddress,
-                            transaction.getInput());
-
-                    MethodMetaInfo methodMetaInfo = getMethodMetaInfo(transaction, contractEntry);
+                    Entry<String, String> contractEntry = optional.get();
+                    MethodMetaInfo methodMetaInfo =
+                            transactionService.getMethodMetaInfo(transaction, contractEntry.getValue());
                     if (methodMetaInfo == null) {
                         continue;
                     }
@@ -146,28 +126,6 @@ public class MethodCrawlerHandler {
                 .setTxFrom(transaction.getFrom()).setTxTo(transaction.getTo()).setTxHash(receipt.getTransactionHash())
                 .setBlockTimeStamp(new Date(block.getTimestamp().longValue()));
         return blockTxDetailInfo;
-    }
-
-    public MethodMetaInfo getMethodMetaInfo(Transaction transaction, Entry<String, String> entry) {
-        if (transaction.getTo() == null || transaction.getTo().equals("0x0000000000000000000000000000000000000000")) {
-            if (entry == null) {
-                log.info("block:{} constructor binary can't find!", transaction.getBlockNumber().longValue());
-                return null;
-            }
-            MethodMetaInfo methodMetaInfo = new MethodMetaInfo();
-            methodMetaInfo.setContractName(entry.getValue()).setMethodName(entry.getValue() + entry.getValue());
-            return methodMetaInfo;
-        }
-        String methodId = transaction.getInput().substring(0, 10);
-        if (transaction.getInput() != null && contractMapsInfo.getMethodIdMap().containsKey(methodId)) {
-            NameValueVO<String> nameValue = contractMapsInfo.getMethodIdMap().get(methodId);
-            MethodMetaInfo methodMetaInfo = new MethodMetaInfo();
-            methodMetaInfo.setContractName(entry.getValue()).setMethodName(nameValue.getValue());
-            return methodMetaInfo;
-
-        } else {
-            return null;
-        }
     }
 
 }

@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.data.AccountInfoBO;
 import com.webank.webasebee.common.bo.data.BlockAccountsInfoBO;
+import com.webank.webasebee.common.constants.ContractConstants;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.service.ContractConstructorService;
 
@@ -100,8 +101,7 @@ public class AccountCrawlerHandler {
             Transaction transaction = optt.get();
             String input = transaction.getInput();
             // get constructor function transaction by judging if transaction's param named to is null
-            if (transaction.getTo() == null
-                    || transaction.getTo().equals("0x0000000000000000000000000000000000000000")) {
+            if (transaction.getTo() == null || transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
                 Entry<String, String> entry = contractConstructorService.getConstructorNameByBinary(input);
                 if (entry == null) {
                     log.info("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());

@@ -15,12 +15,24 @@
  */
 package com.webank.webasebee.parser.service;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
+import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.constants.ContractConstants;
+import com.webank.webasebee.common.tools.JacksonUtils;
+import com.webank.webasebee.common.vo.NameValueVO;
+import com.webank.webasebee.extractor.ods.EthClient;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TransactionService
@@ -31,7 +43,14 @@ import com.webank.webasebee.common.constants.ContractConstants;
  *
  */
 @Service
+@Slf4j
 public class TransactionService {
+    @Autowired
+    private EthClient ethClient;
+    @Autowired
+    private ContractConstructorService contractConstructorService;
+    @Autowired
+    private ContractMapsInfo contractMapsInfo;
 
     public String getContractAddressByTransaction(Transaction transaction,
             Map<String, String> txHashContractAddressMapping) {
@@ -42,4 +61,44 @@ public class TransactionService {
         }
     }
 
+    public Optional<Entry<String, String>> getContractNameByTransaction(Transaction transaction,
+            Map<String, String> txHashContractAddressMapping) throws IOException {
+        String contractAddress = getContractAddressByTransaction(transaction, txHashContractAddressMapping);
+        if (StringUtils.isEmpty(contractAddress)) {
+            log.error(
+                    "block:{} , unrecognized transaction, maybe the contract is not registered! See the DIR of contractPath.",
+                    transaction.getBlockNumber());
+            return Optional.empty();
+        }
+        String input = ethClient.getCodeByContractAddress(contractAddress);
+        log.debug("code: {}", JacksonUtils.toJson(input));
+        Entry<String, String> contractEntry = contractConstructorService.getConstructorNameByCode(input);
+        if (contractEntry == null) {
+            log.error(
+                    "block:{} constructor code can't be find, maybe the contract is not registered! See the DIR of contractPath.",
+                    transaction.getBlockNumber());
+            return Optional.empty();
+        }
+        log.debug("Block{} contractAddress{} transactionInput: {}", transaction.getBlockNumber(), contractAddress,
+                transaction.getInput());
+        return Optional.of(contractEntry);
+    }
+
+    public MethodMetaInfo getMethodMetaInfo(Transaction transaction, String contractName) {
+        if (transaction.getTo() == null || transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
+            MethodMetaInfo methodMetaInfo = new MethodMetaInfo();
+            methodMetaInfo.setContractName(contractName).setMethodName(contractName + contractName);
+            return methodMetaInfo;
+        }
+        String methodId = transaction.getInput().substring(0, 10);
+        if (transaction.getInput() != null && contractMapsInfo.getMethodIdMap().containsKey(methodId)) {
+            NameValueVO<String> nameValue = contractMapsInfo.getMethodIdMap().get(methodId);
+            MethodMetaInfo methodMetaInfo = new MethodMetaInfo();
+            methodMetaInfo.setContractName(contractName).setMethodName(nameValue.getValue());
+            return methodMetaInfo;
+
+        } else {
+            return null;
+        }
+    }
 }
