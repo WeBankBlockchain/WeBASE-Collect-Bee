@@ -55,6 +55,10 @@ public final class AbiTypeRefUtils{
           return (TypeReference) new TypeReference<DynamicBytes>() {};
       case "address[]":
     	  return (TypeReference) new TypeReference<DynamicArray<Address>>() {};
+      case "uint8[]":
+          return (TypeReference) new TypeReference<DynamicArray<Uint8>>() {};
+      case "uint256[]":
+          return (TypeReference) new TypeReference<DynamicArray<Uint256>>() {};
       case "uint8":
           return (TypeReference) new TypeReference<Uint8>() {};
       case "int8":
