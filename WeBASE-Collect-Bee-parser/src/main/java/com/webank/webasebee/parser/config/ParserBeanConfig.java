@@ -37,16 +37,11 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Slf4j
 public class ParserBeanConfig {
-   
 
     @Bean
     @ConditionalOnMissingBean(type = "BcosEventCrawlerInterface")
     public Map<String, BcosEventCrawlerInterface> getEmptyEventMap() {
-        log.info("Doesn't detect any object of BcosEventCrawlerInterface, return an empty bean.");
         return new HashMap<String, BcosEventCrawlerInterface>();
     }
 
-    
-    
-   
 }
