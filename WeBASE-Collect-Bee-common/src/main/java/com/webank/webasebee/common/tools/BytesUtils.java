@@ -15,10 +15,10 @@
  */
 package com.webank.webasebee.common.tools;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.fisco.bcos.web3j.abi.datatypes.Bytes;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
 import org.fisco.bcos.web3j.abi.datatypes.Int;
@@ -28,6 +28,8 @@ import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes32;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Int256;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Int8;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
+
+import cn.hutool.core.util.StrUtil;
 
 /**
  * BytesUtils
@@ -51,11 +53,11 @@ public class BytesUtils {
     }
 
     public static String bytesToString(Bytes b) {
-        return org.apache.commons.lang3.StringUtils.trim(StringUtils.newStringUsAscii(b.getValue()));
+        return StrUtil.str(b.getValue(), Charset.defaultCharset());
     }
 
     public static String bytesArrayToString(byte[] b) {
-        return org.apache.commons.lang3.StringUtils.trim(StringUtils.newStringUsAscii(b));
+        return StrUtil.str(b, Charset.defaultCharset());
     }
 
     public static String bytesArrayToString(Object obj) {
