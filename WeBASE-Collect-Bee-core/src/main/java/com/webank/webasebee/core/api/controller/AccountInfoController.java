@@ -16,6 +16,7 @@
 package com.webank.webasebee.core.api.controller;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -54,7 +55,7 @@ public class AccountInfoController {
 
     @PostMapping("address/get")
     @ApiOperation(value = "get by address", httpMethod = "POST")
-    public CommonResponse getAccountInfoByContractAddress(@RequestBody @Valid String contractAddress,
+    public CommonResponse getAccountInfoByContractAddress(@RequestBody @Valid @NotBlank String contractAddress,
             BindingResult result) {
         if (result.hasErrors()) {
             return ResponseUtils.validateError(result);
