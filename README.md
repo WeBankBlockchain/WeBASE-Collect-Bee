@@ -214,20 +214,23 @@ sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
 sharding.jdbc.datasource.ds0.username=
 sharding.jdbc.datasource.ds0.password=
 
-#### 数据源ds1的默认配置
+#### 数据源ds1的默认配置（注意：多个数据源的表需要自己定义，auto-ddl只会创建第一个数据源的表）
 sharding.jdbc.datasource.ds1.type=com.zaxxer.hikari.HikariDataSource
 sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.cj.jdbc.Driver
 sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
 sharding.jdbc.datasource.ds1.username=
 sharding.jdbc.datasource.ds1.password=
 
+### 如果未定义所有表的分库分表策略，则必须配置本条的默认数据源
+sharding.jdbc.config.sharding.default-datasource-name=ds0
+
 #### 数据库默认分库分表的列字段
-sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=block_height
 #### 数据库默认分库分表的算法
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{block_height % 2}
 
 #### 数据库表block_tx_detail_info的配置，以下配置即为数据自动分为5个分片，以block_height%5来进行路由，pk-id为自增值
-sharding.jdbc.config.sharding.tables.block_tx_detail_info.actual-data-nodes=ds.block_tx_detail_info_$->{0..4}
+sharding.jdbc.config.sharding.tables.block_tx_detail_info.actual-data-nodes=ds0.block_tx_detail_info_$->{0..4}
 sharding.jdbc.config.sharding.tables.block_tx_detail_info.table-strategy.inline.sharding-column=block_height
 sharding.jdbc.config.sharding.tables.block_tx_detail_info.table-strategy.inline.algorithm-expression=block_tx_detail_info_$->{block_height % 5}
 sharding.jdbc.config.sharding.tables.block_tx_detail_info.key-generator-column-name=pk_id
