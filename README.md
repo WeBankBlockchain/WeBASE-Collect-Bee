@@ -200,7 +200,26 @@ dataflowJob.shardingItemParameters=0=A,1=B,2=C
 实践表明，当区块链上存在海量的数据时，导出到单个数据库或单个业务表会对运维造成巨大的压力，造成数据库性能的衰减。
 一般来讲，单一数据库实例的数据的阈值在1TB之内，单一数据库表的数据的阈值在10G以内，是比较合理的范围。
 
-如果数据量超过此阈值，建议对数据进行分片。将同一张表内的数据拆分到多个或同个数据库的多张表。
+如果数据量超过此阈值，建议对数据进行分片。将同一张表内的数据拆分到同个数据库的多张表。
+```
+
+sharding.jdbc.datasource.names=ds
+        
+sharding.jdbc.datasource.ds.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.ds.driver-class-name=com.mysql.cj.jdbc.Driver
+sharding.jdbc.datasource.ds.jdbc-url=jdbc:mysql://ip:3306/db?autoReconnect=true&useSSL=false&serverTimezone=GMT%2b8&useUnicode=true&characterEncoding=UTF-8
+sharding.jdbc.datasource.ds.username=
+sharding.jdbc.datasource.ds.password=
+
+sharding.jdbc.config.sharding.tables.block_detail_info.actual-data-nodes=ds.block_detail_info_$->{0..4}
+sharding.jdbc.config.sharding.tables.block_detail_info.table-strategy.inline.sharding-column=block_height
+sharding.jdbc.config.sharding.tables.block_detail_info.table-strategy.inline.algorithm-expression=block_detail_info_$->{block_height % 5}
+sharding.jdbc.config.sharding.tables.block_detail_info.key-generator-column-name=pk_id
+
+
+```
+
+将同一张表内的数据拆分到多个数据库的多张表。
 
 ```
 
