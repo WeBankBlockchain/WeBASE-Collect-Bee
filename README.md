@@ -493,9 +493,9 @@ WeBASE-Collect-Bee默认集成了swagger的插件，支持通过可视化的控�
 
 > http://your_ip:port/swagger-ui.html
 
-例如，当你在本机运行了WeBASE-Collect-Bee，且未修改默认的8080端口，则可以访问此地址：
+例如，当你在本机运行了WeBASE-Collect-Bee，且未修改默认的5200端口，则可以访问此地址：
 
-> http://localhost:8080/swagger-ui.html
+> http://localhost:5200/swagger-ui.html
 
 此时，你可以看到上述页面，可以看到页面主要包括了http请求页面和数据模型两部分。
 
