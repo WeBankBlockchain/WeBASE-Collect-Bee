@@ -159,7 +159,7 @@ public class BlockCheckService {
         if (isComplete(startIndex, endIndex)) {
             return Optional.empty();
         }
-        List<BlockTaskPool> list = blockTaskPoolRepository.findByBlockHeightBetween(startIndex, endIndex);
+        List<BlockTaskPool> list = blockTaskPoolRepository.findByBlockHeightRange(startIndex, endIndex);
         List<Long> ids = list.stream().map(p -> p.getBlockHeight()).collect(Collectors.toList());
         List<BlockTaskPool> supplements = new ArrayList<>();
         for (long tmpIndex = startIndex; tmpIndex <= endIndex; tmpIndex++) {
@@ -177,8 +177,7 @@ public class BlockCheckService {
 
     public boolean isComplete(long startBlockNumber, long currentMaxTaskPoolNumber) {
         long deserveCount = currentMaxTaskPoolNumber - startBlockNumber + 1;
-        long actualCount =
-                blockTaskPoolRepository.countByBlockHeightBetween(startBlockNumber, currentMaxTaskPoolNumber);
+        long actualCount = blockTaskPoolRepository.countByBlockHeightRange(startBlockNumber, currentMaxTaskPoolNumber);
         log.info("Check task count from block {} to {}, deserve count is {}, and actual count is {}", startBlockNumber,
                 currentMaxTaskPoolNumber, deserveCount, actualCount);
         if (deserveCount == actualCount) {

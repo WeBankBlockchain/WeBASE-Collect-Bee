@@ -47,11 +47,13 @@ public interface BlockTaskPoolRepository
 
     public List<BlockTaskPool> findByCertainty(int certainty);
 
-    public List<BlockTaskPool> findByBlockHeightBetween(long startNumber, long endNumber);
+    @Query(value = "select * from #{#entityName} where block_height >= ?1 or block_height <= ?2 ", nativeQuery = true)
+    public List<BlockTaskPool> findByBlockHeightRange(long startNumber, long endNumber);
 
     public long countBySyncStatus(int syncStatus);
 
-    public long countByBlockHeightBetween(long startNumber, long endNumber);
+    @Query(value = "select count(pk_id) from #{#entityName} where block_height >= ?1 or block_height <= ?2 ", nativeQuery = true)
+    public long countByBlockHeightRange(long startNumber, long endNumber);
 
     @Query(value = "select * from #{#entityName} where sync_status = 4 or sync_status = 3 ", nativeQuery = true)
     public List<BlockTaskPool> findUnNormalRecords();
