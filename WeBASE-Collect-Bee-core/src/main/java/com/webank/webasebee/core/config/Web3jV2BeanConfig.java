@@ -80,6 +80,9 @@ public class Web3jV2BeanConfig {
     public GroupChannelConnectionsConfig getGroupChannelConnections() {
         GroupChannelConnectionsConfig groupChannelConnectionsConfig = new GroupChannelConnectionsConfig();
         ChannelConnections con = new ChannelConnections();
+        con.setCaCertPath("file:./config/ca.crt");
+        con.setNodeCaPath("file:./config/node.crt");
+        con.setNodeKeyPath("file:./config/node.key");
         ArrayList<String> list = new ArrayList<>();
         List<ChannelConnections> allChannelConnections = new ArrayList<>();
         String[] nodes = StringUtils.split(systemEnvironmentConfig.getNodeStr(), ";");
