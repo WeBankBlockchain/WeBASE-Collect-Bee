@@ -141,7 +141,7 @@ cd WeBASE-Collect-Bee/WeBASE-Collect-Bee-core
 注意： 当修改完配置文件后，需要重新编译代码，然后再执行，编译的命令如下：
 
 ```
-sh gradlew clean bootJar
+bash gradlew clean bootJar
 
 ```
 
@@ -200,39 +200,73 @@ dataflowJob.shardingItemParameters=0=A,1=B,2=C
 实践表明，当区块链上存在海量的数据时，导出到单个数据库或单个业务表会对运维造成巨大的压力，造成数据库性能的衰减。
 一般来讲，单一数据库实例的数据的阈值在1TB之内，单一数据库表的数据的阈值在10G以内，是比较合理的范围。
 
-如果数据量超过此阈值，建议对数据进行分片。将同一张表内的数据拆分到多个或同个数据库的多张表。
+如果数据量超过此阈值，建议对数据进行分片。将同一张表内的数据拆分到同个数据库的多张表。
+```
+sharding.jdbc.datasource.names=ds
+# 定义数据源ds属性        
+sharding.jdbc.datasource.ds.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.ds.driver-class-name=com.mysql.cj.jdbc.Driver
+sharding.jdbc.datasource.ds.jdbc-url=jdbc:mysql://[ip]:3306/[db]?autoReconnect=true&useSSL=false&serverTimezone=GMT%2b8&useUnicode=true&characterEncoding=UTF-8
+sharding.jdbc.datasource.ds.username=
+sharding.jdbc.datasource.ds.password=
+
+#将block_detail_info取模5路由到5张表
+sharding.jdbc.config.sharding.tables.block_detail_info.actual-data-nodes=ds.block_detail_info_$->{0..4}
+sharding.jdbc.config.sharding.tables.block_detail_info.table-strategy.inline.sharding-column=block_height
+sharding.jdbc.config.sharding.tables.block_detail_info.table-strategy.inline.algorithm-expression=block_detail_info_$->{block_height % 5}
+sharding.jdbc.config.sharding.tables.block_detail_info.key-generator-column-name=pk_id
+
+ ```
+
+ 将同一张表内的数据拆分到多个数据库的多张表。
 
 ```
 
-#### 定义多个数据源
-sharding.jdbc.datasource.names=ds0,ds1
+# 配置所有的数据源，如此处定义了ds,ds0,ds1 三个数据源，对应三个库
+sharding.jdbc.datasource.names=ds,ds0,ds1
 
-#### 数据源ds0的默认配置
+# 设置默认的数据源
+sharding.jdbc.config.sharding.default-datasource-name=ds
+
+# 定义数据源ds
+sharding.jdbc.datasource.ds.type=com.zaxxer.hikari.HikariDataSource
+sharding.jdbc.datasource.ds.driver-class-name=com.mysql.cj.jdbc.Driver
+sharding.jdbc.datasource.ds.jdbc-url=jdbc:mysql://[ip]:3306/[db]?autoReconnect=true&useSSL=false&serverTimezone=GMT%2b8&useUnicode=true&characterEncoding=UTF-8
+sharding.jdbc.datasource.ds.username=
+sharding.jdbc.datasource.ds.password=
+
+# 定义数据源ds0
 sharding.jdbc.datasource.ds0.type=com.zaxxer.hikari.HikariDataSource
 sharding.jdbc.datasource.ds0.driver-class-name=com.mysql.cj.jdbc.Driver
-sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
+sharding.jdbc.datasource.ds0.jdbc-url=jdbc:mysql://[ip]:3306/[db]?autoReconnect=true&useSSL=false&serverTimezone=GMT%2b8&useUnicode=true&characterEncoding=UTF-8
 sharding.jdbc.datasource.ds0.username=
 sharding.jdbc.datasource.ds0.password=
 
-#### 数据源ds1的默认配置
+# 定义数据源ds1
 sharding.jdbc.datasource.ds1.type=com.zaxxer.hikari.HikariDataSource
 sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.cj.jdbc.Driver
-sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
+sharding.jdbc.datasource.ds1.jdbc-url=jdbc:mysql://[ip]:3306/[db]?autoReconnect=true&useSSL=false&serverTimezone=GMT%2b8&useUnicode=true&characterEncoding=UTF-8
 sharding.jdbc.datasource.ds1.username=
 sharding.jdbc.datasource.ds1.password=
 
-#### 数据库默认分库分表的列字段
-sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
-#### 数据库默认分库分表的算法
-sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
+# 定义数据库默认分片的数量，此处分为2，以block_height取模2来路由到ds0或ds1
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=block_height
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{block_height % 2}
 
-#### 数据库表block_tx_detail_info的配置，以下配置即为数据自动分为5个分片，以block_height%5来进行路由，pk-id为自增值
-sharding.jdbc.config.sharding.tables.block_tx_detail_info.actual-data-nodes=ds.block_tx_detail_info_$->{0..4}
-sharding.jdbc.config.sharding.tables.block_tx_detail_info.table-strategy.inline.sharding-column=block_height
-sharding.jdbc.config.sharding.tables.block_tx_detail_info.table-strategy.inline.algorithm-expression=block_tx_detail_info_$->{block_height % 5}
-sharding.jdbc.config.sharding.tables.block_tx_detail_info.key-generator-column-name=pk_id
+# 定义block_detail_info的分表策略，以block_height取模2来路由到ds0的block_detail_info0或ds1的block_detail_info1
+sharding.jdbc.config.sharding.tables.block_detail_info.actual-data-nodes=ds0.block_detail_info0,ds1.block_detail_info1
+sharding.jdbc.config.sharding.tables.block_detail_info.table-strategy.inline.sharding-column=block_height
+sharding.jdbc.config.sharding.tables.block_detail_info.table-strategy.inline.algorithm-expression=block_detail_info$->{block_height % 2}
+sharding.jdbc.config.sharding.tables.block_detail_info.key-generator-column-name=pk_id
 
-#### 如果需要对更多的数据库表进行分片，请按上面的例子进行修改、配置
+sharding.jdbc.config.sharding.tables.block_task_pool.actual-data-nodes=ds0.block_task_pool0,ds1.block_task_pool1
+sharding.jdbc.config.sharding.tables.block_task_pool.table-strategy.inline.sharding-column=block_height
+sharding.jdbc.config.sharding.tables.block_task_pool.table-strategy.inline.algorithm-expression=block_task_pool$->{block_height % 2}
+sharding.jdbc.config.sharding.tables.block_task_pool.key-generator-column-name=pk_id
+
+# 打印sql日志的开关
+sharding.jdbc.config.props.sql.show=true
+
 
 ```
 
@@ -281,13 +315,13 @@ sharding.jdbc.datasource.names=master,slave0
         
 sharding.jdbc.datasource.master.type=com.zaxxer.hikari.HikariDataSource
 sharding.jdbc.datasource.master.driver-class-name=com.mysql.cj.jdbc.Driver
-sharding.jdbc.datasource.master.jdbc-url=jdbc:mysql://106.12.31.94:3306/test0?useSSL=false&serverTimezone=GMT%2b8&useUnicode=true&characterEncoding=UTF-8
+sharding.jdbc.datasource.master.jdbc-url=jdbc:mysql://[ip]:3306/[db]?useSSL=false&serverTimezone=GMT%2b8&useUnicode=true&characterEncoding=UTF-8
 sharding.jdbc.datasource.master.username=
 sharding.jdbc.datasource.master.password=
 
 sharding.jdbc.datasource.slave0.type=com.zaxxer.hikari.HikariDataSource
 sharding.jdbc.datasource.slave0.driver-class-name=com.mysql.cj.jdbc.Driver
-sharding.jdbc.datasource.slave0.jdbc-url=jdbc:mysql://106.12.31.94:3306/test1?useSSL=false&serverTimezone=GMT%2b8&useUnicode=true&characterEncoding=UTF-8
+sharding.jdbc.datasource.slave0.jdbc-url=jdbc:mysql://[ip]:3306/[db]?useSSL=false&serverTimezone=GMT%2b8&useUnicode=true&characterEncoding=UTF-8
 sharding.jdbc.datasource.slave0.username=
 sharding.jdbc.datasource.slave0.password=
 
@@ -395,7 +429,7 @@ warn_number=1
  ##### 2.2.5.1  使用
 monitor.sh脚本可以直接执行. 
 ```
-./monitor.sh 
+bash monitor.sh 
 block height now is 47
 download number is 48
 Now have 0 blocks to depot
