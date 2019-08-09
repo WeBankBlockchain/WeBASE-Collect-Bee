@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
-import com.webank.webasebee.common.constants.BlockForkConstants;
+import com.webank.webasebee.common.constants.BlockConstants;
 import com.webank.webasebee.common.enums.BlockCertaintyEnum;
 import com.webank.webasebee.common.enums.TxInfoStatusEnum;
 import com.webank.webasebee.db.entity.BlockTaskPool;
@@ -76,7 +76,7 @@ public class BlockPrepareService {
             if (certainty) {
                 pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
             } else {
-                if (i <= end - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
+                if (i <= end - BlockConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
                     pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
                 } else {
                     pool.setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());

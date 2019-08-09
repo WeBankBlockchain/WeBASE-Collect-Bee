@@ -102,6 +102,12 @@ project(':WeBASE-Collect-Bee-core') {
   }
 }
 
+project(':WeBASE-Collect-Bee-extractor') {
+  dependencies {
+    implementation project(':WeBASE-Collect-Bee-common')
+  }
+}
+
 project(':WeBASE-Collect-Bee-parser') {
   dependencies {
     implementation project(':WeBASE-Collect-Bee-extractor')   

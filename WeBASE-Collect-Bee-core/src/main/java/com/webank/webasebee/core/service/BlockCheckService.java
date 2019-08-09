@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.webank.webasebee.common.constants.BlockForkConstants;
+import com.webank.webasebee.common.constants.BlockConstants;
 import com.webank.webasebee.common.enums.BlockCertaintyEnum;
 import com.webank.webasebee.common.enums.TxInfoStatusEnum;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
@@ -84,7 +84,7 @@ public class BlockCheckService {
         List<BlockTaskPool> uncertainBlocks =
                 blockTaskPoolRepository.findByCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
         for (BlockTaskPool pool : uncertainBlocks) {
-            if (pool.getBlockHeight() <= currentBlockHeight - BlockForkConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
+            if (pool.getBlockHeight() <= currentBlockHeight - BlockConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
                 if (pool.getSyncStatus() == TxInfoStatusEnum.DOING.getStatus()) {
                     log.error("block {} is doing!", pool.getBlockHeight());
                     continue;
@@ -115,7 +115,7 @@ public class BlockCheckService {
     }
 
     public void checkTimeOut() {
-        Date offsetDate = DateUtil.offsetSecond(DateUtil.date(), 0 - BlockForkConstants.DEPOT_TIME_OUT);
+        Date offsetDate = DateUtil.offsetSecond(DateUtil.date(), 0 - BlockConstants.DEPOT_TIME_OUT);
         log.info("Begin to check timeout transactions which is ealier than {}", offsetDate);
         List<BlockTaskPool> list = blockTaskPoolRepository
                 .findBySyncStatusAndDepotUpdatetimeLessThan(TxInfoStatusEnum.DOING.getStatus(), offsetDate);

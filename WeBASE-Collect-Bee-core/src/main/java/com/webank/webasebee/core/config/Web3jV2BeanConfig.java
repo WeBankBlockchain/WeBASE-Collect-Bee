@@ -70,7 +70,7 @@ public class Web3jV2BeanConfig {
         channelService.setGroupId(systemEnvironmentConfig.getGroupId());
         channelService.setAllChannelConnections(groupChannelConnectionsConfig);
         // set some default connect timeout seconds
-        channelService.setConnectSeconds(30);
+        channelService.setConnectSeconds(20);
         channelService.setConnectSleepPerMillis(10);
 
         return channelService;
