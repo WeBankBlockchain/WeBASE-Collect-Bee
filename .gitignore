@@ -42,3 +42,4 @@ my.log*
 *.log
 
 src/test/java/com/webank/webasebee/contract/
+WeBASE-Collect-Bee-core/src/test/java/com/webank/webasebee/core/contract/

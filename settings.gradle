@@ -1,1 +1,2 @@
 rootProject.name = 'WeBASE-Collect-Bee'
+include 'WeBASE-Collect-Bee-core', 'WeBASE-Collect-Bee-extractor', 'WeBASE-Collect-Bee-parser', 'WeBASE-Collect-Bee-common', 'WeBASE-Collect-Bee-db'
