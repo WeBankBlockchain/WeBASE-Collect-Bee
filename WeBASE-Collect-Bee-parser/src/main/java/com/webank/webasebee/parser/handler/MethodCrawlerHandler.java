@@ -106,8 +106,10 @@ public class MethodCrawlerHandler {
                     methodInfoList.add(methodCrawlService
                             .getMethodCrawler(
                                     StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
-                            .get().transactionHandler(transaction, block.getTimestamp(), contractEntry,
-                                    methodMetaInfo.getMethodName(), txHashContractAddressMapping));
+                            .get()
+                            .transactionHandler(transaction, block.getTimestamp(), contractEntry,
+                                    methodMetaInfo.getMethodName(), txHashContractAddressMapping)
+                            .setMethodStatus(receipt.getStatus()));
                 }
             }
         }

@@ -37,4 +37,5 @@ public class MethodBO extends CommonBO {
     private String txHash;
     private Date blockTimeStamp;
     private String contractAddress;
+    private String methodStatus;
 }
