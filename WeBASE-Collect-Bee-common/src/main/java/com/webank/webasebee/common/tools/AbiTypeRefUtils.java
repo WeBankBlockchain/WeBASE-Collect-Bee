@@ -284,6 +284,40 @@ public final class AbiTypeRefUtils{
           return new TypeReference<StaticArray15<Bytes32>>(false) {};
       case "bytes32[16]":
           return new TypeReference<StaticArray16<Bytes32>>(false) {};
+      case "bytes32[17]":
+          return new TypeReference<StaticArray17<Bytes32>>(false) {};
+      case "bytes32[18]":
+          return new TypeReference<StaticArray18<Bytes32>>(false) {};
+      case "bytes32[19]":
+          return new TypeReference<StaticArray19<Bytes32>>(false) {};
+      case "bytes32[20]":
+          return new TypeReference<StaticArray20<Bytes32>>(false) {};
+      case "bytes32[21]":
+          return new TypeReference<StaticArray21<Bytes32>>(false) {};
+      case "bytes32[22]":
+          return new TypeReference<StaticArray22<Bytes32>>(false) {};
+      case "bytes32[23]":
+          return new TypeReference<StaticArray23<Bytes32>>(false) {};
+      case "bytes32[24]":
+          return new TypeReference<StaticArray24<Bytes32>>(false) {};
+      case "bytes32[25]":
+          return new TypeReference<StaticArray25<Bytes32>>(false) {};
+      case "bytes32[26]":
+          return new TypeReference<StaticArray26<Bytes32>>(false) {};
+      case "bytes32[27]":
+          return new TypeReference<StaticArray27<Bytes32>>(false) {};
+      case "bytes32[28]":
+          return new TypeReference<StaticArray28<Bytes32>>(false) {};
+      case "bytes32[29]":
+          return new TypeReference<StaticArray29<Bytes32>>(false) {};
+      case "bytes32[30]":
+          return new TypeReference<StaticArray30<Bytes32>>(false) {};
+      case "bytes32[31]":
+          return new TypeReference<StaticArray31<Bytes32>>(false) {};
+      case "bytes32[32]":
+          return new TypeReference<StaticArray32<Bytes32>>(false) {};
+      case "bytes32[128]":
+          return new TypeReference<StaticArray128<Bytes32>>(false) {};
       case "int256[1]":
           return new TypeReference<StaticArray1<Int256>>(false) {};
       case "int256[2]":
