@@ -122,7 +122,7 @@ public class BytesUtils {
         return JacksonUtils.toJson(stringList);
     }
 
-    public static String uint256DArrayToString(Object list) {
+    public static String uint256ArrayToString(Object list) {
         return uint256ArrayToString((List<Uint256>) list);
     }
 
