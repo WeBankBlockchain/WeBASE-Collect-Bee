@@ -57,5 +57,4 @@ public class SystemEnvironmentConfig {
 
     private long startBlockHeight = 0;
     private String startDate;
-
 }
