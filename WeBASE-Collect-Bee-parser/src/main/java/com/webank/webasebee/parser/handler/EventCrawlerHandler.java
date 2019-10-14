@@ -76,7 +76,8 @@ public class EventCrawlerHandler {
                     continue;
                 }
                 bcosEventCrawlerMap.forEach((k, v) -> {
-                    if (!StringUtils.startsWithIgnoreCase(k, contractName)) {
+                    if (ContractConstants.EXPORT_INNER_CALL_EVENT == false
+                            && !StringUtils.startsWithIgnoreCase(k, contractName)) {
                         return;
                     }
                     boList.addAll(v.handleReceipt(tr, block.getTimestamp()));
