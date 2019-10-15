@@ -56,8 +56,8 @@ WeBASE-Collect-Bee可以导出区块链上的基础数据，如当前块高、�
 | docker    | >= docker[18.0.0] | 只有需要可视化监控页面的时候才需要安装|
 
 ## 文档
-- [**中文**](https://webasedoc.readthedocs.io/zh_CN/dev-1.0.2/docs/WeBASE-Collect-Bee/index.html)
-- [**快速安装**](https://webasedoc.readthedocs.io/zh_CN/dev-1.0.2/docs/WeBASE-Collect-Bee/install.html)
+- [**中文**](https://webasedoc.readthedocs.io/zh_CN/latest/docs/WeBASE-Collect-Bee/index.html)
+- [**快速安装**](https://webasedoc.readthedocs.io/zh_CN/latest/docs/WeBASE-Collect-Bee/install.html)
 
 
 ## 贡献代码
