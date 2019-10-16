@@ -78,6 +78,10 @@ public class BytesUtils {
         return JacksonUtils.toJson(bytes32DynamicArrayToList(bytes32DynamicArray));
     }
 
+    public static String uint256DynamicArrayToString(Object list) {
+        return uint256DynamicArrayToString((List<Uint256>) list);
+    }
+
     public static String uint256DynamicArrayToString(List<Uint256> list) {
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {

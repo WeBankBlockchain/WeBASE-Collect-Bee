@@ -70,7 +70,7 @@ public class EventCrawlerHandler {
                         tr.setContractAddress(transaction.getTo());
                     }
                 }
-                if (StringUtils.isEmpty(contractName)) {
+                if (ContractConstants.EXPORT_INNER_CALL_EVENT == false && StringUtils.isEmpty(contractName)) {
                     log.error("TxHash {} is Empty, and the blockNumber is {}! Please check it. ",
                             tr.getTransactionHash(), block.getNumber());
                     continue;
