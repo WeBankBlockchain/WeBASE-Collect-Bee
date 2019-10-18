@@ -16,8 +16,10 @@
 package com.webank.webasebee.common.tools;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import org.fisco.bcos.web3j.abi.datatypes.Address;
+import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
 
 /**
  * AddressUtils
@@ -36,6 +38,12 @@ public class AddressUtils {
 
     public static String bigIntegerToString(Object obj) {
         return bigIntegerToString((BigInteger) obj);
+    }
+    
+    public static String staticArrayToString(Object obj) {
+        StaticArray<Address> sa = (StaticArray<Address>) obj;
+        List<Address> list = sa.getValue();
+        return JacksonUtils.toJson(list);
     }
 
 }
