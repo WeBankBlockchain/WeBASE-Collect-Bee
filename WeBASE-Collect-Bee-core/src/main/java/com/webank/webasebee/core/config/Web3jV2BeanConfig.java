@@ -30,7 +30,6 @@ import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
 
 import com.google.common.collect.Lists;
 import com.webank.webasebee.common.constants.GasConstants;
@@ -81,9 +80,9 @@ public class Web3jV2BeanConfig {
     public GroupChannelConnectionsConfig getGroupChannelConnections() {
         GroupChannelConnectionsConfig groupChannelConnectionsConfig = new GroupChannelConnectionsConfig();
         ChannelConnections con = new ChannelConnections();
-        con.setCaCert(new FileSystemResource("./config/ca.crt"));
-        con.setSslCert(new FileSystemResource("./config/node.crt"));
-        con.setSslKey(new FileSystemResource("./config/node.key"));
+        con.setCaCertPath("file:./config/ca.crt");
+        con.setNodeCaPath("file:./config/node.crt");
+        con.setNodeKeyPath("file:./config/node.key");
         ArrayList<String> list = new ArrayList<>();
         List<ChannelConnections> allChannelConnections = new ArrayList<>();
         String[] nodes = StringUtils.split(systemEnvironmentConfig.getNodeStr(), ";");
