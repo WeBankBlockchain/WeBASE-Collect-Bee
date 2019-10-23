@@ -350,6 +350,38 @@ public final class AbiTypeRefUtils{
           return new TypeReference<StaticArray15<Int256>>(false) {};
       case "int256[16]":
           return new TypeReference<StaticArray16<Int256>>(false) {};
+      case "uint256[1]":
+          return new TypeReference<StaticArray1<Uint256>>(false) {};
+      case "uint256[2]":
+          return new TypeReference<StaticArray2<Uint256>>(false) {};
+      case "uint256[3]":
+          return new TypeReference<StaticArray3<Uint256>>(false) {};
+      case "uint256[4]":
+          return new TypeReference<StaticArray4<Uint256>>(false) {};
+      case "uint256[5]":
+          return new TypeReference<StaticArray5<Uint256>>(false) {};
+      case "uint256[6]":
+          return new TypeReference<StaticArray6<Uint256>>(false) {};
+      case "uint256[7]":
+          return new TypeReference<StaticArray7<Uint256>>(false) {};
+      case "uint256[8]":
+          return new TypeReference<StaticArray8<Uint256>>(false) {};
+      case "uint256[9]":
+          return new TypeReference<StaticArray9<Uint256>>(false) {};
+      case "uint256[10]":
+          return new TypeReference<StaticArray10<Uint256>>(false) {};
+      case "uint256[11]":
+          return new TypeReference<StaticArray11<Uint256>>(false) {};
+      case "uint256[12]":
+          return new TypeReference<StaticArray12<Uint256>>(false) {};
+      case "uint256[13]":
+          return new TypeReference<StaticArray13<Uint256>>(false) {};
+      case "uint256[14]":
+          return new TypeReference<StaticArray14<Uint256>>(false) {};
+      case "uint256[15]":
+          return new TypeReference<StaticArray15<Uint256>>(false) {};
+      case "uint256[16]":
+          return new TypeReference<StaticArray16<Uint256>>(false) {};
       default:
           throw new UnsupportedOperationException("Unsupported type encountered: " + type);
     }
