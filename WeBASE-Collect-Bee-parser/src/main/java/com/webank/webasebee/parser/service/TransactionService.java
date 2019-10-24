@@ -67,7 +67,7 @@ public class TransactionService {
             Map<String, String> txHashContractAddressMapping) throws IOException {
         String contractAddress = getContractAddressByTransaction(transaction, txHashContractAddressMapping);
         if (StringUtils.isEmpty(contractAddress)) {
-            log.error(
+            log.warn(
                     "block:{} , unrecognized transaction, maybe the contract is not registered! See the DIR of contractPath.",
                     transaction.getBlockNumber());
             return Optional.empty();
@@ -76,7 +76,7 @@ public class TransactionService {
         log.debug("code: {}", JacksonUtils.toJson(input));
         Entry<String, String> contractEntry = contractConstructorService.getConstructorNameByCode(input);
         if (contractEntry == null) {
-            log.error(
+            log.warn(
                     "block:{} constructor code can't be find, maybe the contract is not registered! See the DIR of contractPath.",
                     transaction.getBlockNumber());
             return Optional.empty();

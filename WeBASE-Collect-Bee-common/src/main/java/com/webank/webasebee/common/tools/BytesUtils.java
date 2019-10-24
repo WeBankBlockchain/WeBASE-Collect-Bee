@@ -78,6 +78,10 @@ public class BytesUtils {
         return JacksonUtils.toJson(bytes32DynamicArrayToList(bytes32DynamicArray));
     }
 
+    public static String uint256DynamicArrayToString(Object list) {
+        return uint256DynamicArrayToString((List<Uint256>) list);
+    }
+
     public static String uint256DynamicArrayToString(List<Uint256> list) {
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -108,6 +112,22 @@ public class BytesUtils {
             stringList.add(list.get(i).getValue().toString());
         }
         return JacksonUtils.toJson(stringList);
+    }
+
+    public static String int256DynamicArrayToString(Object list) {
+        return int256DynamicArrayToString((List<Int256>) list);
+    }
+
+    public static String uint256ArrayToString(List<Uint256> list) {
+        List<String> stringList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            stringList.add(list.get(i).getValue().toString());
+        }
+        return JacksonUtils.toJson(stringList);
+    }
+
+    public static String uint256ArrayToString(Object list) {
+        return uint256ArrayToString((List<Uint256>) list);
     }
 
     public static String intDynamicArrayToString(List<Int> list) {

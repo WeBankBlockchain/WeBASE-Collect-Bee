@@ -30,6 +30,8 @@ import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import com.google.common.collect.Lists;
 import com.webank.webasebee.common.constants.GasConstants;
@@ -80,9 +82,13 @@ public class Web3jV2BeanConfig {
     public GroupChannelConnectionsConfig getGroupChannelConnections() {
         GroupChannelConnectionsConfig groupChannelConnectionsConfig = new GroupChannelConnectionsConfig();
         ChannelConnections con = new ChannelConnections();
-        con.setCaCertPath("file:./config/ca.crt");
-        con.setNodeCaPath("file:./config/node.crt");
-        con.setNodeKeyPath("file:./config/node.key");
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        Resource ca = resolver.getResource("file:./config/ca.crt");
+        Resource nodeCrt = resolver.getResource("file:./config/node.crt");
+        Resource nodeKey = resolver.getResource("file:./config/node.key");
+        groupChannelConnectionsConfig.setCaCert(ca);
+        groupChannelConnectionsConfig.setSslCert(nodeCrt);
+        groupChannelConnectionsConfig.setSslKey(nodeKey);
         ArrayList<String> list = new ArrayList<>();
         List<ChannelConnections> allChannelConnections = new ArrayList<>();
         String[] nodes = StringUtils.split(systemEnvironmentConfig.getNodeStr(), ";");

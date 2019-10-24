@@ -284,6 +284,104 @@ public final class AbiTypeRefUtils{
           return new TypeReference<StaticArray15<Bytes32>>(false) {};
       case "bytes32[16]":
           return new TypeReference<StaticArray16<Bytes32>>(false) {};
+      case "bytes32[17]":
+          return new TypeReference<StaticArray17<Bytes32>>(false) {};
+      case "bytes32[18]":
+          return new TypeReference<StaticArray18<Bytes32>>(false) {};
+      case "bytes32[19]":
+          return new TypeReference<StaticArray19<Bytes32>>(false) {};
+      case "bytes32[20]":
+          return new TypeReference<StaticArray20<Bytes32>>(false) {};
+      case "bytes32[21]":
+          return new TypeReference<StaticArray21<Bytes32>>(false) {};
+      case "bytes32[22]":
+          return new TypeReference<StaticArray22<Bytes32>>(false) {};
+      case "bytes32[23]":
+          return new TypeReference<StaticArray23<Bytes32>>(false) {};
+      case "bytes32[24]":
+          return new TypeReference<StaticArray24<Bytes32>>(false) {};
+      case "bytes32[25]":
+          return new TypeReference<StaticArray25<Bytes32>>(false) {};
+      case "bytes32[26]":
+          return new TypeReference<StaticArray26<Bytes32>>(false) {};
+      case "bytes32[27]":
+          return new TypeReference<StaticArray27<Bytes32>>(false) {};
+      case "bytes32[28]":
+          return new TypeReference<StaticArray28<Bytes32>>(false) {};
+      case "bytes32[29]":
+          return new TypeReference<StaticArray29<Bytes32>>(false) {};
+      case "bytes32[30]":
+          return new TypeReference<StaticArray30<Bytes32>>(false) {};
+      case "bytes32[31]":
+          return new TypeReference<StaticArray31<Bytes32>>(false) {};
+      case "bytes32[32]":
+          return new TypeReference<StaticArray32<Bytes32>>(false) {};
+      case "bytes32[128]":
+          return new TypeReference<StaticArray128<Bytes32>>(false) {};
+      case "int256[1]":
+          return new TypeReference<StaticArray1<Int256>>(false) {};
+      case "int256[2]":
+          return new TypeReference<StaticArray2<Int256>>(false) {};
+      case "int256[3]":
+          return new TypeReference<StaticArray3<Int256>>(false) {};
+      case "int256[4]":
+          return new TypeReference<StaticArray4<Int256>>(false) {};
+      case "int256[5]":
+          return new TypeReference<StaticArray5<Int256>>(false) {};
+      case "int256[6]":
+          return new TypeReference<StaticArray6<Int256>>(false) {};
+      case "int256[7]":
+          return new TypeReference<StaticArray7<Int256>>(false) {};
+      case "int256[8]":
+          return new TypeReference<StaticArray8<Int256>>(false) {};
+      case "int256[9]":
+          return new TypeReference<StaticArray9<Int256>>(false) {};
+      case "int256[10]":
+          return new TypeReference<StaticArray10<Int256>>(false) {};
+      case "int256[11]":
+          return new TypeReference<StaticArray11<Int256>>(false) {};
+      case "int256[12]":
+          return new TypeReference<StaticArray12<Int256>>(false) {};
+      case "int256[13]":
+          return new TypeReference<StaticArray13<Int256>>(false) {};
+      case "int256[14]":
+          return new TypeReference<StaticArray14<Int256>>(false) {};
+      case "int256[15]":
+          return new TypeReference<StaticArray15<Int256>>(false) {};
+      case "int256[16]":
+          return new TypeReference<StaticArray16<Int256>>(false) {};
+      case "uint256[1]":
+          return new TypeReference<StaticArray1<Uint256>>(false) {};
+      case "uint256[2]":
+          return new TypeReference<StaticArray2<Uint256>>(false) {};
+      case "uint256[3]":
+          return new TypeReference<StaticArray3<Uint256>>(false) {};
+      case "uint256[4]":
+          return new TypeReference<StaticArray4<Uint256>>(false) {};
+      case "uint256[5]":
+          return new TypeReference<StaticArray5<Uint256>>(false) {};
+      case "uint256[6]":
+          return new TypeReference<StaticArray6<Uint256>>(false) {};
+      case "uint256[7]":
+          return new TypeReference<StaticArray7<Uint256>>(false) {};
+      case "uint256[8]":
+          return new TypeReference<StaticArray8<Uint256>>(false) {};
+      case "uint256[9]":
+          return new TypeReference<StaticArray9<Uint256>>(false) {};
+      case "uint256[10]":
+          return new TypeReference<StaticArray10<Uint256>>(false) {};
+      case "uint256[11]":
+          return new TypeReference<StaticArray11<Uint256>>(false) {};
+      case "uint256[12]":
+          return new TypeReference<StaticArray12<Uint256>>(false) {};
+      case "uint256[13]":
+          return new TypeReference<StaticArray13<Uint256>>(false) {};
+      case "uint256[14]":
+          return new TypeReference<StaticArray14<Uint256>>(false) {};
+      case "uint256[15]":
+          return new TypeReference<StaticArray15<Uint256>>(false) {};
+      case "uint256[16]":
+          return new TypeReference<StaticArray16<Uint256>>(false) {};
       default:
           throw new UnsupportedOperationException("Unsupported type encountered: " + type);
     }

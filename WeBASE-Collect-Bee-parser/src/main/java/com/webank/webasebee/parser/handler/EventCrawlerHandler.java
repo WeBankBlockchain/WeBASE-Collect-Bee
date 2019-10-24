@@ -25,11 +25,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.data.EventBO;
+import com.webank.webasebee.common.constants.ContractConstants;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
 
@@ -61,13 +63,21 @@ public class EventCrawlerHandler {
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
                 String contractName = txHashContractNameMapping.get(tr.getTransactionHash());
-                if (StringUtils.isEmpty(contractName)) {
+                Optional<Transaction> optt = ethClient.getTransactionByHash(tr);
+                if (optt.isPresent()) {
+                    Transaction transaction = optt.get();
+                    if (transaction.getTo() != null && !transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
+                        tr.setContractAddress(transaction.getTo());
+                    }
+                }
+                if (ContractConstants.EXPORT_INNER_CALL_EVENT == false && StringUtils.isEmpty(contractName)) {
                     log.error("TxHash {} is Empty, and the blockNumber is {}! Please check it. ",
                             tr.getTransactionHash(), block.getNumber());
                     continue;
                 }
                 bcosEventCrawlerMap.forEach((k, v) -> {
-                    if (!StringUtils.startsWithIgnoreCase(k, contractName)) {
+                    if (ContractConstants.EXPORT_INNER_CALL_EVENT == false
+                            && !StringUtils.startsWithIgnoreCase(k, contractName)) {
                         return;
                     }
                     boList.addAll(v.handleReceipt(tr, block.getTimestamp()));

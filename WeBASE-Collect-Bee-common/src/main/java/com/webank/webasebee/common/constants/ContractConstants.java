@@ -26,4 +26,6 @@ package com.webank.webasebee.common.constants;
 public class ContractConstants {
     public static final String EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 
+    public static final boolean EXPORT_INNER_CALL_EVENT = true;
+
 }
