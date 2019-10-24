@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,8 +69,14 @@ public class ContractParser {
         List<ContractMethodInfo> contractMethodInfos = Lists.newArrayList();
         Set<Class<?>> clazzs = ClazzScanUtils.scan(systemEnvironmentConfig.getContractPath(),
                 systemEnvironmentConfig.getContractPackName());
-        for (Class<?> clazz : clazzs) {
-            contractMethodInfos.add(parse(clazz));
+        if (CollectionUtils.isEmpty(clazzs)) {
+            clazzs = ClazzScanUtils.scanJar(systemEnvironmentConfig.getContractPath(),
+                systemEnvironmentConfig.getContractPackName());
+        }
+        if (CollectionUtils.isNotEmpty(clazzs)) {
+            for (Class<?> clazz : clazzs) {
+                contractMethodInfos.add(parse(clazz));
+            }
         }
         return contractMethodInfos;
     }

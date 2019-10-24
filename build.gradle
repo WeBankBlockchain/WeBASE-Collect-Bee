@@ -113,6 +113,7 @@ project(':WeBASE-Collect-Bee-parser') {
   dependencies {
     implementation project(':WeBASE-Collect-Bee-extractor')   
     implementation project(':WeBASE-Collect-Bee-common')
+    compile fileTree(dir: '../libs', includes: ['*.jar'])
   }
 }
 
