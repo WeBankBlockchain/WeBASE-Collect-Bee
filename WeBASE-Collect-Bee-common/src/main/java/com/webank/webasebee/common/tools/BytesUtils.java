@@ -18,9 +18,11 @@ package com.webank.webasebee.common.tools;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.fisco.bcos.web3j.abi.datatypes.Bytes;
 import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
+import org.fisco.bcos.web3j.abi.datatypes.DynamicBytes;
 import org.fisco.bcos.web3j.abi.datatypes.Int;
 import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
 import org.fisco.bcos.web3j.abi.datatypes.Uint;
@@ -166,5 +168,15 @@ public class BytesUtils {
         StaticArray<Bytes32> sa = (StaticArray<Bytes32>) obj;
         List<Bytes32> list = sa.getValue();
         return bytes32ListToString(list);
+    }
+    
+    public static String dynamicBytesListObjectToString(Object obj) {
+        List<DynamicBytes> list = (List<DynamicBytes>) obj;
+        return dynamicBytesListToString(list);
+    }
+
+    public static String dynamicBytesListToString(List<DynamicBytes> list) {
+        return JacksonUtils
+                .toJson(list.stream().map(b -> b.getValue()).map(b -> new String(b)).collect(Collectors.toList()));
     }
 }
