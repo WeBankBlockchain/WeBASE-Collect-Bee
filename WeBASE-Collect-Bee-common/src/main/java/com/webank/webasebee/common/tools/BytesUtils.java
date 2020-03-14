@@ -169,7 +169,7 @@ public class BytesUtils {
         List<Bytes32> list = sa.getValue();
         return bytes32ListToString(list);
     }
-    
+
     public static String dynamicBytesListObjectToString(Object obj) {
         List<DynamicBytes> list = (List<DynamicBytes>) obj;
         return dynamicBytesListToString(list);
@@ -178,5 +178,9 @@ public class BytesUtils {
     public static String dynamicBytesListToString(List<DynamicBytes> list) {
         return JacksonUtils
                 .toJson(list.stream().map(b -> b.getValue()).map(b -> new String(b)).collect(Collectors.toList()));
+    }
+
+    public static String listByteArrayToString(List<byte[]> list) {
+        return JacksonUtils.toJson(list.stream().map(b -> String.valueOf(b)).collect(Collectors.toList()));
     }
 }
