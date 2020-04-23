@@ -85,10 +85,7 @@ project(':WeBASE-Collect-Bee-core') {
     implementation('com.ibeetl:beetl:2.9.3')
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation 'mysql:mysql-connector-java'
-    implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0') {
-        exclude module: ':sharding-core'
-        compile fileTree(dir: '../libs', includes: ['*.jar'])
-    }
+    implementation('org.apache.shardingsphere:sharding-jdbc-spring-boot-starter:4.0.1')
     
     // elastic-job
     implementation('com.dangdang:elastic-job-lite-core:2.1.5')
@@ -123,10 +120,7 @@ project(':WeBASE-Collect-Bee-db') {
     implementation project(':WeBASE-Collect-Bee-parser')   
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation 'mysql:mysql-connector-java'
-    implementation('io.shardingsphere:sharding-jdbc-spring-boot-starter:3.1.0') {
-        exclude module: ':sharding-core'
-        compile fileTree(dir: '../libs', includes: ['*.jar'])
-    }
+    implementation('org.apache.shardingsphere:sharding-jdbc-spring-boot-starter:4.0.1')
 
   }
 }
