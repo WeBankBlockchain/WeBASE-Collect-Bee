@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.webank.webasebee.common.bo.data.BlockInfoBO;

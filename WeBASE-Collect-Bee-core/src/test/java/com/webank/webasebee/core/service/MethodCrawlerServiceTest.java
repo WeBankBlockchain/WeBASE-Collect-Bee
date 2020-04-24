@@ -15,10 +15,10 @@
  */
 package com.webank.webasebee.core.service;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.webank.webasebee.core.BaseTest;
+import com.webank.webasebee.core.WebaseBeeApplicationTests;
 import com.webank.webasebee.core.parser.ContractParser;
 import com.webank.webasebee.parser.handler.MethodCrawlerHandler;
 
@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class MethodCrawlerServiceTest extends BaseTest {
+public class MethodCrawlerServiceTest extends WebaseBeeApplicationTests {
 	
 	@Autowired
 	private ContractParser methodMapper;

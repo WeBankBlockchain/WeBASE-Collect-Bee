@@ -31,12 +31,12 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceip
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.txdecode.BaseException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.webank.webasebee.common.tools.JacksonUtils;
 import com.webank.webasebee.common.tools.TypeReferenceUtils;
-import com.webank.webasebee.core.BaseTest;
+import com.webank.webasebee.core.WebaseBeeApplicationTests;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
 import com.webank.webasebee.core.parser.ContractParser;
 import com.webank.webasebee.extractor.ods.EthClient;
@@ -53,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class FunctionTest extends BaseTest {
+public class FunctionTest extends WebaseBeeApplicationTests {
 
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;

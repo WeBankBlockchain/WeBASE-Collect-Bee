@@ -17,7 +17,7 @@ package com.webank.webasebee.core.jpa;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.webank.webasebee.core.WebaseBeeApplicationTests;

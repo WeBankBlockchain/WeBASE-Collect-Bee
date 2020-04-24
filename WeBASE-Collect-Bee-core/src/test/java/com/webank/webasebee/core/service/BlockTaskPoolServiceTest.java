@@ -15,11 +15,10 @@
  */
 package com.webank.webasebee.core.service;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.webank.webasebee.core.BaseTest;
-import com.webank.webasebee.core.service.BlockCheckService;
+import com.webank.webasebee.core.WebaseBeeApplicationTests;
 
 /**
  * BlockTaskPoolServiceTest
@@ -29,7 +28,7 @@ import com.webank.webasebee.core.service.BlockCheckService;
  * @data May 5, 2019 5:28:13 PM
  *
  */
-public class BlockTaskPoolServiceTest extends BaseTest {
+public class BlockTaskPoolServiceTest extends WebaseBeeApplicationTests {
 
     @Autowired
     BlockCheckService blockTaskPoolService;

@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Order(value = 1)
+@Profile("!test")
 @ConditionalOnProperty(name = "system.multiLiving", havingValue = "false")
 @Slf4j
 public class CrawlApplicationRunner implements ApplicationRunner {
