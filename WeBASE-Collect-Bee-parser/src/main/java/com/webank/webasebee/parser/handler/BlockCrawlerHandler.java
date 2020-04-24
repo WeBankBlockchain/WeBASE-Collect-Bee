@@ -49,7 +49,7 @@ public class BlockCrawlerHandler {
         blockDetailInfo.setTxCount(block.getTransactions().size());
         blockDetailInfo.setBlockHash(block.getHash());
         blockDetailInfo.setBlockTimeStamp(new Date(block.getTimestamp().longValue()));
-        blockDetailInfo.setStatus(Status.COMPLETED);
+        blockDetailInfo.setStatus((short) Status.COMPLETED.ordinal());
         return blockDetailInfo;
     }
 }

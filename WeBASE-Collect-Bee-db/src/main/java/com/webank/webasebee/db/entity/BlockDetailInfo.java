@@ -59,14 +59,14 @@ public class BlockDetailInfo extends IdEntity {
 
     /** @Fields txCount : transaction's count in block */
     @Column(name = "tx_count")
-    private int txCount;
+    private short txCount;
 
     /** @Fields blockTimeStamp : block timestamp */
     @Column(name = "block_timestamp")
     private Date blockTimeStamp;
 
     /** @Fields status : block process status */
-    private Status status;
+    private short status;
 
     /** @Fields updatetime : depot update time */
     @UpdateTimestamp

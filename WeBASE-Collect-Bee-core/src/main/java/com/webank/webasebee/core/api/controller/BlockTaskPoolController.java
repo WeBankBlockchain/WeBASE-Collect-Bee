@@ -52,7 +52,7 @@ public class BlockTaskPoolController {
     @RequestMapping("/blocks/get")
     @ApiOperation(value = "Get finished block count", httpMethod = "GET")
     public long getFinishedBlockCount() {
-        return blockTaskPoolRepository.countBySyncStatus(TxInfoStatusEnum.DONE.getStatus());
+        return blockTaskPoolRepository.countBySyncStatus((short) TxInfoStatusEnum.DONE.getStatus());
     }
 
     @ResponseBody

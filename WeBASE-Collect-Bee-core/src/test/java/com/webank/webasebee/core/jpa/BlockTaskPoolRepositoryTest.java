@@ -37,7 +37,7 @@ public class BlockTaskPoolRepositoryTest extends WebaseBeeApplicationTests {
 
     @Test
     public void testUpd() {
-        r.setSyncStatusByBlockHeight(7, new Date(), 20);
+        r.setSyncStatusByBlockHeight((short)7, new Date(), 20);
     }
 
 }

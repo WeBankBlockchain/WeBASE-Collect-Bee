@@ -66,10 +66,12 @@ public class BlockDataResetService {
             }
         }
         log.info("begin to refetch block {}", blockHeight);
-        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.RESET.getStatus(), new Date(), blockHeight);
+        blockTaskPoolRepository.setSyncStatusByBlockHeight((short) TxInfoStatusEnum.RESET.getStatus(), new Date(),
+                blockHeight);
         rollBackService.rollback(blockHeight, blockHeight + 1);
         singleBlockCrawlerService.parse(blockHeight);
-        blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.DONE.getStatus(), new Date(), blockHeight);
+        blockTaskPoolRepository.setSyncStatusByBlockHeight((short) TxInfoStatusEnum.DONE.getStatus(), new Date(),
+                blockHeight);
         log.info("block {} is reset!", blockHeight);
         return ResponseUtils.success();
     }

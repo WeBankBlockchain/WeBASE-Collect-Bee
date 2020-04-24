@@ -57,14 +57,14 @@ public class BlockTaskPool extends IdEntity {
 
     /** @Fields syncStatus : sync status of transactions */
     @Column(name = "sync_status")
-    private int syncStatus;
+    private short syncStatus;
 
     /** @Fields certainty : certainty of fork check */
     @Column(name = "certainty")
-    private int certainty;
+    private short certainty;
 
     @Column(name = "handle_item")
-    private int handleItem = 0;
+    private short handleItem = 0;
 
     /** @Fields updatetime : update time */
     @UpdateTimestamp

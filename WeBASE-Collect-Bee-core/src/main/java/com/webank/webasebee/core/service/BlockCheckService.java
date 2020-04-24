@@ -74,7 +74,8 @@ public class BlockCheckService {
             unnormalRecords.parallelStream().map(b -> b.getBlockHeight()).forEach(e -> {
                 log.error("Block {} sync error, and begin to rollback.", e);
                 rollBackService.rollback(e, e + 1);
-                blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.INIT.getStatus(), new Date(), e);
+                blockTaskPoolRepository.setSyncStatusByBlockHeight((short) TxInfoStatusEnum.INIT.getStatus(),
+                        new Date(), e);
             });
         }
     }
@@ -82,7 +83,7 @@ public class BlockCheckService {
     public void checkForks(long currentBlockHeight) throws IOException {
         log.info("current block height is {}, and begin to check forks", currentBlockHeight);
         List<BlockTaskPool> uncertainBlocks =
-                blockTaskPoolRepository.findByCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
+                blockTaskPoolRepository.findByCertainty((short) BlockCertaintyEnum.UNCERTAIN.getCertainty());
         for (BlockTaskPool pool : uncertainBlocks) {
             if (pool.getBlockHeight() <= currentBlockHeight - BlockConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
                 if (pool.getSyncStatus() == TxInfoStatusEnum.DOING.getStatus()) {
@@ -91,7 +92,7 @@ public class BlockCheckService {
                 }
                 if (pool.getSyncStatus() == TxInfoStatusEnum.INIT.getStatus()) {
                     log.error("block {} is not sync!", pool.getBlockHeight());
-                    blockTaskPoolRepository.setCertaintyByBlockHeight(BlockCertaintyEnum.FIXED.getCertainty(),
+                    blockTaskPoolRepository.setCertaintyByBlockHeight((short) BlockCertaintyEnum.FIXED.getCertainty(),
                             pool.getBlockHeight());
                     continue;
                 }
@@ -101,11 +102,12 @@ public class BlockCheckService {
                         blockDetailInfoDAO.getBlockDetailInfoByBlockHeight(pool.getBlockHeight()).getBlockHash())) {
                     log.info("Block {} is forked!!! ready to resync", pool.getBlockHeight());
                     rollBackService.rollback(pool.getBlockHeight(), pool.getBlockHeight() + 1);
-                    blockTaskPoolRepository.setSyncStatusAndCertaintyByBlockHeight(TxInfoStatusEnum.INIT.getStatus(),
-                            BlockCertaintyEnum.FIXED.getCertainty(), pool.getBlockHeight());
+                    blockTaskPoolRepository.setSyncStatusAndCertaintyByBlockHeight(
+                            (short) TxInfoStatusEnum.INIT.getStatus(), (short) BlockCertaintyEnum.FIXED.getCertainty(),
+                            pool.getBlockHeight());
                 } else {
                     log.info("Block {} is not forked!", pool.getBlockHeight());
-                    blockTaskPoolRepository.setCertaintyByBlockHeight(BlockCertaintyEnum.FIXED.getCertainty(),
+                    blockTaskPoolRepository.setCertaintyByBlockHeight((short) BlockCertaintyEnum.FIXED.getCertainty(),
                             pool.getBlockHeight());
                 }
 
@@ -118,14 +120,14 @@ public class BlockCheckService {
         Date offsetDate = DateUtil.offsetSecond(DateUtil.date(), 0 - BlockConstants.DEPOT_TIME_OUT);
         log.info("Begin to check timeout transactions which is ealier than {}", offsetDate);
         List<BlockTaskPool> list = blockTaskPoolRepository
-                .findBySyncStatusAndDepotUpdatetimeLessThan(TxInfoStatusEnum.DOING.getStatus(), offsetDate);
+                .findBySyncStatusAndDepotUpdatetimeLessThan((short) TxInfoStatusEnum.DOING.getStatus(), offsetDate);
         if (!CollectionUtils.isEmpty(list)) {
             log.info("Detect {} timeout transactions.", list.size());
         }
         list.forEach(p -> {
             log.error("Block {} sync block timeout!!, the depot_time is {}, and the threshold time is {}",
                     p.getBlockHeight(), p.getDepotUpdatetime(), offsetDate);
-            blockTaskPoolRepository.setSyncStatusByBlockHeight(TxInfoStatusEnum.TIMEOUT.getStatus(), new Date(),
+            blockTaskPoolRepository.setSyncStatusByBlockHeight((short) TxInfoStatusEnum.TIMEOUT.getStatus(), new Date(),
                     p.getBlockHeight());
         });
 
@@ -167,9 +169,9 @@ public class BlockCheckService {
                 continue;
             }
             log.info("Successfully detect block {} is missing. Try to sync block again.", tmpIndex);
-            BlockTaskPool pool =
-                    new BlockTaskPool().setBlockHeight(tmpIndex).setSyncStatus(TxInfoStatusEnum.ERROR.getStatus())
-                            .setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
+            BlockTaskPool pool = new BlockTaskPool().setBlockHeight(tmpIndex)
+                    .setSyncStatus((short) TxInfoStatusEnum.ERROR.getStatus())
+                    .setCertainty((short) BlockCertaintyEnum.UNCERTAIN.getCertainty());
             supplements.add(pool);
         }
         return Optional.of(supplements);
