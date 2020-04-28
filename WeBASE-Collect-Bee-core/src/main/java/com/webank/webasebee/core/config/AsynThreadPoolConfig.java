@@ -44,8 +44,8 @@ public class AsynThreadPoolConfig {
     public Executor taskExecutor() {
         log.info("Begin to init taskExecutor");
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(4);
+        executor.setCorePoolSize(8);
+        executor.setMaxPoolSize(8);
         executor.setQueueCapacity(0);
         executor.setKeepAliveSeconds(60);
         executor.setThreadNamePrefix("taskExecutor-");
