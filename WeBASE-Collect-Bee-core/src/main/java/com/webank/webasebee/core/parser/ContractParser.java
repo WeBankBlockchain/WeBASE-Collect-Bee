@@ -63,7 +63,6 @@ public class ContractParser {
      * 
      * @return List<ContractMethodInfo>
      */
-    @Bean
     public List<ContractMethodInfo> initContractMethodInfo() {
         List<ContractMethodInfo> contractMethodInfos = Lists.newArrayList();
         Set<Class<?>> clazzs = ClazzScanUtils.scan(systemEnvironmentConfig.getContractPath(),
@@ -123,7 +122,7 @@ public class ContractParser {
         }
         return contractMethodInfo;
     }
-    
+
     /**
      * Translate all contract info of ContractMethodInfo's objects to methodIdMap, methodFiledsMap and
      * contractBinaryMap.
@@ -132,7 +131,8 @@ public class ContractParser {
      * @return ContractMapsInfo
      */
     @Bean
-    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo(List<ContractMethodInfo> contractMethodInfos) {
+    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo() {
+        List<ContractMethodInfo> contractMethodInfos = initContractMethodInfo();
         ContractMapsInfo contractMapsInfo = new ContractMapsInfo();
         Map<String, NameValueVO<String>> methodIdMap = new HashMap<>();
         Map<String, List<NamedType>> methodFiledsMap = new HashMap<>();
