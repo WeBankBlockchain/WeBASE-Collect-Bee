@@ -118,6 +118,7 @@ public class ContractParser {
             methodName = className + StringUtils.capitalize(methodName);
             metaInfo.setMethodName(methodName);
             metaInfo.setFieldsList(inputs);
+            metaInfo.setOutputFieldsList(abiDefinition.getOutputs());
             methodIdList.add(metaInfo);
         }
         return contractMethodInfo;
@@ -135,6 +136,7 @@ public class ContractParser {
         ContractMapsInfo contractMapsInfo = new ContractMapsInfo();
         Map<String, NameValueVO<String>> methodIdMap = new HashMap<>();
         Map<String, List<NamedType>> methodFiledsMap = new HashMap<>();
+        Map<String, List<NamedType>> outputMethodFiledsMap = new HashMap<>();
         Map<String, String> contractBinaryMap = new HashMap<>();
         for (ContractMethodInfo contractMethodInfo : contractMethodInfos) {
             contractBinaryMap.put(contractMethodInfo.getContractBinary(), contractMethodInfo.getContractName());
@@ -144,11 +146,13 @@ public class ContractParser {
                 nameValue.setValue(methodMetaInfo.getMethodName());
                 methodIdMap.put(methodMetaInfo.getMethodId(), nameValue);
                 methodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getFieldsList());
+                outputMethodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getOutputFieldsList());
             }
         }
         log.info("Init sync block: find {} contract constructors.", contractBinaryMap.size());
         contractMapsInfo.setContractBinaryMap(contractBinaryMap);
         contractMapsInfo.setMethodFiledsMap(methodFiledsMap);
+        contractMapsInfo.setOutputMethodFiledsMap(outputMethodFiledsMap);
         log.info("Init sync block: find {} contract methods.", methodIdMap.size());
         contractMapsInfo.setMethodIdMap(methodIdMap);
         return contractMapsInfo;

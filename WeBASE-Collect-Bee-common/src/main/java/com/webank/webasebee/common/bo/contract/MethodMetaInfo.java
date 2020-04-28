@@ -51,5 +51,7 @@ public class MethodMetaInfo {
 
     /** @Fields fieldsList : method input param list */
     private List<NamedType> fieldsList;
+    
+    private List<NamedType> outputFieldsList;
 
 }

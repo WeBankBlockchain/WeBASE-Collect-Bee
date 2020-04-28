@@ -107,7 +107,7 @@ public class MethodCrawlerHandler {
                             .getMethodCrawler(
                                     StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
                             .get()
-                            .transactionHandler(transaction, block.getTimestamp(), contractEntry,
+                            .transactionHandler(transaction, receipt, block.getTimestamp(), contractEntry,
                                     methodMetaInfo.getMethodName(), txHashContractAddressMapping)
                             .setMethodStatus(receipt.getStatus()));
                 }
