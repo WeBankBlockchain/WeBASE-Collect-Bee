@@ -18,7 +18,6 @@ package com.webank.webasebee.common.tools;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -214,8 +213,8 @@ public class BytesUtils {
     @SuppressWarnings("unchecked")
     public static String bytesTypeListToString(Object typeList) {
         List<BytesType> list = (List<BytesType>) typeList;
-        List<String> stringList =
-                list.stream().map(t -> t.getValue()).map(b -> Arrays.toString(b)).collect(Collectors.toList());
+        List<String> stringList = list.stream().map(t -> t.getValue())
+                .map(b -> StrUtil.str(b, Charset.defaultCharset())).collect(Collectors.toList());
         return JacksonUtils.toJson(stringList);
     }
 
