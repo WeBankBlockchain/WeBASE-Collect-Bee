@@ -32,7 +32,6 @@ import lombok.Data;
 @ConfigurationProperties("system")
 @Data
 public class SystemEnvironmentConfig {
-    private String orgId;
     private String nodeStr;
     private int groupId;
 
