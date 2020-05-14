@@ -56,26 +56,26 @@ public class BytesUtils {
     }
 
     public static String bytesToString(Object obj) {
-        return bytesToString((Bytes) obj);
+        return bytesTypeToString((Bytes) obj);
     }
 
-    public static String bytesToString(Bytes b) {
+    public static String bytesTypeToString(Bytes b) {
         return StrUtil.str(b.getValue(), Charset.defaultCharset());
     }
 
-    public static String bytesArrayToString(byte[] b) {
+    public static String bytesArrayTypeToString(byte[] b) {
         return StrUtil.str(b, Charset.defaultCharset());
     }
 
     public static String bytesArrayToString(Object obj) {
         byte[] b = (byte[]) obj;
-        return bytesArrayToString(b);
+        return bytesArrayTypeToString(b);
     }
 
     public static List<String> bytes32ListToStringList(List<Bytes32> list) {
         List<String> strList = new ArrayList<>();
         for (Bytes32 b : list) {
-            String s = bytesToString(b);
+            String s = bytesTypeToString(b);
             strList.add(s);
         }
         return strList;
@@ -152,12 +152,12 @@ public class BytesUtils {
     public static List<String> bytes32DynamicArrayToList(List<Bytes32> bytes32List) {
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < bytes32List.size(); i++) {
-            stringList.add(bytesToString(bytes32List.get(i)).trim());
+            stringList.add(bytesTypeToString(bytes32List.get(i)).trim());
         }
         return stringList;
     }
 
-    public static String bytes32ListToString(List<Bytes32> list) {
+    public static String bytes32ListTypeToString(List<Bytes32> list) {
         return JacksonUtils.toJson(bytes32ListToStringList(list));
     }
 
@@ -168,7 +168,7 @@ public class BytesUtils {
     public static String staticArrayBytes32ToString(Object obj) {
         StaticArray<Bytes32> sa = (StaticArray<Bytes32>) obj;
         List<Bytes32> list = sa.getValue();
-        return bytes32ListToString(list);
+        return bytes32ListTypeToString(list);
     }
 
     public static String bytesListObjectToString(Object obj) {
