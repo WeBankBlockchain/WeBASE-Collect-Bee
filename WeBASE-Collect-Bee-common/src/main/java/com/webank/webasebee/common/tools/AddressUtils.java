@@ -21,6 +21,8 @@ import java.util.List;
 import org.fisco.bcos.web3j.abi.datatypes.Address;
 import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
 
+import cn.hutool.core.convert.Convert;
+
 /**
  * AddressUtils
  *
@@ -31,16 +33,17 @@ import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
  */
 public class AddressUtils {
 
-    public static String bigIntegerToString(BigInteger bi) {
+    public static String bigIntegerTypeToString(BigInteger bi) {
         Address address = new Address(bi);
         return address.toString();
     }
 
     public static String bigIntegerToString(Object obj) {
-        return bigIntegerToString((BigInteger) obj);
+        return bigIntegerTypeToString(Convert.toBigInteger(obj));
     }
-    
+
     public static String staticArrayToString(Object obj) {
+        @SuppressWarnings("unchecked")
         StaticArray<Address> sa = (StaticArray<Address>) obj;
         List<Address> list = sa.getValue();
         return JacksonUtils.toJson(list);
