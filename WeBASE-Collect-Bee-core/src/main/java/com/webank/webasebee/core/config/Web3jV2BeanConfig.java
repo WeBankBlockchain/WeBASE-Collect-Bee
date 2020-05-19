@@ -73,7 +73,6 @@ public class Web3jV2BeanConfig {
         // set some default connect timeout seconds
         channelService.setConnectSeconds(20);
         channelService.setConnectSleepPerMillis(10);
-
         return channelService;
     }
 
@@ -111,6 +110,7 @@ public class Web3jV2BeanConfig {
     @Bean
     public EncryptType getEncryptType() {
         // 0-RSA 1-Chinese-gm
+        log.info("Is gm {}", systemEnvironmentConfig.getEncryptType() == 1);
         return new EncryptType(systemEnvironmentConfig.getEncryptType());
     }
 

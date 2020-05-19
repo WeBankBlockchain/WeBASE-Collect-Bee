@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fisco.bcos.web3j.abi.FunctionEncoder;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +112,8 @@ public class ContractParser {
                 methodName = clazz.getSimpleName();
             }
             // compute method id by method name and method input's params.
-            String methodId = MethodUtils.buildMethodId(MethodUtils.buildMethodSignature(methodName, inputs));
+            String methodId = FunctionEncoder.buildMethodId(MethodUtils.buildMethodSignature(methodName, inputs));
+            log.debug("methodId {} , methodName {}", methodId, methodName);
             MethodMetaInfo metaInfo = new MethodMetaInfo();
             metaInfo.setMethodId(methodId);
             methodName = className + StringUtils.capitalize(methodName);

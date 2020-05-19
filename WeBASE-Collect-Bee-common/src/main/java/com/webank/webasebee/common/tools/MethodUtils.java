@@ -140,17 +140,4 @@ public class MethodUtils {
         log.debug("methodName: {}, joint method paras: {}", methodName, result);
         return result.toString();
     }
-
-    /**
-     * compute contract method id by method signature
-     * 
-     * @param methodSignature
-     * @return String
-     */
-    public static String buildMethodId(String methodSignature) {
-        byte[] input = methodSignature.getBytes();
-        byte[] hash = Hash.sha3(input);
-        log.debug("methodId is {}", Numeric.toHexString(hash).substring(0, 10));
-        return Numeric.toHexString(hash).substring(0, 10);
-    }
 }
