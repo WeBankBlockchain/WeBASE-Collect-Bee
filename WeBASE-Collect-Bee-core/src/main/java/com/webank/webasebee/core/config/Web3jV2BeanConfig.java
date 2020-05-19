@@ -108,7 +108,7 @@ public class Web3jV2BeanConfig {
     }
 
     @Bean
-    public EncryptType getEncryptType() {
+    public EncryptType encryptType() {
         // 0-RSA 1-Chinese-gm
         log.info("Is gm {}", systemEnvironmentConfig.getEncryptType() == 1);
         return new EncryptType(systemEnvironmentConfig.getEncryptType());
