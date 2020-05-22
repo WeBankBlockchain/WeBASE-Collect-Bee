@@ -68,13 +68,11 @@ public class Web3jV2BeanConfig {
     public Service getService() {
         GroupChannelConnectionsConfig groupChannelConnectionsConfig = getGroupChannelConnections();
         Service channelService = new Service();
-        channelService.setOrgID(systemEnvironmentConfig.getOrgId());
         channelService.setGroupId(systemEnvironmentConfig.getGroupId());
         channelService.setAllChannelConnections(groupChannelConnectionsConfig);
         // set some default connect timeout seconds
         channelService.setConnectSeconds(20);
         channelService.setConnectSleepPerMillis(10);
-
         return channelService;
     }
 
@@ -110,9 +108,10 @@ public class Web3jV2BeanConfig {
     }
 
     @Bean
-    public EncryptType getEncryptType() {
-        // 0-RSA 1-Chinese
-        return new EncryptType(0);
+    public EncryptType encryptType() {
+        // 0-RSA 1-Chinese-gm
+        log.info("Is gm {}", systemEnvironmentConfig.getEncryptType() == 1);
+        return new EncryptType(systemEnvironmentConfig.getEncryptType());
     }
 
     @Bean

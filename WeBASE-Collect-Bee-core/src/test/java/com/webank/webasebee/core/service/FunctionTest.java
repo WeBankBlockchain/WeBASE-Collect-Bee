@@ -30,12 +30,13 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Transaction
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.junit.Test;
+import org.fisco.bcos.web3j.tx.txdecode.BaseException;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.webank.webasebee.common.tools.AbiTypeRefUtils;
 import com.webank.webasebee.common.tools.JacksonUtils;
-import com.webank.webasebee.core.BaseTest;
+import com.webank.webasebee.common.tools.TypeReferenceUtils;
+import com.webank.webasebee.core.WebaseBeeApplicationTests;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
 import com.webank.webasebee.core.parser.ContractParser;
 import com.webank.webasebee.extractor.ods.EthClient;
@@ -52,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class FunctionTest extends BaseTest {
+public class FunctionTest extends WebaseBeeApplicationTests {
 
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
@@ -66,7 +67,7 @@ public class FunctionTest extends BaseTest {
     private ContractParser factory;
 
     @Test
-    public void testInput() throws IOException {
+    public void testInput() throws IOException, BaseException {
         BigInteger bigBlockHeight = new BigInteger(Integer.toString(8));
         Block block = ethClient.getBlock(bigBlockHeight);
         List<TransactionResult> transactionResults = block.getTransactions();
@@ -83,9 +84,9 @@ public class FunctionTest extends BaseTest {
 
                     log.info("input : {}", optt.get().getInput());
                     List<TypeReference<Type>> referencesTypeList = new ArrayList<>(1);
-                    TypeReference exScore = AbiTypeRefUtils.getTypeRef("uint128");
+                    TypeReference exScore = TypeReferenceUtils.getTypeRef("uint128");
                     referencesTypeList.add(exScore);
-                    TypeReference operationType = AbiTypeRefUtils.getTypeRef("uint8");
+                    TypeReference operationType = TypeReferenceUtils.getTypeRef("uint8");
                     referencesTypeList.add(operationType);
 
                     List<Type> listT = FunctionReturnDecoder.decode(rawInput.substring(10), referencesTypeList);
@@ -99,7 +100,7 @@ public class FunctionTest extends BaseTest {
     }
 
     // @Test
-    public void testActivity() throws IOException {
+    public void testActivity() throws IOException, BaseException {
         BigInteger bigBlockHeight = new BigInteger(Integer.toString(200));
         Block block = ethClient.getBlock(bigBlockHeight);
         List<TransactionResult> transactionResults = block.getTransactions();
@@ -115,7 +116,7 @@ public class FunctionTest extends BaseTest {
                     String rawInput = optt.get().getInput();
                     log.info("input : {}", optt.get().getInput());
                     List<TypeReference<Type>> referencesTypeList = new ArrayList<>(1);
-                    TypeReference exScore = AbiTypeRefUtils.getTypeRef("uint64");
+                    TypeReference exScore = TypeReferenceUtils.getTypeRef("uint64");
                     referencesTypeList.add(exScore);
 
                     List<Type> listT = FunctionReturnDecoder.decode(rawInput.substring(10), referencesTypeList);

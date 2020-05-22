@@ -13,34 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webasebee.core.service;
+package com.webank.webasebee.core.utils;
 
+import org.fisco.bcos.web3j.abi.FunctionEncoder;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.webank.webasebee.core.WebaseBeeApplicationTests;
 
 /**
- * BlockTaskPoolServiceTest
+ * MethodUtilsTest
  *
- * @Description: BlockTaskPoolServiceTest
+ * @Description: MethodUtilsTest
  * @author maojiayu
- * @data May 5, 2019 5:28:13 PM
+ * @data May 19, 2020 5:53:38 PM
  *
  */
-public class BlockTaskPoolServiceTest extends WebaseBeeApplicationTests {
-
-    @Autowired
-    BlockCheckService blockTaskPoolService;
-
-    //@Test
-    public void testCheckNumber() {
-        blockTaskPoolService.checkTaskCount(2, 18);
-    }
+public class MethodUtilsTest extends WebaseBeeApplicationTests {
+    private String name = "setBytes(bytes)";
 
     @Test
-    public void testCheckTaskNumber() {
-        blockTaskPoolService.checkTaskCount(0, 200);
-    }
+    public void testMethod() {
+        System.out.println(FunctionEncoder.buildMethodId(name));
 
+    }
 }

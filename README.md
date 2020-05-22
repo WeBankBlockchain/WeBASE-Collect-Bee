@@ -3,6 +3,11 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/WeBASE-Collect-Bee/WeBASE-Collect-Bee.svg)](https://gitter.im/webase-bee/community)
+[![Documentation Status](https://readthedocs.org/projects/webasedoc/badge/?version=latest)](https://webasedoc.readthedocs.io/zh_CN/latest/docs/WeBASE-Codegen-Monkey/index.html)
+[![snyk](https://snyk.io/test/github/WeBankFinTech/WeBASE-Collect-Bee/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/WeBankFinTech/WeBASE-Collect-Bee?targetFile=build.gradle&tab=issues)
+[![Total Lines](https://tokei.rs/b1/github/WeBankFinTech/WeBASE-Collect-Bee?category=lines)](https://github.com/WeBankFinTech/WeBASE-Collect-Bee)
+[![Latest release](https://img.shields.io/github/release/WeBankFinTech/WeBASE-Collect-Bee.svg)](https://github.com/WeBankFinTech/WeBASE-Collect-Bee/releases/latest)
+
 
 
 > 穿花度柳飞如箭，

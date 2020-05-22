@@ -26,6 +26,7 @@ import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
+import org.fisco.bcos.web3j.tx.txdecode.BaseException;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.stereotype.Service;
 
@@ -52,13 +53,20 @@ public class MethodUtils {
      * 
      * @param list
      * @return List<TypeReference<Type>>
+     * @throws BaseException
      */
     public static List<TypeReference<Type>> getMethodTypeReferenceList(List<NamedType> list) {
         List<TypeReference<Type>> referencesTypeList = Lists.newArrayList();
         for (NamedType type : list) {
-            TypeReference reference = AbiTypeRefUtils.getTypeRef(type.getType().split(" ")[0]);
-            log.debug("type: {} TypeReference converted: {}", type.getType(), JacksonUtils.toJson(reference));
-            referencesTypeList.add(reference);
+            TypeReference reference;
+            try {
+                reference = TypeReferenceUtils.getTypeRef(type.getType().split(" ")[0]);
+                log.debug("type: {} TypeReference converted: {}", type.getType(), JacksonUtils.toJson(reference));
+                referencesTypeList.add(reference);
+            } catch (BaseException e) {
+                log.error("BaseException: ", e);
+                return null;
+            }
         }
         return referencesTypeList;
     }
@@ -131,18 +139,5 @@ public class MethodUtils {
         result.append(")");
         log.debug("methodName: {}, joint method paras: {}", methodName, result);
         return result.toString();
-    }
-
-    /**
-     * compute contract method id by method signature
-     * 
-     * @param methodSignature
-     * @return String
-     */
-    public static String buildMethodId(String methodSignature) {
-        byte[] input = methodSignature.getBytes();
-        byte[] hash = Hash.sha3(input);
-        log.debug("methodId is {}", Numeric.toHexString(hash).substring(0, 10));
-        return Numeric.toHexString(hash).substring(0, 10);
     }
 }

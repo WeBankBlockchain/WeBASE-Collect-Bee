@@ -17,7 +17,7 @@ package com.webank.webasebee.core.jpa;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.webank.webasebee.core.WebaseBeeApplicationTests;
@@ -37,7 +37,7 @@ public class BlockTaskPoolRepositoryTest extends WebaseBeeApplicationTests {
 
     @Test
     public void testUpd() {
-        r.setSyncStatusByBlockHeight(7, new Date(), 20);
+        r.setSyncStatusByBlockHeight((short)7, new Date(), 20);
     }
 
 }

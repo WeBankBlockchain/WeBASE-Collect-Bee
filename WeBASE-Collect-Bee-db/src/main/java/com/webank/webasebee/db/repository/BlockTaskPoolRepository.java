@@ -45,12 +45,12 @@ public interface BlockTaskPoolRepository
 
     public Optional<BlockTaskPool> findByBlockHeight(long blockHeight);
 
-    public List<BlockTaskPool> findByCertainty(int certainty);
+    public List<BlockTaskPool> findByCertainty(short certainty);
 
     @Query(value = "select * from #{#entityName} where block_height >= ?1 or block_height <= ?2 ", nativeQuery = true)
     public List<BlockTaskPool> findByBlockHeightRange(long startNumber, long endNumber);
 
-    public long countBySyncStatus(int syncStatus);
+    public long countBySyncStatus(short syncStatus);
 
     @Query(value = "select count(pk_id) from #{#entityName} where block_height >= ?1 or block_height <= ?2 ", nativeQuery = true)
     public long countByBlockHeightRange(long startNumber, long endNumber);
@@ -59,28 +59,28 @@ public interface BlockTaskPoolRepository
     public List<BlockTaskPool> findUnNormalRecords();
 
     @Query(value = "select * from #{#entityName} where sync_status = ?1 order by block_height limit ?2", nativeQuery = true)
-    public List<BlockTaskPool> findBySyncStatusOrderByBlockHeightLimit(int syncStatus, int limit);
+    public List<BlockTaskPool> findBySyncStatusOrderByBlockHeightLimit(short syncStatus, int limit);
 
     @Query(value = "select * from #{#entityName} where block_height% ?1 = ?2 and sync_status = ?3 limit ?4", nativeQuery = true)
     public List<BlockTaskPool> findBySyncStatusModByBlockHeightLimit(int shardingCount, int shardingItem,
-            int syncStatus, int limit);
+            short syncStatus, int limit);
 
-    public List<BlockTaskPool> findBySyncStatusAndDepotUpdatetimeLessThan(int syncStatus, Date time);
+    public List<BlockTaskPool> findBySyncStatusAndDepotUpdatetimeLessThan(short syncStatus, Date time);
 
     @Transactional
     @Modifying
     @Query(value = "update #{#entityName} set sync_status = ?1, depot_updatetime= ?2 where block_height = ?3", nativeQuery = true)
-    public void setSyncStatusByBlockHeight(int syncStatus, Date updateTime, long blockHeight);
+    public void setSyncStatusByBlockHeight(short syncStatus, Date updateTime, long blockHeight);
 
     @Transactional
     @Modifying
     @Query(value = "update #{#entityName} set certainty = ?1 where block_height = ?2", nativeQuery = true)
-    public void setCertaintyByBlockHeight(int certainty, long blockHeight);
+    public void setCertaintyByBlockHeight(short certainty, long blockHeight);
 
     @Transactional
     @Modifying
     @Query(value = "update #{#entityName} set sync_status = ?1, certainty = ?2 where block_height = ?3", nativeQuery = true)
-    public void setSyncStatusAndCertaintyByBlockHeight(int syncStatus, int certainty, long blockHeight);
+    public void setSyncStatusAndCertaintyByBlockHeight(short syncStatus, short certainty, long blockHeight);
 
     /*
      * @see com.webank.webasebee.sys.db.repository.RollbackInterface#rollback(long)

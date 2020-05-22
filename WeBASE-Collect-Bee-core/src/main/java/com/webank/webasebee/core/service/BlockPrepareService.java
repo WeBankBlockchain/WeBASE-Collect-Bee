@@ -72,14 +72,15 @@ public class BlockPrepareService {
         log.info("Begin to prepare sync blocks from {} to {}", begin, end);
         List<BlockTaskPool> list = Lists.newArrayList();
         for (long i = begin; i <= end; i++) {
-            BlockTaskPool pool = new BlockTaskPool().setBlockHeight(i).setSyncStatus(TxInfoStatusEnum.INIT.getStatus());
+            BlockTaskPool pool =
+                    new BlockTaskPool().setBlockHeight(i).setSyncStatus((short) TxInfoStatusEnum.INIT.getStatus());
             if (certainty) {
-                pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
+                pool.setCertainty((short) BlockCertaintyEnum.FIXED.getCertainty());
             } else {
                 if (i <= end - BlockConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
-                    pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
+                    pool.setCertainty((short) BlockCertaintyEnum.FIXED.getCertainty());
                 } else {
-                    pool.setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
+                    pool.setCertainty((short) BlockCertaintyEnum.UNCERTAIN.getCertainty());
                 }
             }
             list.add(pool);

@@ -32,7 +32,6 @@ import lombok.Data;
 @ConfigurationProperties("system")
 @Data
 public class SystemEnvironmentConfig {
-    private String orgId;
     private String nodeStr;
     private int groupId;
 
@@ -57,4 +56,6 @@ public class SystemEnvironmentConfig {
 
     private long startBlockHeight = 0;
     private String startDate;
+    
+    private int encryptType = 0;
 }

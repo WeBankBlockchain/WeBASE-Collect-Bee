@@ -15,14 +15,21 @@
  */
 package com.webank.webasebee.common.tools;
 
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.abi.datatypes.Bytes;
-import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
+import org.fisco.bcos.web3j.abi.datatypes.BytesType;
+import org.fisco.bcos.web3j.abi.datatypes.DynamicBytes;
 import org.fisco.bcos.web3j.abi.datatypes.Int;
+import org.fisco.bcos.web3j.abi.datatypes.NumericType;
 import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
+import org.fisco.bcos.web3j.abi.datatypes.Type;
 import org.fisco.bcos.web3j.abi.datatypes.Uint;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Bytes32;
 import org.fisco.bcos.web3j.abi.datatypes.generated.Int256;
@@ -49,33 +56,33 @@ public class BytesUtils {
     }
 
     public static String bytesToString(Object obj) {
-        return bytesToString((Bytes) obj);
+        return bytesTypeToString((Bytes) obj);
     }
 
-    public static String bytesToString(Bytes b) {
+    public static String bytesTypeToString(Bytes b) {
         return StrUtil.str(b.getValue(), Charset.defaultCharset());
     }
 
-    public static String bytesArrayToString(byte[] b) {
+    public static String bytesArrayTypeToString(byte[] b) {
         return StrUtil.str(b, Charset.defaultCharset());
     }
 
     public static String bytesArrayToString(Object obj) {
         byte[] b = (byte[]) obj;
-        return bytesArrayToString(b);
+        return bytesArrayTypeToString(b);
     }
 
     public static List<String> bytes32ListToStringList(List<Bytes32> list) {
         List<String> strList = new ArrayList<>();
         for (Bytes32 b : list) {
-            String s = bytesToString(b);
+            String s = bytesTypeToString(b);
             strList.add(s);
         }
         return strList;
     }
 
-    public static String bytes32DynamicArrayToString(DynamicArray<Bytes32> bytes32DynamicArray) {
-        return JacksonUtils.toJson(bytes32DynamicArrayToList(bytes32DynamicArray));
+    public static String bytes32DynamicArrayToString(Object bytes32DynamicArray) {
+        return bytes32DynamicArrayToString((List<Bytes32>) bytes32DynamicArray);
     }
 
     public static String uint256DynamicArrayToString(Object list) {
@@ -145,16 +152,12 @@ public class BytesUtils {
     public static List<String> bytes32DynamicArrayToList(List<Bytes32> bytes32List) {
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < bytes32List.size(); i++) {
-            stringList.add(bytesToString(bytes32List.get(i)).trim());
+            stringList.add(bytesTypeToString(bytes32List.get(i)).trim());
         }
         return stringList;
     }
 
-    public static List<String> bytes32DynamicArrayToList(DynamicArray<Bytes32> bytes32DynamicArray) {
-        return bytes32DynamicArrayToList(bytes32DynamicArray.getValue());
-    }
-
-    public static String bytes32ListToString(List<Bytes32> list) {
+    public static String bytes32ListTypeToString(List<Bytes32> list) {
         return JacksonUtils.toJson(bytes32ListToStringList(list));
     }
 
@@ -165,6 +168,71 @@ public class BytesUtils {
     public static String staticArrayBytes32ToString(Object obj) {
         StaticArray<Bytes32> sa = (StaticArray<Bytes32>) obj;
         List<Bytes32> list = sa.getValue();
-        return bytes32ListToString(list);
+        return bytes32ListTypeToString(list);
+    }
+
+    public static String bytesListObjectToString(Object obj) {
+        List<Bytes> list = (List<Bytes>) obj;
+        return bytesListToString(list);
+    }
+
+    public static String bytesListToString(List<Bytes> list) {
+        return JacksonUtils
+                .toJson(list.stream().map(b -> b.getValue()).map(b -> new String(b)).collect(Collectors.toList()));
+    }
+
+    public static String dynamicBytesListObjectToString(Object obj) {
+        List<DynamicBytes> list = (List<DynamicBytes>) obj;
+        return dynamicBytesListToString(list);
+    }
+
+    public static String dynamicBytesListToString(List<DynamicBytes> list) {
+        return JacksonUtils
+                .toJson(list.stream().map(b -> b.getValue()).map(b -> new String(b)).collect(Collectors.toList()));
+    }
+
+    public static String listByteArrayToString(List<byte[]> list) {
+        return JacksonUtils.toJson(list.stream().map(b -> String.valueOf(b)).collect(Collectors.toList()));
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static String typeListToString(Object typeList) {
+        List<Type> list = (List<Type>) typeList;
+        List<String> stringList =
+                list.stream().map(t -> t.getValue()).map(s -> String.valueOf(s)).collect(Collectors.toList());
+        return JacksonUtils.toJson(stringList);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static String numericTypeListToString(Object typeList) {
+        List<NumericType> list = (List<NumericType>) typeList;
+        List<BigInteger> stringList = list.stream().map(t -> t.getValue()).collect(Collectors.toList());
+        return JacksonUtils.toJson(stringList);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static String bytesTypeListToString(Object typeList) {
+        List<BytesType> list = (List<BytesType>) typeList;
+        List<String> stringList = list.stream().map(t -> t.getValue())
+                .map(b -> StrUtil.str(b, Charset.defaultCharset())).collect(Collectors.toList());
+        return JacksonUtils.toJson(stringList);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static String stringListToString(Object stringList) {
+        String s = JacksonUtils.toJson(stringList);
+        if (StringUtils.contains(s, "value") && StringUtils.contains(s, "typeAsString")) {
+            List<Map<String, String>> maps = JacksonUtils.fromJson(s, List.class, Map.class);
+            List<String> r = new ArrayList<>();
+            for (Map<String, String> map : maps) {
+                String v = map.get("value");
+                if (v != null) {
+                    r.add(v);
+                }
+            }
+            return JacksonUtils.toJson(r);
+        } else {
+            return s;
+        }
     }
 }

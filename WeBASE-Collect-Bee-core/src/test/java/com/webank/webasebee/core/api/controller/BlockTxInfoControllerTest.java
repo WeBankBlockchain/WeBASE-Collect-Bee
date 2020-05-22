@@ -15,7 +15,7 @@
  */
 package com.webank.webasebee.core.api.controller;
 
-import com.webank.webasebee.core.BaseTest;
+import com.webank.webasebee.core.WebaseBeeApplicationTests;
 /**
  * BlockTxInfoControllerTest
  *
@@ -24,7 +24,7 @@ import com.webank.webasebee.core.BaseTest;
  * @data 2018年12月3日 下午4:16:01
  *
  */
-public class BlockTxInfoControllerTest extends BaseTest {	
+public class BlockTxInfoControllerTest extends WebaseBeeApplicationTests {	
 	
 	/*
 	@Test

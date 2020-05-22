@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.util.Map;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import com.webank.webasebee.common.bo.data.MethodBO;
 
@@ -41,6 +42,6 @@ public interface BcosMethodCrawlerInterface {
      * @param txHashContractAddressMapping (to get the constructor method address)
      * @return void
      */
-    MethodBO transactionHandler(Transaction transaction, BigInteger blockTimeStamp, Map.Entry<String, String> entry,
+    MethodBO transactionHandler(Transaction transaction, TransactionReceipt receipt, BigInteger blockTimeStamp, Map.Entry<String, String> entry,
             String methodName, Map<String, String> txHashContractAddressMapping);
 }

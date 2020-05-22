@@ -20,11 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fisco.bcos.web3j.abi.FunctionEncoder;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
@@ -51,6 +53,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Configuration
 @Slf4j
+@DependsOn("encryptType")
 public class ContractParser {
 
     /** @Fields monitorGeneratedConfig : monitor config params start with monitor in application.properties file */
@@ -63,7 +66,6 @@ public class ContractParser {
      * 
      * @return List<ContractMethodInfo>
      */
-    @Bean
     public List<ContractMethodInfo> initContractMethodInfo() {
         List<ContractMethodInfo> contractMethodInfos = Lists.newArrayList();
         Set<Class<?>> clazzs = ClazzScanUtils.scan(systemEnvironmentConfig.getContractPath(),
@@ -112,17 +114,19 @@ public class ContractParser {
                 methodName = clazz.getSimpleName();
             }
             // compute method id by method name and method input's params.
-            String methodId = MethodUtils.buildMethodId(MethodUtils.buildMethodSignature(methodName, inputs));
+            String methodId = FunctionEncoder.buildMethodId(MethodUtils.buildMethodSignature(methodName, inputs));
+            log.debug("methodId {} , methodName {}", methodId, methodName);
             MethodMetaInfo metaInfo = new MethodMetaInfo();
             metaInfo.setMethodId(methodId);
             methodName = className + StringUtils.capitalize(methodName);
             metaInfo.setMethodName(methodName);
             metaInfo.setFieldsList(inputs);
+            metaInfo.setOutputFieldsList(abiDefinition.getOutputs());
             methodIdList.add(metaInfo);
         }
         return contractMethodInfo;
     }
-    
+
     /**
      * Translate all contract info of ContractMethodInfo's objects to methodIdMap, methodFiledsMap and
      * contractBinaryMap.
@@ -131,10 +135,12 @@ public class ContractParser {
      * @return ContractMapsInfo
      */
     @Bean
-    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo(List<ContractMethodInfo> contractMethodInfos) {
+    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo() {
+        List<ContractMethodInfo> contractMethodInfos = initContractMethodInfo();
         ContractMapsInfo contractMapsInfo = new ContractMapsInfo();
         Map<String, NameValueVO<String>> methodIdMap = new HashMap<>();
         Map<String, List<NamedType>> methodFiledsMap = new HashMap<>();
+        Map<String, List<NamedType>> outputMethodFiledsMap = new HashMap<>();
         Map<String, String> contractBinaryMap = new HashMap<>();
         for (ContractMethodInfo contractMethodInfo : contractMethodInfos) {
             contractBinaryMap.put(contractMethodInfo.getContractBinary(), contractMethodInfo.getContractName());
@@ -144,11 +150,13 @@ public class ContractParser {
                 nameValue.setValue(methodMetaInfo.getMethodName());
                 methodIdMap.put(methodMetaInfo.getMethodId(), nameValue);
                 methodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getFieldsList());
+                outputMethodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getOutputFieldsList());
             }
         }
         log.info("Init sync block: find {} contract constructors.", contractBinaryMap.size());
         contractMapsInfo.setContractBinaryMap(contractBinaryMap);
         contractMapsInfo.setMethodFiledsMap(methodFiledsMap);
+        contractMapsInfo.setOutputMethodFiledsMap(outputMethodFiledsMap);
         log.info("Init sync block: find {} contract methods.", methodIdMap.size());
         contractMapsInfo.setMethodIdMap(methodIdMap);
         return contractMapsInfo;

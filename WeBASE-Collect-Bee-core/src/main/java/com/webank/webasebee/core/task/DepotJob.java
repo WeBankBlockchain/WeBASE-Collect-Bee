@@ -24,6 +24,7 @@ import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -46,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
+@Profile("!test")
 @ConditionalOnProperty(name = "system.multiLiving", havingValue = "true")
 public class DepotJob implements DataflowJob<Block> {
 
@@ -63,7 +65,7 @@ public class DepotJob implements DataflowJob<Block> {
     public List<Block> fetchData(ShardingContext shardingContext) {
         List<BlockTaskPool> tasks =
                 blockTaskPoolRepository.findBySyncStatusModByBlockHeightLimit(shardingContext.getShardingTotalCount(),
-                        shardingContext.getShardingItem(), TxInfoStatusEnum.INIT.getStatus(), 1);
+                        shardingContext.getShardingItem(), (short) TxInfoStatusEnum.INIT.getStatus(), 1);
         if (CollectionUtils.isEmpty(tasks)) {
             return new ArrayList<Block>();
         }

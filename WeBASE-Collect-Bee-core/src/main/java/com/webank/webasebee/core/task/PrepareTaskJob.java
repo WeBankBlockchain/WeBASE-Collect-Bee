@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
@@ -46,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
+@Profile("!test")
 @ConditionalOnProperty(name = "system.multiLiving", havingValue = "true")
 public class PrepareTaskJob implements SimpleJob {
     @Autowired

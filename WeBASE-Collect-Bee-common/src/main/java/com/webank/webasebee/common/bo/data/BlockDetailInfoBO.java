@@ -44,7 +44,7 @@ public class BlockDetailInfoBO {
     /** @Fields blockTimeStamp : block timestamp */
     private Date blockTimeStamp;
 
-    private Status status;
+    private short status;
 
     public enum Status {
         TODO, COMPLETED

@@ -42,6 +42,8 @@ public class ContractMapsInfo {
 
     /** @Fields methodFiledsMap : use to storage method fileds map , key:methodName, value:fieldsList */
     private Map<String, List<NamedType>> methodFiledsMap;
+    
+    private Map<String, List<NamedType>> outputMethodFiledsMap;
 
     /** @Fields contractBinaryMap : use to storage contract binary map, key:contract binary, value:contract name */
     private Map<String, String> contractBinaryMap;
