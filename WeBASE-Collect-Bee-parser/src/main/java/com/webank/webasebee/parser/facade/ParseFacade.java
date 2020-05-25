@@ -16,11 +16,13 @@
 package com.webank.webasebee.parser.facade;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Stopwatch;
 import com.webank.webasebee.common.bo.data.BlockAccountsInfoBO;
 import com.webank.webasebee.common.bo.data.BlockInfoBO;
 import com.webank.webasebee.common.bo.data.BlockMethodInfo;
@@ -28,6 +30,8 @@ import com.webank.webasebee.parser.handler.AccountCrawlerHandler;
 import com.webank.webasebee.parser.handler.BlockCrawlerHandler;
 import com.webank.webasebee.parser.handler.EventCrawlerHandler;
 import com.webank.webasebee.parser.handler.MethodCrawlerHandler;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * ParseFacade
@@ -38,6 +42,7 @@ import com.webank.webasebee.parser.handler.MethodCrawlerHandler;
  *
  */
 @Service
+@Slf4j
 public class ParseFacade implements ParseInterface {
     @Autowired
     private AccountCrawlerHandler accountCrawlerHandler;
@@ -55,14 +60,23 @@ public class ParseFacade implements ParseInterface {
     @Override
     public BlockInfoBO parse(Block block) throws IOException {
         BlockInfoBO blockInfo = new BlockInfoBO();
+        Stopwatch st = Stopwatch.createStarted();
         BlockAccountsInfoBO accountsBo = accountCrawlerHandler.crawl(block);
+        log.debug("Block {} , Account crawler handle useTime {} ", block.getNumber(),
+                st.stop().elapsed(TimeUnit.MILLISECONDS));
+        st.start();
         BlockMethodInfo blockMethodInfo =
                 methodCrawlerHandler.crawl(block, accountsBo.getTxHashContractAddressMapping());
+        log.debug("Block {} , method crawler handle useTime {} ", block.getNumber(),
+                st.stop().elapsed(TimeUnit.MILLISECONDS));
+        st.start();
         blockInfo.setAccountInfoList(accountsBo.getAccounts())
                 .setBlockDetailInfo(blockCrawlerHandler.handleBlockDetail(block))
                 .setEventInfoList(eventCrawlHandler.crawl(block, blockMethodInfo.getTxHashContractNameMapping()))
                 .setMethodInfoList(blockMethodInfo.getMethodInfoList())
                 .setBlockTxDetailInfoList(blockMethodInfo.getBlockTxDetailInfoList());
+        log.debug("Block {} , event crawler handle useTime {} ", block.getNumber(),
+                st.stop().elapsed(TimeUnit.MILLISECONDS));
         return blockInfo;
     }
 
