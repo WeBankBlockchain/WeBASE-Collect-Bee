@@ -63,7 +63,10 @@ subprojects {
     implementation ('org.apache.commons:commons-lang3:3.8.1')
     compile 'cn.hutool:hutool-all:5.3.0'
      // web3j依赖
-    implementation ('org.fisco-bcos:web3sdk:2.3.0')
+    implementation ('org.fisco-bcos:web3sdk:2.3.0')  {
+        exclude group: 'com.alibaba', module: 'fastjson'
+    }
+    implementation 'com.alibaba:fastjson:1.2.70'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'   
 
