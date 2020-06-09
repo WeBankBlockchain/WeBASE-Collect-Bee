@@ -27,7 +27,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +69,7 @@ public class MethodCrawlerHandler {
         List<TransactionResult> transactionResults = block.getTransactions();
         Map<String, String> txHashContractNameMapping = new HashMap<>();
         for (TransactionResult result : transactionResults) {
-            BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
-            Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
+            Optional<TransactionReceipt> opt = ethClient.getTransactionReceipt(result).getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt receipt = opt.get();
                 Optional<Transaction> optt = ethClient.getTransactionByHash(receipt);
@@ -82,6 +80,7 @@ public class MethodCrawlerHandler {
                     if (!optional.isPresent()) {
                         continue;
                     }
+                    // key:contract binary, value:contract name
                     Entry<String, String> contractEntry = optional.get();
                     MethodMetaInfo methodMetaInfo =
                             transactionService.getMethodMetaInfo(transaction, contractEntry.getValue());

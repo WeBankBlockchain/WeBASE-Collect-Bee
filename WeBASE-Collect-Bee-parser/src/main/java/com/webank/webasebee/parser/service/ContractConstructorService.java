@@ -67,6 +67,12 @@ public class ContractConstructorService {
         return null;
     }
 
+    /**
+     * get constuctor name by transaction input code.
+     * 
+     * @param input of tx
+     * @return key:contract binary, value:contract name
+     */
     public Map.Entry<String, String> getConstructorNameByCode(String input) {
 
         Map<String, String> binaryMap = contractMapsInfo.getContractBinaryMap();
