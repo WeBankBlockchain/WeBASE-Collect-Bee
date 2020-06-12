@@ -58,15 +58,12 @@ subprojects {
     compileOnly "org.springframework.boot:spring-boot-configuration-processor"
     implementation "org.springframework.boot:spring-boot-starter-web" 
     implementation "org.springframework.boot:spring-boot-starter-aop" 
-    implementation "com.google.guava:guava:20.0"
+    implementation "com.google.guava:guava:29.0-jre"
     implementation "commons-io:commons-io:2.6"
     implementation ('org.apache.commons:commons-lang3:3.8.1')
-    compile 'cn.hutool:hutool-all:5.3.0'
+    compile 'cn.hutool:hutool-all:5.3.7'
      // web3j依赖
-    implementation ('org.fisco-bcos:web3sdk:2.3.0')  {
-        exclude group: 'com.alibaba', module: 'fastjson'
-    }
-    implementation 'com.alibaba:fastjson:1.2.70'
+    implementation ('org.fisco-bcos:web3sdk:2.3.1-SNAPSHOT')
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'   
 

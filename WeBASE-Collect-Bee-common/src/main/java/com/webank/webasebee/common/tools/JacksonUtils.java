@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -134,16 +132,5 @@ public class JacksonUtils {
         return objectMapper.convertValue(map, retClazz);
     }
 
-    public static <T> List<T> strToList(String str, Class<T> clazz) {
-        JSONArray jsonArray = JSONArray.parseArray(str);
-        T t = null;
-        List<T> list = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            String objStr = JSONObject.toJSONString(jsonArray.get(i));
-            t = (T) JSONObject.parseObject(objStr, clazz);
-            list.add(t);
-        }
-        return list;
-    }
 
 }
