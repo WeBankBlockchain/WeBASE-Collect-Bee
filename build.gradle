@@ -1,5 +1,5 @@
 plugins {
-    id "org.springframework.boot" version "2.2.5.RELEASE"
+    id "org.springframework.boot" version "2.2.8.RELEASE"
     id "io.spring.dependency-management" version "1.0.9.RELEASE"
     id 'eclipse'
     id 'idea'
@@ -20,7 +20,7 @@ allprojects {
 }
 
 subprojects {
-  version = "1.3.0"
+  version = "1.3.1"
   apply plugin: "java"
   apply plugin: "org.springframework.boot"
   apply plugin: "io.spring.dependency-management"
@@ -58,12 +58,12 @@ subprojects {
     compileOnly "org.springframework.boot:spring-boot-configuration-processor"
     implementation "org.springframework.boot:spring-boot-starter-web" 
     implementation "org.springframework.boot:spring-boot-starter-aop" 
-    implementation "com.google.guava:guava:20.0"
+    implementation "com.google.guava:guava:29.0-jre"
     implementation "commons-io:commons-io:2.6"
     implementation ('org.apache.commons:commons-lang3:3.8.1')
-    compile 'cn.hutool:hutool-all:5.3.0'
+    compile 'cn.hutool:hutool-all:5.3.7'
      // web3j依赖
-    implementation ('org.fisco-bcos:web3sdk:2.3.0')
+    implementation ('org.fisco-bcos:web3sdk:2.4.1')
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'   
 
