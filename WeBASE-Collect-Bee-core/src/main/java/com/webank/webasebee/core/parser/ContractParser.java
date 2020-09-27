@@ -150,7 +150,8 @@ public class ContractParser {
                 nameValue.setValue(methodMetaInfo.getMethodName());
                 methodIdMap.put(methodMetaInfo.getMethodId(), nameValue);
                 methodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getFieldsList());
-                outputMethodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getOutputFieldsList());
+                outputMethodFiledsMap.put(contractMethodInfo.getContractName() + "_" + methodMetaInfo.getMethodName(),
+                        methodMetaInfo.getOutputFieldsList());
             }
         }
         log.info("Init sync block: find {} contract constructors.", contractBinaryMap.size());
