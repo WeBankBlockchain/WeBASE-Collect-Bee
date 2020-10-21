@@ -18,8 +18,8 @@ package com.webank.webasebee.common.tools;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.fisco.bcos.web3j.abi.datatypes.Address;
-import org.fisco.bcos.web3j.abi.datatypes.StaticArray;
+import org.fisco.bcos.sdk.abi.datatypes.Address;
+import org.fisco.bcos.sdk.abi.datatypes.StaticArray;
 
 import cn.hutool.core.convert.Convert;
 

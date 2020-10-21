@@ -20,13 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.fisco.bcos.web3j.abi.FunctionEncoder;
-import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
-import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
+import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition;
+import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition.NamedType;
+import org.fisco.bcos.sdk.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
@@ -59,6 +60,8 @@ public class ContractParser {
     /** @Fields monitorGeneratedConfig : monitor config params start with monitor in application.properties file */
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
+    @Autowired
+    private Client client;
 
     /**
      * Parsing all contract java code files from contract path, and storage contract info into ContractMethodInfo
@@ -85,8 +88,8 @@ public class ContractParser {
      * @return ContractMethodInfo
      */
     public ContractMethodInfo parse(Class<?> clazz) {
-        AbiDefinition[] abiDefinitions = MethodUtils.getContractAbiList(clazz);
-        if (abiDefinitions == null || abiDefinitions.length == 0) {
+        List<ABIDefinition> abiDefinitions = MethodUtils.getContractAbiList(clazz);
+        if (CollectionUtils.isEmpty(abiDefinitions)) {
             return null;
         }
         String className = clazz.getSimpleName();
@@ -98,7 +101,7 @@ public class ContractParser {
         List<MethodMetaInfo> methodIdList = Lists.newArrayList();
         contractMethodInfo.setMethodMetaInfos(methodIdList);
 
-        for (AbiDefinition abiDefinition : abiDefinitions) {
+        for (ABIDefinition abiDefinition : abiDefinitions) {
             String abiType = abiDefinition.getType();
             // remove event function and query function
             if (abiType.equals(AbiTypeConstants.ABI_EVENT_TYPE) || abiDefinition.isConstant()) {
@@ -114,7 +117,7 @@ public class ContractParser {
                 methodName = clazz.getSimpleName();
             }
             // compute method id by method name and method input's params.
-            String methodId = FunctionEncoder.buildMethodId(MethodUtils.buildMethodSignature(methodName, inputs));
+            String methodId = abiDefinition.getMethodId(client.getCryptoSuite());
             log.debug("methodId {} , methodName {}", methodId, methodName);
             MethodMetaInfo metaInfo = new MethodMetaInfo();
             metaInfo.setMethodId(methodId);

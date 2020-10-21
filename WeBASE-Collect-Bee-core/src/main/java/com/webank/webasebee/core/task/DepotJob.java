@@ -15,13 +15,12 @@
  */
 package com.webank.webasebee.core.task;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.Client;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
@@ -56,7 +55,7 @@ public class DepotJob implements DataflowJob<Block> {
     @Autowired
     private BlockDepotService blockSyncService;
     @Autowired
-    private Web3j web3j;
+    private Client web3j;
 
     /*
      * @see com.dangdang.ddframe.job.api.dataflow.DataflowJob#fetchData(com.dangdang.ddframe.job.api.ShardingContext)
@@ -78,12 +77,8 @@ public class DepotJob implements DataflowJob<Block> {
      */
     @Override
     public void processData(ShardingContext shardingContext, List<Block> data) {
-        try {
-            BigInteger blockNumber = web3j.getBlockNumber().send().getBlockNumber();
+            BigInteger blockNumber = web3j.getBlockNumber().getBlockNumber();
             blockSyncService.processDataSequence(data, blockNumber.longValue());
-        } catch (IOException e) {
-            log.error("Job {}, exception occur in job processing: {}", shardingContext.getTaskId(), e.getMessage());
-        }
     }
 
 }

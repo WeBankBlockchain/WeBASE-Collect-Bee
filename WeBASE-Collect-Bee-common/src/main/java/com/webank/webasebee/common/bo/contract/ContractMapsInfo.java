@@ -18,7 +18,7 @@ package com.webank.webasebee.common.bo.contract;
 import java.util.List;
 import java.util.Map;
 
-import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
+import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition.NamedType;
 
 import com.webank.webasebee.common.vo.NameValueVO;
 

@@ -25,10 +25,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,9 +72,9 @@ public class MethodCrawlerHandler {
             Optional<TransactionReceipt> opt = ethClient.getTransactionReceipt(result).getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt receipt = opt.get();
-                Optional<Transaction> optt = ethClient.getTransactionByHash(receipt);
+                Optional<JsonTransactionResponse> optt = ethClient.getTransactionByHash(receipt);
                 if (optt.isPresent()) {
-                    Transaction transaction = optt.get();
+                    JsonTransactionResponse transaction = optt.get();
                     Optional<Entry<String, String>> optional =
                             transactionService.getContractNameByTransaction(transaction, txHashContractAddressMapping);
                     if (!optional.isPresent()) {
@@ -118,14 +118,14 @@ public class MethodCrawlerHandler {
 
     }
 
-    public BlockTxDetailInfoBO getBlockTxDetailInfo(Block block, Transaction transaction, TransactionReceipt receipt,
-            MethodMetaInfo methodMetaInfo) {
+    public BlockTxDetailInfoBO getBlockTxDetailInfo(Block block, JsonTransactionResponse transaction,
+            TransactionReceipt receipt, MethodMetaInfo methodMetaInfo) {
         BlockTxDetailInfoBO blockTxDetailInfo = new BlockTxDetailInfoBO();
-        blockTxDetailInfo.setBlockHash(receipt.getBlockHash()).setBlockHeight(receipt.getBlockNumber().longValue())
+        blockTxDetailInfo.setBlockHash(receipt.getBlockHash()).setBlockHeight(receipt.getBlockNumber())
                 .setContractName(methodMetaInfo.getContractName())
                 .setMethodName(methodMetaInfo.getMethodName().substring(methodMetaInfo.getContractName().length()))
                 .setTxFrom(transaction.getFrom()).setTxTo(transaction.getTo()).setTxHash(receipt.getTransactionHash())
-                .setBlockTimeStamp(new Date(block.getTimestamp().longValue()));
+                .setBlockTimeStamp(new Date(Long.parseLong(block.getTimestamp())));
         return blockTxDetailInfo;
     }
 

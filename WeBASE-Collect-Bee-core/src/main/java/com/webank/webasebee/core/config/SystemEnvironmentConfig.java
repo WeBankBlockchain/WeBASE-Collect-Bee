@@ -37,7 +37,6 @@ public class SystemEnvironmentConfig {
 
     private String configPath;
 
-    private String privateKey;
     private int crawlBatchUnit = 1000;
 
     private boolean multiLiving;

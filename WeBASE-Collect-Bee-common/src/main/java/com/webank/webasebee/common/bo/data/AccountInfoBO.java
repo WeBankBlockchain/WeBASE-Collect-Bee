@@ -31,7 +31,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class AccountInfoBO {
-    private long blockHeight;
+    private String blockHeight;
 
     /** @Fields contractName : contract name */
     private String contractName;

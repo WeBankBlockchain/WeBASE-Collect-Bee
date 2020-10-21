@@ -18,7 +18,7 @@ package com.webank.webasebee.parser.crawler.face;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.sdk.model.TransactionReceipt;
 
 import com.webank.webasebee.common.bo.data.EventBO;
 
@@ -41,5 +41,5 @@ public interface BcosEventCrawlerInterface {
      * @return boolean   
      * @throws   
      */
-    List<EventBO> handleReceipt(TransactionReceipt receipt, BigInteger blockTimeStamp);
+    List<EventBO> handleReceipt(TransactionReceipt receipt, String blockTimeStamp);
 }

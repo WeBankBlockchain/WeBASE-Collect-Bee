@@ -20,7 +20,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.sdk.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +49,7 @@ public class BlockPrepareService {
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
     @Autowired
-    private Web3j web3j;
+    private Client client;
 
     public long getTaskPoolHeight() {
         Optional<BlockTaskPool> item = blockTaskPoolRepository.findTopByOrderByBlockHeightDesc();
@@ -61,7 +61,7 @@ public class BlockPrepareService {
     }
 
     public long getCurrentBlockHeight() throws IOException {
-        BigInteger blockNumber = web3j.getBlockNumber().send().getBlockNumber();
+        BigInteger blockNumber = client.getBlockNumber().getBlockNumber();
         long total = blockNumber.longValue();
         log.debug("Current chain block number is:{}", blockNumber);
         return total;

@@ -18,7 +18,7 @@ package com.webank.webasebee.parser.facade;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -20,9 +20,8 @@ import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
-import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
+import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -64,10 +63,10 @@ public class BlockTxDetailInfoDAO {
             throws IOException {
         BlockTxDetailInfo blockTxDetailInfo = new BlockTxDetailInfo();
         blockTxDetailInfo.setBlockHash(receipt.getBlockHash());
-        blockTxDetailInfo.setBlockHeight(receipt.getBlockNumber().longValue());
+        blockTxDetailInfo.setBlockHeight(receipt.getBlockNumber());
         blockTxDetailInfo.setContractName(contractName);
         blockTxDetailInfo.setMethodName(methodName.substring(contractName.length()));
-        Transaction transaction = ethClient.getTransactionByHash(receipt).get();
+        JsonTransactionResponse transaction = ethClient.getTransactionByHash(receipt).get();
         blockTxDetailInfo.setTxFrom(transaction.getFrom());
         blockTxDetailInfo.setTxTo(transaction.getTo());
         blockTxDetailInfo.setTxHash(receipt.getTransactionHash());

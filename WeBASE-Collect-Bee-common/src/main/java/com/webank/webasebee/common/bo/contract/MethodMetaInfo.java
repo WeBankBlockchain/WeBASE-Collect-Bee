@@ -17,7 +17,7 @@ package com.webank.webasebee.common.bo.contract;
 
 import java.util.List;
 
-import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition.NamedType;
+import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition.NamedType;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

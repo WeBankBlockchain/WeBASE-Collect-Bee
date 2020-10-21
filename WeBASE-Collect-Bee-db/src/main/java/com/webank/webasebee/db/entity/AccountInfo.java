@@ -61,7 +61,7 @@ public class AccountInfo extends IdEntity {
     
     /** @Fields blockHeight : block height */
     @Column(name = "block_height")
-    private long blockHeight;
+    private String blockHeight;
     
     /** @Fields blockTimeStamp : block timestamp */
     @Column(name = "block_timestamp")

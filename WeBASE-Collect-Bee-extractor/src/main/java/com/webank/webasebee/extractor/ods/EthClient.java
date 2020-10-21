@@ -20,14 +20,12 @@ import java.math.BigInteger;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterName;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.sdk.client.Client;
+import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.sdk.client.protocol.response.BcosTransactionReceipt;
+import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -49,14 +47,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EthClient {
     @Autowired
-    private Web3j web3j;
+    private Client client;
 
     @Cacheable(cacheNames = { "block" })
     @Retry
     public Block getBlock(BigInteger blockHeightNumber) throws IOException {
         Stopwatch stopwatch = Stopwatch.createStarted();
         log.debug("get block number: {}", blockHeightNumber);
-        Block block = web3j.getBlockByNumber(DefaultBlockParameter.valueOf(blockHeightNumber), false).send().getBlock();
+        Block block = client.getBlockByNumber(blockHeightNumber, true).getBlock();
         Stopwatch st1 = stopwatch.stop();
         log.info("get block:{} succeed, eth.getBlock useTime: {}", blockHeightNumber,
                 st1.elapsed(TimeUnit.MILLISECONDS));
@@ -69,16 +67,16 @@ public class EthClient {
 
     @Cacheable(cacheNames = { "transactionReceipt" })
     public BcosTransactionReceipt getTransactionReceipt(String hash) throws IOException {
-        return web3j.getTransactionReceipt(hash).send();
+        return client.getTransactionReceipt(hash);
     }
 
-    public Optional<Transaction> getTransactionByHash(TransactionReceipt receipt) throws IOException {
-        return web3j.getTransactionByHash(receipt.getTransactionHash()).send().getTransaction();
+    public Optional<JsonTransactionResponse> getTransactionByHash(TransactionReceipt receipt) throws IOException {
+        return client.getTransactionByHash(receipt.getTransactionHash()).getTransaction();
 
     }
 
     @Cacheable(cacheNames = { "code" })
     public String getCodeByContractAddress(String contractAddress) throws IOException {
-        return web3j.getCode(contractAddress, DefaultBlockParameterName.LATEST).sendForReturnString();
+        return client.getCode(contractAddress).getCode();
     }
 }

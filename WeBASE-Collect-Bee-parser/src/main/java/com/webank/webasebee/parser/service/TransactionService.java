@@ -21,7 +21,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
+import org.fisco.bcos.sdk.client.protocol.request.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,7 @@ public class TransactionService {
     @Autowired
     private ContractMapsInfo contractMapsInfo;
 
-    public String getContractAddressByTransaction(Transaction transaction,
+    public String getContractAddressByTransaction(JsonTransactionResponse transaction,
             Map<String, String> txHashContractAddressMapping) {
         log.debug("blocknumber: {} , to: {}, map: {}", transaction.getBlockNumber(), transaction.getTo(),
                 JacksonUtils.toJson(txHashContractAddressMapping));
@@ -63,7 +64,7 @@ public class TransactionService {
         }
     }
 
-    public Optional<Entry<String, String>> getContractNameByTransaction(Transaction transaction,
+    public Optional<Entry<String, String>> getContractNameByTransaction(JsonTransactionResponse transaction,
             Map<String, String> txHashContractAddressMapping) throws IOException {
         String contractAddress = getContractAddressByTransaction(transaction, txHashContractAddressMapping);
         if (StringUtils.isEmpty(contractAddress)) {
@@ -86,7 +87,7 @@ public class TransactionService {
         return Optional.of(contractEntry);
     }
 
-    public MethodMetaInfo getMethodMetaInfo(Transaction transaction, String contractName) {
+    public MethodMetaInfo getMethodMetaInfo(JsonTransactionResponse transaction, String contractName) {
         if (transaction.getTo() == null || transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
             MethodMetaInfo methodMetaInfo = new MethodMetaInfo();
             methodMetaInfo.setContractName(contractName).setMethodName(contractName + contractName);

@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +54,7 @@ public class AccountInfoDAO {
      */
     public void save(TransactionReceipt receipt, BigInteger blockTimeStamp, String contractName) {
         AccountInfo accountInfo = new AccountInfo();
-        accountInfo.setBlockHeight(receipt.getBlockNumber().longValue());
+        accountInfo.setBlockHeight(receipt.getBlockNumber());
         accountInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()));
         accountInfo.setContractAddress(receipt.getContractAddress());
         accountInfo.setContractName(contractName);

@@ -55,7 +55,7 @@ public class BlockTxDetailInfo extends IdEntity {
     
 	/** @Fields blockHeight : block height */
 	@Column(name = "block_height")
-    private long blockHeight;
+    private String blockHeight;
 	
     /** @Fields blockHash : block hash */
     @Column(name = "block_hash")

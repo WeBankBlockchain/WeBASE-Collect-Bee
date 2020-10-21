@@ -36,7 +36,7 @@ import lombok.experimental.Accessors;
 public class BlockTxDetailInfoBO {
 
     /** @Fields blockHeight : block height */
-    private long blockHeight;
+    private String blockHeight;
 
     /** @Fields blockHash : block hash */
     private String blockHash;

@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.StringUtils;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -60,7 +60,7 @@ public class BlockCheckService {
     @Autowired
     private RollBackService rollBackService;
     @Autowired
-    private EthClient ethClient;
+    private EthClient client;
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
 
@@ -96,7 +96,7 @@ public class BlockCheckService {
                             pool.getBlockHeight());
                     continue;
                 }
-                Block block = ethClient.getBlock(BigInteger.valueOf(pool.getBlockHeight()));
+                Block block = client.getBlock(BigInteger.valueOf(pool.getBlockHeight()));
                 String newHash = block.getHash();
                 if (!StringUtils.equals(newHash,
                         blockDetailInfoDAO.getBlockDetailInfoByBlockHeight(pool.getBlockHeight()).getBlockHash())) {

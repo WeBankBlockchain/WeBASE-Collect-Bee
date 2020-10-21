@@ -15,9 +15,7 @@
  */
 package com.webank.webasebee.core.api.controller;
 
-import java.io.IOException;
-
-import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.sdk.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,7 +26,6 @@ import com.webank.webasebee.db.repository.BlockTaskPoolRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * BlockTaskInfoController
@@ -41,10 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/blockTaskPool")
 @Api(value = "BlockTaskPoolController", tags = "Block Task Pool Query")
-@Slf4j
 public class BlockTaskPoolController {
     @Autowired
-    private Web3j web3j;
+    private Client client;
     @Autowired
     private BlockTaskPoolRepository blockTaskPoolRepository;
 
@@ -59,12 +55,7 @@ public class BlockTaskPoolController {
     @RequestMapping("/blockHeight/get")
     @ApiOperation(value = "Get block height", httpMethod = "GET")
     public long getBlockHeight() {
-        try {
-            return web3j.getBlockNumber().send().getBlockNumber().longValue();
-        } catch (IOException e) {
-            log.error("get block height error: {}", e.getMessage());
-            return -1;
-        }
+        return client.getBlockNumber().getBlockNumber().longValue();
     }
 
 }

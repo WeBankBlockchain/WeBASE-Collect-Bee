@@ -21,7 +21,7 @@ import java.text.ParseException;
 
 import javax.annotation.PostConstruct;
 
-import org.fisco.bcos.web3j.protocol.Web3j;
+import org.fisco.bcos.sdk.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
@@ -31,9 +31,9 @@ import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.webank.webasebee.common.constants.BlockConstants;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
+import com.webank.webasebee.core.service.BlockCheckService;
 import com.webank.webasebee.core.service.BlockIndexService;
 import com.webank.webasebee.core.service.BlockPrepareService;
-import com.webank.webasebee.core.service.BlockCheckService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @ConditionalOnProperty(name = "system.multiLiving", havingValue = "true")
 public class PrepareTaskJob implements SimpleJob {
     @Autowired
-    private Web3j web3j;
+    private Client client;
     @Autowired
     private BlockCheckService blockCheckService;
     @Autowired
@@ -79,7 +79,7 @@ public class PrepareTaskJob implements SimpleJob {
     @Override
     public void execute(ShardingContext shardingContext) {
         try {
-            BigInteger blockNumber = web3j.getBlockNumber().send().getBlockNumber();
+            BigInteger blockNumber = client.getBlockNumber().getBlockNumber();
             long total = blockNumber.longValue();
             log.info("Current chain block number is:{}", total);
             long height = blockPrepareService.getTaskPoolHeight();

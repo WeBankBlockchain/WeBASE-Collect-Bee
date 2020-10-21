@@ -20,8 +20,8 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.Client;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BlockIndexService {
     @Autowired
-    private Web3j web3j;
+    private Client client;
     @Autowired
     private EthClient ethClient;
     @Autowired
@@ -75,11 +75,11 @@ public class BlockIndexService {
     private long getBlockIndexByStartDate(Date startDate) throws IOException {
 
         Block beginBlock = ethClient.getBlock(new BigInteger("0"));
-        BigInteger blockNumber = web3j.getBlockNumber().send().getBlockNumber();
+        BigInteger blockNumber = client.getBlockNumber().getBlockNumber();
         Block endBlock = ethClient.getBlock(blockNumber);
 
-        Date beginDate = new Date(beginBlock.getTimestamp().longValue());
-        Date endDate = new Date(endBlock.getTimestamp().longValue());
+        Date beginDate = new Date(Long.parseLong(beginBlock.getTimestamp()));
+        Date endDate = new Date(Long.parseLong(endBlock.getTimestamp()));
 
         if (beginDate.getTime() > startDate.getTime()) {
             return 0;
@@ -103,7 +103,7 @@ public class BlockIndexService {
     private long searchBlockIndex(long begin, long end, Date startDate) throws IOException {
         long index = (begin + end) / 2;
         Block indexBlock = ethClient.getBlock(new BigInteger(Long.toString(index)));
-        Date indexDate = new Date(indexBlock.getTimestamp().longValue());
+        Date indexDate = new Date(Long.parseLong(indexBlock.getTimestamp()));
         if (indexDate.getTime() == startDate.getTime()) {
             return index;
         } else if (indexDate.getTime() > startDate.getTime()) {

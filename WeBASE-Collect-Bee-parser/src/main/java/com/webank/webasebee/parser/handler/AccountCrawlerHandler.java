@@ -16,7 +16,6 @@
 package com.webank.webasebee.parser.handler;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,11 +24,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.sdk.client.protocol.response.BcosTransactionReceipt;
+import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
@@ -101,10 +100,10 @@ public class AccountCrawlerHandler {
      * @return void
      * @throws IOException
      */
-    public Optional<AccountInfoBO> handle(TransactionReceipt receipt, BigInteger blockTimeStamp) throws IOException {
-        Optional<Transaction> optt = ethClient.getTransactionByHash(receipt);
+    public Optional<AccountInfoBO> handle(TransactionReceipt receipt, String blockTimeStamp) throws IOException {
+        Optional<JsonTransactionResponse> optt = ethClient.getTransactionByHash(receipt);
         if (optt.isPresent()) {
-            Transaction transaction = optt.get();
+            JsonTransactionResponse transaction = optt.get();
             // get constructor function transaction by judging if transaction's param named to is null
             if (transaction.getTo() == null || transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
                 String contractAddress = receipt.getContractAddress();
@@ -112,14 +111,13 @@ public class AccountCrawlerHandler {
                 log.debug("blockNumber: {}, input: {}", receipt.getBlockNumber(), input);
                 Entry<String, String> entry = contractConstructorService.getConstructorNameByCode(input);
                 if (entry == null) {
-                    log.info("block:{} constructor binary can't find!", receipt.getBlockNumber().longValue());
+                    log.info("block:{} constructor binary can't find!", receipt.getBlockNumber());
                     return Optional.empty();
                 }
                 AccountInfoBO accountInfo = new AccountInfoBO();
-                accountInfo.setBlockTimeStamp(new Date(blockTimeStamp.longValue()))
-                        .setBlockHeight(receipt.getBlockNumber().longValue())
-                        .setContractAddress(receipt.getContractAddress()).setContractName(entry.getValue())
-                        .setTxHash(receipt.getTransactionHash());
+                accountInfo.setBlockTimeStamp(new Date(Long.parseLong(blockTimeStamp)))
+                        .setBlockHeight(receipt.getBlockNumber()).setContractAddress(receipt.getContractAddress())
+                        .setContractName(entry.getValue()).setTxHash(receipt.getTransactionHash());
                 return Optional.of(accountInfo);
             }
         }

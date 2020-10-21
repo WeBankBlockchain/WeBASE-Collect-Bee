@@ -22,11 +22,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosTransactionReceipt;
-import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.sdk.client.protocol.response.BcosTransactionReceipt;
+import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,9 +63,9 @@ public class EventCrawlerHandler {
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
                 String contractName = txHashContractNameMapping.get(tr.getTransactionHash());
-                Optional<Transaction> optt = ethClient.getTransactionByHash(tr);
+                Optional<JsonTransactionResponse> optt = ethClient.getTransactionByHash(tr);
                 if (optt.isPresent()) {
-                    Transaction transaction = optt.get();
+                    JsonTransactionResponse transaction = optt.get();
                     if (transaction.getTo() != null && !transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
                         tr.setContractAddress(transaction.getTo());
                     }

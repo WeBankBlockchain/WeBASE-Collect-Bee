@@ -15,26 +15,22 @@
  */
 package com.webank.webasebee.core.config;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.fisco.bcos.channel.client.Service;
-import org.fisco.bcos.channel.handler.ChannelConnections;
-import org.fisco.bcos.channel.handler.GroupChannelConnectionsConfig;
-import org.fisco.bcos.web3j.crypto.EncryptType;
-import org.fisco.bcos.web3j.protocol.Web3j;
-import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
-import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
-import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
+import org.fisco.bcos.sdk.BcosSDK;
+import org.fisco.bcos.sdk.client.Client;
+import org.fisco.bcos.sdk.config.ConfigOption;
+import org.fisco.bcos.sdk.config.exceptions.ConfigException;
+import org.fisco.bcos.sdk.config.model.ConfigProperty;
+import org.fisco.bcos.sdk.crypto.keypair.CryptoKeyPair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import com.google.common.collect.Lists;
-import com.webank.webasebee.common.constants.GasConstants;
+import com.google.common.collect.Maps;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,71 +48,40 @@ public class Web3jV2BeanConfig {
 
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
-
+    
     @Bean
-    public Web3j getWeb3j() throws Exception {
-        ChannelEthereumService channelEthereumService = new ChannelEthereumService();
-        Service service = getService();
-        service.run();
-        channelEthereumService.setChannelService(service);
-        // default sync transactions timeout: 30s
-        channelEthereumService.setTimeout(30000);
-        return Web3j.build(channelEthereumService, service.getGroupId());
+    public CryptoKeyPair getCrypto() throws ConfigException {
+        Client client = getClient();
+        return client.getCryptoSuite().createKeyPair();
     }
-
+    
     @Bean
-    public Service getService() {
-        GroupChannelConnectionsConfig groupChannelConnectionsConfig = getGroupChannelConnections();
-        Service channelService = new Service();
-        channelService.setGroupId(systemEnvironmentConfig.getGroupId());
-        channelService.setAllChannelConnections(groupChannelConnectionsConfig);
-        // set some default connect timeout seconds
-        channelService.setConnectSeconds(20);
-        channelService.setConnectSleepPerMillis(10);
-        return channelService;
+    public Client getClient() throws ConfigException {
+        BcosSDK sdk = getSDK();
+        return sdk.getClient(systemEnvironmentConfig.getGroupId());
     }
-
+    
     @Bean
-    public GroupChannelConnectionsConfig getGroupChannelConnections() {
-        GroupChannelConnectionsConfig groupChannelConnectionsConfig = new GroupChannelConnectionsConfig();
-        ChannelConnections con = new ChannelConnections();
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource ca = resolver.getResource("file:./config/ca.crt");
-        Resource nodeCrt = resolver.getResource("file:./config/node.crt");
-        Resource nodeKey = resolver.getResource("file:./config/node.key");
-        groupChannelConnectionsConfig.setCaCert(ca);
-        groupChannelConnectionsConfig.setSslCert(nodeCrt);
-        groupChannelConnectionsConfig.setSslKey(nodeKey);
-        ArrayList<String> list = new ArrayList<>();
-        List<ChannelConnections> allChannelConnections = new ArrayList<>();
-        String[] nodes = StringUtils.split(systemEnvironmentConfig.getNodeStr(), ";");
-        for (int i = 0; i < nodes.length; i++) {
-            if (nodes[i].contains("@")) {
-                nodes[i] = StringUtils.substringAfter(nodes[i], "@");
-            }
-        }
-        List<String> nodesList = Lists.newArrayList(nodes);
-        list.addAll(nodesList);
-        list.stream().forEach(s -> {
-            log.info("connect address: {}", s);
-        });
-        con.setConnectionsStr(list);
-        con.setGroupId(systemEnvironmentConfig.getGroupId());
-        allChannelConnections.add(con);
-        groupChannelConnectionsConfig.setAllChannelConnections(allChannelConnections);
-        return groupChannelConnectionsConfig;
-    }
-
-    @Bean
-    public EncryptType encryptType() {
-        // 0-RSA 1-Chinese-gm
+    public BcosSDK getSDK() throws ConfigException {
+        ConfigProperty configProperty = new ConfigProperty();
+        setPeers(configProperty);
+        setCertPath(configProperty);
+        ConfigOption option = new ConfigOption(configProperty, systemEnvironmentConfig.getEncryptType());
         log.info("Is gm {}", systemEnvironmentConfig.getEncryptType() == 1);
-        return new EncryptType(systemEnvironmentConfig.getEncryptType());
+        return new BcosSDK(option);
     }
-
-    @Bean
-    public ContractGasProvider getContractGasProvider() {
-        return new StaticGasProvider(GasConstants.GAS_PRICE, GasConstants.GAS_LIMIT);
+    
+    public void setPeers(ConfigProperty configProperty) {
+        String[] nodes = StringUtils.split(systemEnvironmentConfig.getNodeStr(), ";");
+        List<String> peers = Arrays.asList(nodes);
+        Map<String, Object> network = Maps.newHashMapWithExpectedSize(1);
+        network.put("peers", peers);
+        configProperty.setNetwork(network);
     }
-
+    
+    public void setCertPath(ConfigProperty configProperty) {
+        Map<String, Object> cryptoMaterial = Maps.newHashMapWithExpectedSize(1);
+        cryptoMaterial.put("certPath", "config");
+        configProperty.setCryptoMaterial(cryptoMaterial);
+    }
 }
