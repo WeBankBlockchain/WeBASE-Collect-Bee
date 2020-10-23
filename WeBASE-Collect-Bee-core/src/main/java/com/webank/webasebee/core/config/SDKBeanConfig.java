@@ -44,13 +44,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
-public class Web3jV2BeanConfig {
+public class SDKBeanConfig {
 
     @Autowired
     private SystemEnvironmentConfig systemEnvironmentConfig;
     
     @Bean
-    public CryptoKeyPair getCrypto() throws ConfigException {
+    public CryptoKeyPair cryptoKeyPair() throws ConfigException {
         Client client = getClient();
         return client.getCryptoSuite().createKeyPair();
     }

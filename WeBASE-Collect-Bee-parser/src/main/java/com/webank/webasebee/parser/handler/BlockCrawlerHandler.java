@@ -15,13 +15,12 @@
  */
 package com.webank.webasebee.parser.handler;
 
-import java.sql.Date;
-
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.data.BlockDetailInfoBO;
 import com.webank.webasebee.common.bo.data.BlockDetailInfoBO.Status;
+import com.webank.webasebee.common.tools.DateUtils;
 
 /**
  * BlockCrawlerHandler is responsible for crawling block info.
@@ -48,7 +47,7 @@ public class BlockCrawlerHandler {
         blockDetailInfo.setBlockHeight(block.getNumber().longValue());
         blockDetailInfo.setTxCount(block.getTransactions().size());
         blockDetailInfo.setBlockHash(block.getHash());
-        blockDetailInfo.setBlockTimeStamp(new Date(Long.parseLong(block.getTimestamp())));
+        blockDetailInfo.setBlockTimeStamp(DateUtils.hexStrToDate(block.getTimestamp()));
         blockDetailInfo.setStatus((short) Status.COMPLETED.ordinal());
         return blockDetailInfo;
     }

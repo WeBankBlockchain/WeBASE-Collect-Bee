@@ -15,6 +15,7 @@
  */
 package com.webank.webasebee.parser.crawler.face;
 
+import java.util.Date;
 import java.util.Map;
 
 import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
@@ -41,6 +42,6 @@ public interface BcosMethodCrawlerInterface {
      * @param txHashContractAddressMapping (to get the constructor method address)
      * @return void
      */
-    MethodBO transactionHandler(JsonTransactionResponse transaction, TransactionReceipt receipt, String blockTimeStamp, Map.Entry<String, String> entry,
-            String methodName, Map<String, String> txHashContractAddressMapping);
+    MethodBO transactionHandler(JsonTransactionResponse transaction, TransactionReceipt receipt, Date blockTimeStamp,
+            String methodName);
 }

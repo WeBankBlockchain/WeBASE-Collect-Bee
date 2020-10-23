@@ -17,6 +17,8 @@ package com.webank.webasebee.common.tools;
 
 import java.math.BigInteger;
 
+import cn.hutool.core.convert.Convert;
+
 /**
  * BigIntegerUtils
  *
@@ -32,8 +34,7 @@ public class BigIntegerUtils {
     }
     
     public static long toLong(Object obj) {
-        BigInteger bi = (BigInteger) obj;
-        return bi.longValue();
+        return Convert.toLong(obj);
     }
 
 

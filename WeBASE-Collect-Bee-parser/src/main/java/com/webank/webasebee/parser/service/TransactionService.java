@@ -64,7 +64,7 @@ public class TransactionService {
         }
     }
 
-    public Optional<Entry<String, String>> getContractNameByTransaction(JsonTransactionResponse transaction,
+    public Optional<String> getContractNameByTransaction(JsonTransactionResponse transaction,
             Map<String, String> txHashContractAddressMapping) throws IOException {
         String contractAddress = getContractAddressByTransaction(transaction, txHashContractAddressMapping);
         if (StringUtils.isEmpty(contractAddress)) {
@@ -84,13 +84,13 @@ public class TransactionService {
         }
         log.debug("Block{} contractAddress{} transactionInput: {}", transaction.getBlockNumber(), contractAddress,
                 transaction.getInput());
-        return Optional.of(contractEntry);
+        return Optional.of(contractEntry.getValue());
     }
 
     public MethodMetaInfo getMethodMetaInfo(JsonTransactionResponse transaction, String contractName) {
         if (transaction.getTo() == null || transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
             MethodMetaInfo methodMetaInfo = new MethodMetaInfo();
-            methodMetaInfo.setContractName(contractName).setMethodName(contractName + contractName);
+            methodMetaInfo.setContractName(contractName).setMethodName("constructor");
             return methodMetaInfo;
         }
         String methodId = transaction.getInput().substring(0, 10);

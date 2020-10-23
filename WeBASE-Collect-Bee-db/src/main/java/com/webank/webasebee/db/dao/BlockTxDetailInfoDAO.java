@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
+import org.fisco.bcos.sdk.utils.Numeric;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -63,7 +64,7 @@ public class BlockTxDetailInfoDAO {
             throws IOException {
         BlockTxDetailInfo blockTxDetailInfo = new BlockTxDetailInfo();
         blockTxDetailInfo.setBlockHash(receipt.getBlockHash());
-        blockTxDetailInfo.setBlockHeight(receipt.getBlockNumber());
+        blockTxDetailInfo.setBlockHeight(Numeric.toBigInt(receipt.getBlockNumber()).longValue());
         blockTxDetailInfo.setContractName(contractName);
         blockTxDetailInfo.setMethodName(methodName.substring(contractName.length()));
         JsonTransactionResponse transaction = ethClient.getTransactionByHash(receipt).get();

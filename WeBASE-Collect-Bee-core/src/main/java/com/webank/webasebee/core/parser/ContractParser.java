@@ -54,7 +54,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Configuration
 @Slf4j
-@DependsOn("encryptType")
+@DependsOn("cryptoKeyPair")
 public class ContractParser {
 
     /** @Fields monitorGeneratedConfig : monitor config params start with monitor in application.properties file */
@@ -114,14 +114,14 @@ public class ContractParser {
             }
             String methodName = abiDefinition.getName();
             if (abiType.equals(AbiTypeConstants.ABI_CONSTRUCTOR_TYPE)) {
-                methodName = clazz.getSimpleName();
+                methodName = "constructor";
             }
             // compute method id by method name and method input's params.
             String methodId = abiDefinition.getMethodId(client.getCryptoSuite());
             log.debug("methodId {} , methodName {}", methodId, methodName);
             MethodMetaInfo metaInfo = new MethodMetaInfo();
             metaInfo.setMethodId(methodId);
-            methodName = className + StringUtils.capitalize(methodName);
+            methodName = StringUtils.capitalize(methodName);
             metaInfo.setMethodName(methodName);
             metaInfo.setFieldsList(inputs);
             metaInfo.setOutputFieldsList(abiDefinition.getOutputs());

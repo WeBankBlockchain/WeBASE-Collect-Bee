@@ -26,20 +26,21 @@ import java.util.Optional;
 
 import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionObject;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.sdk.client.protocol.response.BcosTransactionReceipt;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
+import org.fisco.bcos.sdk.utils.Numeric;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
 import com.webank.webasebee.common.bo.data.AccountInfoBO;
 import com.webank.webasebee.common.bo.data.BlockAccountsInfoBO;
 import com.webank.webasebee.common.constants.ContractConstants;
+import com.webank.webasebee.common.tools.DateUtils;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.service.ContractConstructorService;
-import com.webank.webasebee.parser.service.TransactionService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,10 +64,6 @@ public class AccountCrawlerHandler {
     /** @Fields contractConstructorService : contract constructor service */
     @Autowired
     private ContractConstructorService contractConstructorService;
-    @Autowired
-    private TransactionService transactionService;
-    @Autowired
-    private ContractMapsInfo contractMapsInfo;
 
     @SuppressWarnings("rawtypes")
     public BlockAccountsInfoBO crawl(Block block) throws IOException {
@@ -74,11 +71,14 @@ public class AccountCrawlerHandler {
         Map<String, String> map = new HashMap<>();
         List<TransactionResult> transactionResults = block.getTransactions();
         for (TransactionResult result : transactionResults) {
-            BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
+            TransactionObject to = (TransactionObject) result;
+            JsonTransactionResponse transaction = to.get();
+            BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(transaction.getHash());
             Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
-                handle(tr, block.getTimestamp()).ifPresent(e -> {
+
+                handle(tr, DateUtils.hexStrToDate(block.getTimestamp())).ifPresent(e -> {
                     accountInfoList.add(e);
                     map.putIfAbsent(e.getTxHash(), e.getContractAddress());
                 });
@@ -100,7 +100,7 @@ public class AccountCrawlerHandler {
      * @return void
      * @throws IOException
      */
-    public Optional<AccountInfoBO> handle(TransactionReceipt receipt, String blockTimeStamp) throws IOException {
+    public Optional<AccountInfoBO> handle(TransactionReceipt receipt, Date blockTimeStamp) throws IOException {
         Optional<JsonTransactionResponse> optt = ethClient.getTransactionByHash(receipt);
         if (optt.isPresent()) {
             JsonTransactionResponse transaction = optt.get();
@@ -115,9 +115,10 @@ public class AccountCrawlerHandler {
                     return Optional.empty();
                 }
                 AccountInfoBO accountInfo = new AccountInfoBO();
-                accountInfo.setBlockTimeStamp(new Date(Long.parseLong(blockTimeStamp)))
-                        .setBlockHeight(receipt.getBlockNumber()).setContractAddress(receipt.getContractAddress())
-                        .setContractName(entry.getValue()).setTxHash(receipt.getTransactionHash());
+                accountInfo.setBlockTimeStamp(blockTimeStamp)
+                        .setBlockHeight(Numeric.toBigInt(receipt.getBlockNumber()).longValue())
+                        .setContractAddress(receipt.getContractAddress()).setContractName(entry.getValue())
+                        .setTxHash(receipt.getTransactionHash());
                 return Optional.of(accountInfo);
             }
         }

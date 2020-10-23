@@ -15,6 +15,7 @@
  */
 package com.webank.webasebee.common.bo.data;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 import lombok.Data;
@@ -31,7 +32,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class AccountInfoBO {
-    private String blockHeight;
+    private long blockHeight;
 
     /** @Fields contractName : contract name */
     private String contractName;

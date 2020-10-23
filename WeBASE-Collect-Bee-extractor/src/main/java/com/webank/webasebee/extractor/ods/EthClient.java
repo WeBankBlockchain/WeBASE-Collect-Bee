@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import org.fisco.bcos.sdk.client.Client;
 import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
-import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.sdk.client.protocol.response.BcosTransactionReceipt;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +60,6 @@ public class EthClient {
         return block;
     }
 
-    public BcosTransactionReceipt getTransactionReceipt(TransactionResult result) throws IOException {
-        return getTransactionReceipt((String) result.get());
-    }
 
     @Cacheable(cacheNames = { "transactionReceipt" })
     public BcosTransactionReceipt getTransactionReceipt(String hash) throws IOException {

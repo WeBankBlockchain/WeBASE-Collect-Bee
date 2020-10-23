@@ -24,6 +24,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionObject;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.sdk.client.protocol.response.BcosTransactionReceipt;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.data.EventBO;
 import com.webank.webasebee.common.constants.ContractConstants;
+import com.webank.webasebee.common.tools.DateUtils;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.crawler.face.BcosEventCrawlerInterface;
 
@@ -53,23 +55,22 @@ public class EventCrawlerHandler {
     @Autowired
     private Map<String, BcosEventCrawlerInterface> bcosEventCrawlerMap;
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unused" })
     public List<EventBO> crawl(Block block, Map<String, String> txHashContractNameMapping) throws IOException {
         List<EventBO> boList = new ArrayList<>();
         List<TransactionResult> transactionResults = block.getTransactions();
         for (TransactionResult result : transactionResults) {
-            BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(result);
+            TransactionObject to = (TransactionObject) result;
+            JsonTransactionResponse transaction = to.get();
+            BcosTransactionReceipt bcosTransactionReceipt = ethClient.getTransactionReceipt(transaction.getHash());
             Optional<TransactionReceipt> opt = bcosTransactionReceipt.getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt tr = opt.get();
-                String contractName = txHashContractNameMapping.get(tr.getTransactionHash());
-                Optional<JsonTransactionResponse> optt = ethClient.getTransactionByHash(tr);
-                if (optt.isPresent()) {
-                    JsonTransactionResponse transaction = optt.get();
-                    if (transaction.getTo() != null && !transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
-                        tr.setContractAddress(transaction.getTo());
-                    }
+                String contractName = txHashContractNameMapping.get(transaction.getHash());
+                if (transaction.getTo() != null && !transaction.getTo().equals(ContractConstants.EMPTY_ADDRESS)) {
+                    tr.setContractAddress(transaction.getTo());
                 }
+
                 if (ContractConstants.EXPORT_INNER_CALL_EVENT == false && StringUtils.isEmpty(contractName)) {
                     log.error("TxHash {} is Empty, and the blockNumber is {}! Please check it. ",
                             tr.getTransactionHash(), block.getNumber());
@@ -80,7 +81,7 @@ public class EventCrawlerHandler {
                             && !StringUtils.startsWithIgnoreCase(k, contractName)) {
                         return;
                     }
-                    boList.addAll(v.handleReceipt(tr, block.getTimestamp()));
+                    boList.addAll(v.handleReceipt(tr, DateUtils.hexStrToDate(block.getTimestamp())));
                 });
             }
         }

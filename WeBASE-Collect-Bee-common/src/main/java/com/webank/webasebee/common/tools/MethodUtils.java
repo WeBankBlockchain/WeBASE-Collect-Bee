@@ -17,12 +17,21 @@ package com.webank.webasebee.common.tools;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.fisco.bcos.sdk.abi.ABICodecException;
 import org.fisco.bcos.sdk.abi.tools.ContractAbiUtil;
+import org.fisco.bcos.sdk.abi.wrapper.ABICodecObject;
 import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition;
-import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition.NamedType;
+import org.fisco.bcos.sdk.abi.wrapper.ABIDefinitionFactory;
+import org.fisco.bcos.sdk.abi.wrapper.ABIObject;
+import org.fisco.bcos.sdk.abi.wrapper.ABIObjectFactory;
+import org.fisco.bcos.sdk.abi.wrapper.ContractABIDefinition;
+import org.fisco.bcos.sdk.client.Client;
+import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.stereotype.Service;
+
+import com.webank.blockchain.wecredit.contracts.ComplexSol;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,4 +89,36 @@ public class MethodUtils {
         }
         return ContractAbiUtil.getFuncABIDefinition(abi);
     }
+
+    @SuppressWarnings("static-access")
+    public static List<Object> decodeMethodInput(String ABI, String methodName, TransactionReceipt tr, Client client)
+            throws ABICodecException {
+        ABIDefinitionFactory abiDefinitionFactory = new ABIDefinitionFactory(client.getCryptoSuite());
+        ContractABIDefinition contractABIDefinition = abiDefinitionFactory.loadABI(ABI);
+        List<ABIDefinition> methods;
+        ABICodecObject abiCodecObject = new ABICodecObject();
+        ABIObjectFactory abiObjectFactory = new ABIObjectFactory();
+        if (StringUtils.equals(methodName, "constructor")) {
+            String code = client.getCode(tr.getContractAddress()).getCode();
+            String lastCode = StringUtils.substring(code, code.length() - 32, code.length());
+            String paramsInput = StringUtils.substringAfter(tr.getInput(), lastCode);
+            // remove methodId of input
+            return abiCodecObject.decodeJavaObject(
+                    abiObjectFactory.createInputObject(contractABIDefinition.getConstructor()), paramsInput);
+        } else {
+            methods = contractABIDefinition.getFunctions().get(methodName);
+        }
+        for (ABIDefinition abiDefinition : methods) {
+            ABIObject outputABIObject = abiObjectFactory.createInputObject(abiDefinition);
+            try {
+                return abiCodecObject.decodeJavaObject(outputABIObject, tr.getInput());
+            } catch (Exception e) {
+                log.debug(" exception in decodeMethodToObject : {}", e.getMessage());
+            }
+        }
+        String errorMsg = " cannot decode in decodeMethodToObject with appropriate interface ABI";
+        log.error(errorMsg);
+        throw new ABICodecException(errorMsg);
+    }
+
 }

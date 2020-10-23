@@ -17,16 +17,15 @@ package com.webank.webasebee.parser.handler;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionObject;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,7 @@ import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.bo.data.BlockMethodInfo;
 import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
 import com.webank.webasebee.common.bo.data.MethodBO;
+import com.webank.webasebee.common.tools.DateUtils;
 import com.webank.webasebee.extractor.ods.EthClient;
 import com.webank.webasebee.parser.service.MethodCrawlService;
 import com.webank.webasebee.parser.service.TransactionService;
@@ -69,47 +69,45 @@ public class MethodCrawlerHandler {
         List<TransactionResult> transactionResults = block.getTransactions();
         Map<String, String> txHashContractNameMapping = new HashMap<>();
         for (TransactionResult result : transactionResults) {
-            Optional<TransactionReceipt> opt = ethClient.getTransactionReceipt(result).getTransactionReceipt();
+            TransactionObject to = (TransactionObject) result;
+            JsonTransactionResponse transaction = to.get();
+            Optional<TransactionReceipt> opt =
+                    ethClient.getTransactionReceipt(transaction.getHash()).getTransactionReceipt();
             if (opt.isPresent()) {
                 TransactionReceipt receipt = opt.get();
-                Optional<JsonTransactionResponse> optt = ethClient.getTransactionByHash(receipt);
-                if (optt.isPresent()) {
-                    JsonTransactionResponse transaction = optt.get();
-                    Optional<Entry<String, String>> optional =
-                            transactionService.getContractNameByTransaction(transaction, txHashContractAddressMapping);
-                    if (!optional.isPresent()) {
-                        continue;
-                    }
-                    // key:contract binary, value:contract name
-                    Entry<String, String> contractEntry = optional.get();
-                    MethodMetaInfo methodMetaInfo =
-                            transactionService.getMethodMetaInfo(transaction, contractEntry.getValue());
-                    if (methodMetaInfo == null) {
-                        continue;
-                    }
-                    // get block tx detail info
-                    BlockTxDetailInfoBO blockTxDetailInfo =
-                            getBlockTxDetailInfo(block, transaction, receipt, methodMetaInfo);
-                    blockTxDetailInfoList.add(blockTxDetailInfo);
-                    txHashContractNameMapping.putIfAbsent(blockTxDetailInfo.getTxHash(),
-                            blockTxDetailInfo.getContractName());
-                    if (!methodCrawlService
-                            .getMethodCrawler(
-                                    StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
-                            .isPresent()) {
-                        log.info("The methodName {} doesn't exist or is constant, please check it !",
-                                methodMetaInfo.getMethodName());
-                        continue;
-                    }
-                    // get method bo
-                    methodInfoList.add(methodCrawlService
-                            .getMethodCrawler(
-                                    StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
-                            .get()
-                            .transactionHandler(transaction, receipt, block.getTimestamp(), contractEntry,
-                                    methodMetaInfo.getMethodName(), txHashContractAddressMapping)
-                            .setMethodStatus(receipt.getStatus()));
+                Optional<String> contractName =
+                        transactionService.getContractNameByTransaction(transaction, txHashContractAddressMapping);
+                if (!contractName.isPresent()) {
+                    continue;
                 }
+                MethodMetaInfo methodMetaInfo = transactionService.getMethodMetaInfo(transaction, contractName.get());
+                if (methodMetaInfo == null) {
+                    continue;
+                }
+                // get block tx detail info
+                BlockTxDetailInfoBO blockTxDetailInfo =
+                        getBlockTxDetailInfo(block, transaction, receipt, methodMetaInfo);
+                blockTxDetailInfoList.add(blockTxDetailInfo);
+                txHashContractNameMapping.putIfAbsent(blockTxDetailInfo.getTxHash(),
+                        blockTxDetailInfo.getContractName());
+                if (!methodCrawlService
+                        .getMethodCrawler(
+                                StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
+                        .isPresent()) {
+                    log.info("The methodName {} doesn't exist or is constant, please check it !",
+                            methodMetaInfo.getMethodName());
+                    continue;
+                }
+                // get method bo
+                methodInfoList
+                        .add(methodCrawlService
+                                .getMethodCrawler(
+                                        StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
+                                .get()
+                                .transactionHandler(transaction, receipt, DateUtils.hexStrToDate(block.getTimestamp()),
+                                        methodMetaInfo.getMethodName())
+                                .setMethodStatus(receipt.getStatus()));
+
             }
         }
         blockMethodInfo.setBlockTxDetailInfoList(blockTxDetailInfoList).setMethodInfoList(methodInfoList)
@@ -122,10 +120,9 @@ public class MethodCrawlerHandler {
             TransactionReceipt receipt, MethodMetaInfo methodMetaInfo) {
         BlockTxDetailInfoBO blockTxDetailInfo = new BlockTxDetailInfoBO();
         blockTxDetailInfo.setBlockHash(receipt.getBlockHash()).setBlockHeight(receipt.getBlockNumber())
-                .setContractName(methodMetaInfo.getContractName())
-                .setMethodName(methodMetaInfo.getMethodName().substring(methodMetaInfo.getContractName().length()))
+                .setContractName(methodMetaInfo.getContractName()).setMethodName(methodMetaInfo.getMethodName())
                 .setTxFrom(transaction.getFrom()).setTxTo(transaction.getTo()).setTxHash(receipt.getTransactionHash())
-                .setBlockTimeStamp(new Date(Long.parseLong(block.getTimestamp())));
+                .setBlockTimeStamp(DateUtils.hexStrToDate(block.getTimestamp()));
         return blockTxDetailInfo;
     }
 

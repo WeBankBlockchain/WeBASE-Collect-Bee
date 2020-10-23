@@ -60,7 +60,9 @@ subprojects {
     implementation "org.springframework.boot:spring-boot-starter-aop" 
     compile 'cn.hutool:hutool-all:5.3.7'
     compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
-    compile ('org.fisco-bcos.java-sdk:java-sdk:2.6.1-rc1')
+    implementation ('org.fisco-bcos.java-sdk:java-sdk:2.6.1-rc1') {
+        exclude group: 'org.slf4j'
+    }
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'   
 
