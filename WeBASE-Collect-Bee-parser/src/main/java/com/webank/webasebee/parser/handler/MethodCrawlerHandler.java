@@ -91,7 +91,7 @@ public class MethodCrawlerHandler {
                 txHashContractNameMapping.putIfAbsent(blockTxDetailInfo.getTxHash(),
                         blockTxDetailInfo.getContractName());
                 if (!methodCrawlService
-                        .getMethodCrawler(
+                        .getMethodCrawler(StringUtils.uncapitalize(methodMetaInfo.getContractName()) +
                                 StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
                         .isPresent()) {
                     log.info("The methodName {} doesn't exist or is constant, please check it !",
@@ -101,7 +101,7 @@ public class MethodCrawlerHandler {
                 // get method bo
                 methodInfoList
                         .add(methodCrawlService
-                                .getMethodCrawler(
+                                .getMethodCrawler(StringUtils.uncapitalize(methodMetaInfo.getContractName()) +
                                         StringUtils.uncapitalize(methodMetaInfo.getMethodName()) + "MethodCrawlerImpl")
                                 .get()
                                 .transactionHandler(transaction, receipt, DateUtils.hexStrToDate(block.getTimestamp()),

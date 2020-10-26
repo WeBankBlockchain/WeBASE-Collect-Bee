@@ -111,9 +111,9 @@ public class MethodUtils {
         for (ABIDefinition abiDefinition : methods) {
             ABIObject outputABIObject = abiObjectFactory.createInputObject(abiDefinition);
             try {
-                return abiCodecObject.decodeJavaObject(outputABIObject, tr.getInput());
+                return abiCodecObject.decodeJavaObject(outputABIObject, tr.getInput().substring(10));
             } catch (Exception e) {
-                log.debug(" exception in decodeMethodToObject : {}", e.getMessage());
+                log.warn(" exception in decodeMethodToObject : {}", e.getMessage());
             }
         }
         String errorMsg = " cannot decode in decodeMethodToObject with appropriate interface ABI";

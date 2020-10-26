@@ -121,7 +121,6 @@ public class ContractParser {
             log.debug("methodId {} , methodName {}", methodId, methodName);
             MethodMetaInfo metaInfo = new MethodMetaInfo();
             metaInfo.setMethodId(methodId);
-            methodName = StringUtils.capitalize(methodName);
             metaInfo.setMethodName(methodName);
             metaInfo.setFieldsList(inputs);
             metaInfo.setOutputFieldsList(abiDefinition.getOutputs());

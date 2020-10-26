@@ -68,6 +68,9 @@ public class BytesUtils {
     }
 
     public static String bytesArrayToString(Object obj) {
+        if(obj.getClass().getName().equals("java.lang.String")) {
+            return (String) obj;
+        }
         byte[] b = (byte[]) obj;
         return bytesArrayTypeToString(b);
     }
