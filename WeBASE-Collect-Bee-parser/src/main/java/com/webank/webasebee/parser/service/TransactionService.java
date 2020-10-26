@@ -22,15 +22,14 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
-import org.fisco.bcos.sdk.client.protocol.request.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
+import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
 import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.constants.ContractConstants;
 import com.webank.webasebee.common.tools.JacksonUtils;
-import com.webank.webasebee.common.vo.NameValueVO;
 import com.webank.webasebee.extractor.ods.EthClient;
 
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +74,7 @@ public class TransactionService {
         }
         String input = ethClient.getCodeByContractAddress(contractAddress);
         log.debug("code: {}", JacksonUtils.toJson(input));
-        Entry<String, String> contractEntry = contractConstructorService.getConstructorNameByCode(input);
+        Entry<String, ContractMethodInfo> contractEntry = contractConstructorService.getConstructorNameByCode(input);
         if (contractEntry == null) {
             log.warn(
                     "block:{} constructor code can't be find, maybe the contract is not registered! See the DIR of contractPath.",
@@ -84,7 +83,7 @@ public class TransactionService {
         }
         log.debug("Block{} contractAddress{} transactionInput: {}", transaction.getBlockNumber(), contractAddress,
                 transaction.getInput());
-        return Optional.of(contractEntry.getValue());
+        return Optional.of(contractEntry.getValue().getContractName());
     }
 
     public MethodMetaInfo getMethodMetaInfo(JsonTransactionResponse transaction, String contractName) {
@@ -95,9 +94,9 @@ public class TransactionService {
         }
         String methodId = transaction.getInput().substring(0, 10);
         if (transaction.getInput() != null && contractMapsInfo.getMethodIdMap().containsKey(methodId)) {
-            NameValueVO<String> nameValue = contractMapsInfo.getMethodIdMap().get(methodId);
             MethodMetaInfo methodMetaInfo = new MethodMetaInfo();
-            methodMetaInfo.setContractName(contractName).setMethodName(nameValue.getValue());
+            methodMetaInfo.setContractName(contractName)
+                    .setMethodName(contractMapsInfo.getMethodIdMap().get(methodId).getMethodName());
             return methodMetaInfo;
 
         } else {
