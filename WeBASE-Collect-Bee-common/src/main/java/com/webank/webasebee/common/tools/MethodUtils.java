@@ -31,8 +31,6 @@ import org.fisco.bcos.sdk.client.Client;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.stereotype.Service;
 
-import com.webank.blockchain.wecredit.contracts.ComplexSol;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -54,16 +52,16 @@ public class MethodUtils {
      * @param clazz
      * @return String
      */
-    public static String getContractBinary(Class<?> clazz) {
+    public static String getClassField(Class<?> clazz, String fieldName) {
         String binary = null;
         try {
-            Field field = clazz.getDeclaredField("BINARY");
+            Field field = clazz.getDeclaredField(fieldName);
             if (!field.isAccessible()) {
                 field.setAccessible(true);
             }
-            binary = (String) field.get("BINARY");
+            binary = (String) field.get(fieldName);
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            log.error("Read BINARY error: {}", e.getMessage());
+            log.error("Read {} error: {}", fieldName, e.getMessage());
         }
         return binary;
     }

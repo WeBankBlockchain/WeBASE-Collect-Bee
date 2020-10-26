@@ -35,9 +35,12 @@ public class ContractMethodInfo {
 	/** @Fields contractName : contract name */
 	private String contractName;
 	
-	/** @Fields congtractBinary : contract binary */
 	private String contractBinary;
 	
-	/** @Fields methodMetaInfos : methodMetaInfos */
+	private String contractABI;
+	
 	private List<MethodMetaInfo> methodMetaInfos;
+	
+	/** @Fields to register */
+	private int version;
 }

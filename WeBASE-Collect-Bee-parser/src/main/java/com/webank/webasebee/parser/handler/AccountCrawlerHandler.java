@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
+import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
 import com.webank.webasebee.common.bo.data.AccountInfoBO;
 import com.webank.webasebee.common.bo.data.BlockAccountsInfoBO;
 import com.webank.webasebee.common.constants.ContractConstants;
@@ -109,7 +110,7 @@ public class AccountCrawlerHandler {
                 String contractAddress = receipt.getContractAddress();
                 String input = ethClient.getCodeByContractAddress(contractAddress);
                 log.debug("blockNumber: {}, input: {}", receipt.getBlockNumber(), input);
-                Entry<String, String> entry = contractConstructorService.getConstructorNameByCode(input);
+                Entry<String, ContractMethodInfo> entry = contractConstructorService.getConstructorNameByCode(input);
                 if (entry == null) {
                     log.info("block:{} constructor binary can't find!", receipt.getBlockNumber());
                     return Optional.empty();
@@ -117,8 +118,8 @@ public class AccountCrawlerHandler {
                 AccountInfoBO accountInfo = new AccountInfoBO();
                 accountInfo.setBlockTimeStamp(blockTimeStamp)
                         .setBlockHeight(Numeric.toBigInt(receipt.getBlockNumber()).longValue())
-                        .setContractAddress(receipt.getContractAddress()).setContractName(entry.getValue())
-                        .setTxHash(receipt.getTransactionHash());
+                        .setContractAddress(receipt.getContractAddress())
+                        .setContractName(entry.getValue().getContractName()).setTxHash(receipt.getTransactionHash());
                 return Optional.of(accountInfo);
             }
         }

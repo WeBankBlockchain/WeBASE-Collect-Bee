@@ -28,7 +28,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
@@ -37,7 +36,6 @@ import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.constants.AbiTypeConstants;
 import com.webank.webasebee.common.tools.ClazzScanUtils;
 import com.webank.webasebee.common.tools.MethodUtils;
-import com.webank.webasebee.common.vo.NameValueVO;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
 
 import lombok.extern.slf4j.Slf4j;
@@ -93,12 +91,11 @@ public class ContractParser {
             return null;
         }
         String className = clazz.getSimpleName();
-        String binary = MethodUtils.getContractBinary(clazz);
         ContractMethodInfo contractMethodInfo = new ContractMethodInfo();
         contractMethodInfo.setContractName(className);
-        contractMethodInfo.setContractBinary(binary);
-
-        List<MethodMetaInfo> methodIdList = Lists.newArrayList();
+        contractMethodInfo.setContractBinary(MethodUtils.getClassField(clazz, "BINARY"));
+        contractMethodInfo.setContractABI(MethodUtils.getClassField(clazz, "ABI"));
+        List<MethodMetaInfo> methodIdList = Lists.newArrayListWithExpectedSize(abiDefinitions.size());
         contractMethodInfo.setMethodMetaInfos(methodIdList);
 
         for (ABIDefinition abiDefinition : abiDefinitions) {
@@ -130,37 +127,25 @@ public class ContractParser {
     }
 
     /**
-     * Translate all contract info of ContractMethodInfo's objects to methodIdMap, methodFiledsMap and
-     * contractBinaryMap.
+     * Translate all contract info of ContractMethodInfo's objects to methodIdMap and contractBinaryMap.
      * 
-     * @param contractMethodInfos: contractMethodInfos contains methodIdMap, methodFiledsMap and contractBinaryMap.
+     * @param contractMethodInfos: contractMethodInfos contains methodIdMap and contractBinaryMap.
      * @return ContractMapsInfo
      */
     @Bean
     public ContractMapsInfo transContractMethodInfo2ContractMapsInfo() {
         List<ContractMethodInfo> contractMethodInfos = initContractMethodInfo();
         ContractMapsInfo contractMapsInfo = new ContractMapsInfo();
-        Map<String, NameValueVO<String>> methodIdMap = new HashMap<>();
-        Map<String, List<NamedType>> methodFiledsMap = new HashMap<>();
-        Map<String, List<NamedType>> outputMethodFiledsMap = new HashMap<>();
-        Map<String, String> contractBinaryMap = new HashMap<>();
+        Map<String, MethodMetaInfo> methodIdMap = new HashMap<>();
+        Map<String, ContractMethodInfo> contractBinaryMap = new HashMap<>();
         for (ContractMethodInfo contractMethodInfo : contractMethodInfos) {
-            contractBinaryMap.put(contractMethodInfo.getContractBinary(), contractMethodInfo.getContractName());
             for (MethodMetaInfo methodMetaInfo : contractMethodInfo.getMethodMetaInfos()) {
-                NameValueVO<String> nameValue = new NameValueVO<>();
-                nameValue.setName(contractMethodInfo.getContractName());
-                nameValue.setValue(methodMetaInfo.getMethodName());
-                methodIdMap.put(methodMetaInfo.getMethodId(), nameValue);
-                methodFiledsMap.put(methodMetaInfo.getMethodName(), methodMetaInfo.getFieldsList());
-                outputMethodFiledsMap.put(contractMethodInfo.getContractName() + "_" + methodMetaInfo.getMethodName(),
-                        methodMetaInfo.getOutputFieldsList());
+                methodIdMap.put(methodMetaInfo.getMethodId(), methodMetaInfo);
+                contractBinaryMap.put(contractMethodInfo.getContractBinary(), contractMethodInfo);
             }
         }
         log.info("Init sync block: find {} contract constructors.", contractBinaryMap.size());
         contractMapsInfo.setContractBinaryMap(contractBinaryMap);
-        contractMapsInfo.setMethodFiledsMap(methodFiledsMap);
-        contractMapsInfo.setOutputMethodFiledsMap(outputMethodFiledsMap);
-        log.info("Init sync block: find {} contract methods.", methodIdMap.size());
         contractMapsInfo.setMethodIdMap(methodIdMap);
         return contractMapsInfo;
     }

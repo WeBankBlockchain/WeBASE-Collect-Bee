@@ -15,12 +15,7 @@
  */
 package com.webank.webasebee.common.bo.contract;
 
-import java.util.List;
 import java.util.Map;
-
-import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition.NamedType;
-
-import com.webank.webasebee.common.vo.NameValueVO;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -38,14 +33,9 @@ import lombok.experimental.Accessors;
 public class ContractMapsInfo {
 
     /** @Fields methodIdMap : use to storage methodId map , key:methodId, value:(contractName, methodName) */
-    private Map<String, NameValueVO<String>> methodIdMap;
-
-    /** @Fields methodFiledsMap : use to storage method fileds map , key:methodName, value:fieldsList */
-    private Map<String, List<NamedType>> methodFiledsMap;
+    private Map<String, MethodMetaInfo> methodIdMap;
     
-    private Map<String, List<NamedType>> outputMethodFiledsMap;
-
     /** @Fields contractBinaryMap : use to storage contract binary map, key:contract binary, value:contract name */
-    private Map<String, String> contractBinaryMap;
+    private Map<String, ContractMethodInfo> contractBinaryMap;
 
 }
