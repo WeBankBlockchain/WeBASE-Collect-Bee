@@ -25,8 +25,6 @@ import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
 import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
 import com.webank.webasebee.common.constants.BinConstant;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * ContractConstructorService for querying contract constructor name by input.
  *
@@ -36,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Service
-@Slf4j
 public class ContractConstructorService {
 
     /** @Fields contractMapsInfo : contract maps info */

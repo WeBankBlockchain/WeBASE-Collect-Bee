@@ -63,8 +63,11 @@ subprojects {
     implementation ('org.fisco-bcos.java-sdk:java-sdk:2.6.1-rc1') {
         exclude group: 'org.slf4j'
     }
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'   
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+
+    compile('org.springframework.boot:spring-boot-starter-data-elasticsearch')
+
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

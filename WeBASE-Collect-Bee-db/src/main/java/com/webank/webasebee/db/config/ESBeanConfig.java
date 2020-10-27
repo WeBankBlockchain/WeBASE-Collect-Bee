@@ -46,6 +46,7 @@ public class ESBeanConfig {
         if (!isEsEnabled()) {
             return;
         }
+        System.setProperty("es.set.netty.runtime.available.processors","false");
         Settings settings = Settings.builder()
                 .put("cluster.name", clusterName)
                 .build();
