@@ -22,7 +22,7 @@ public class ContractInfoBO {
 
     private int version;
 
-    private long contractId;
+    private long abiHash;
 
 
 }

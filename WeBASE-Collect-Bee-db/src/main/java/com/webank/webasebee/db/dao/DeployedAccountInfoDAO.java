@@ -37,7 +37,7 @@ public class DeployedAccountInfoDAO implements SaveInterface<DeployedAccountInfo
         DeployedAccountInfo deployedAccountInfo = new DeployedAccountInfo();
         BeanUtil.copyProperties(deployedAccountInfoBO, deployedAccountInfo, true);
         ContractMethodInfo contractMethodInfo = contractMapsInfo.getContractBinaryMap().get(deployedAccountInfoBO.getBinary());
-        deployedAccountInfo.setContractId(contractMethodInfo.getContractInfoBO().getContractId());
+        deployedAccountInfo.setAbiHash(contractMethodInfo.getContractInfoBO().getAbiHash());
         save(deployedAccountInfo);
     }
 }

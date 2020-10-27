@@ -15,12 +15,18 @@
  */
 package com.webank.webasebee.core.service;
 
+import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
+import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
 import com.webank.webasebee.common.bo.data.BlockInfoBO;
+import com.webank.webasebee.common.bo.data.ContractInfoBO;
 import com.webank.webasebee.db.service.DataStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Map;
 
 /**
  * BlockStoreService
@@ -31,14 +37,28 @@ import java.util.List;
  *
  */
 @Service
+@DependsOn("contractParser")
 public class BlockStoreService {
 
     @Autowired
     private List<DataStoreService> dataStoreServiceList;
+    @Autowired
+    private ContractMapsInfo contractMapsInfo;
 
     public void store(BlockInfoBO blockInfo) {
         for (DataStoreService dataStoreService : dataStoreServiceList) {
-            dataStoreService.store(blockInfo);
+            dataStoreService.storeBlockInfoBO(blockInfo);
+        }
+    }
+
+    @PostConstruct
+    public void saveContractInfo() {
+        Map<String, ContractMethodInfo> contractMethodInfoMap =  contractMapsInfo.getContractBinaryMap();
+        for (Map.Entry<String, ContractMethodInfo> entry : contractMethodInfoMap.entrySet()){
+            ContractInfoBO contractInfoBO = entry.getValue().getContractInfoBO();
+            for (DataStoreService storeService : dataStoreServiceList) {
+                storeService.storeContractInfo(contractInfoBO);
+            }
         }
     }
 

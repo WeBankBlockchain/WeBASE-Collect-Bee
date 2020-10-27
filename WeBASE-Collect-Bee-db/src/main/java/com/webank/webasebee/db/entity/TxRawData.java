@@ -43,9 +43,6 @@ public class TxRawData extends IdEntity{
     @Column(name = "tx_index")
     private String txIndex;
 
-    @Column(name = "tx_object")
-    private String txObject;
-
     /** @Fields blockTimeStamp : block timestamp */
     @Column(name = "block_timestamp")
     private Date blockTimeStamp;

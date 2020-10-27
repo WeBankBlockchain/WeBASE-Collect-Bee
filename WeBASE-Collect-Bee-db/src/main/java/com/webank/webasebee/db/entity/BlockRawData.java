@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -36,9 +37,6 @@ public class BlockRawData extends IdEntity {
     @Column(name = "block_height", unique = true)
     private long blockHeight;
 
-    @Column(name = "block_object")
-    private String blockObject;
-
     /** @Fields blockTimeStamp : block timestamp */
     @Column(name = "block_timestamp")
     private Date blockTimeStamp;
@@ -46,6 +44,7 @@ public class BlockRawData extends IdEntity {
     @Column(name = "parentHash")
     private String parentHash;
 
+    @Lob
     @Column(name = "logsBloom")
     private String logsBloom;
 
@@ -64,9 +63,11 @@ public class BlockRawData extends IdEntity {
     @Column(name = "sealer")
     private String sealer;
 
+    @Lob
     @Column(name = "sealerList")
     private String sealerList;
 
+    @Lob
     @Column(name = "extraData")
     private String extraData;
 
@@ -76,9 +77,11 @@ public class BlockRawData extends IdEntity {
     @Column(name = "gasUsed")
     private String gasUsed;
 
+    @Lob
     @Column(name = "signatureList")
     private String signatureList;
 
+    @Lob
     @Column(name = "transactionList")
     private String transactionList;
 

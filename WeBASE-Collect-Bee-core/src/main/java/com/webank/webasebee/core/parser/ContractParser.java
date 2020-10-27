@@ -24,8 +24,6 @@ import com.webank.webasebee.common.constants.AbiTypeConstants;
 import com.webank.webasebee.common.tools.ClazzScanUtils;
 import com.webank.webasebee.common.tools.MethodUtils;
 import com.webank.webasebee.core.config.SystemEnvironmentConfig;
-import com.webank.webasebee.db.dao.ContractInfoDAO;
-import com.webank.webasebee.db.dao.ESHandleDao;
 import lombok.extern.slf4j.Slf4j;
 import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition;
 import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition.NamedType;
@@ -61,10 +59,6 @@ public class ContractParser {
     private SystemEnvironmentConfig systemEnvironmentConfig;
     @Autowired
     private Client client;
-    @Autowired
-    private ContractInfoDAO contractInfoDAO;
-    @Autowired
-    private ESHandleDao esHandleDao;
 
     /**
      * Parsing all contract java code files from contract path, and storage contract info into ContractMethodInfo
@@ -101,8 +95,7 @@ public class ContractParser {
         contractInfoBO.setContractName(className);
         contractInfoBO.setContractBinary(MethodUtils.getClassField(clazz, "BINARY"));
         contractInfoBO.setContractABI(MethodUtils.getClassField(clazz, "ABI"));
-        contractInfoBO.setContractId(contractInfoDAO.saveAndObtainId(contractInfoBO));
-        esHandleDao.saveContractInfo(contractInfoBO);
+        contractInfoBO.setAbiHash(contractInfoBO.getContractABI().hashCode());
         contractMethodInfo.setContractInfoBO(contractInfoBO);
         List<MethodMetaInfo> methodIdList = Lists.newArrayListWithExpectedSize(abiDefinitions.size());
         contractMethodInfo.setMethodMetaInfos(methodIdList);

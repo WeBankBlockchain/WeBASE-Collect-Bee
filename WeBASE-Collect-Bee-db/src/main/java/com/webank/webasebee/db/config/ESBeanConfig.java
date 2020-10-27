@@ -8,13 +8,10 @@ import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * @author wesleywang
@@ -33,8 +30,6 @@ public class ESBeanConfig {
     private String ip;
     @Value("${es.port}")
     private int port;
-    @Value("${es.index}")
-    private String index;
 
     private TransportClient client;
 
@@ -56,6 +51,5 @@ public class ESBeanConfig {
                 port
         );
         client.addTransportAddress(node);
-        esService.createIndex(client,index);
     }
 }

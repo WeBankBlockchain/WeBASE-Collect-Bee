@@ -5,15 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
@@ -94,27 +91,5 @@ public class ESService {
         }
         return false;
     }
-
-
-//    public static void main(String[] args) throws Exception {
-//
-//        List<SearchHit> list = queryString("bee","accountinfo","account");
-////
-////        deleteIndex("bee");
-////        if (!indexExists("bee")) {
-////            createIndex("Bee");
-////        }
-////        initBaseMapping("bee", AccountInfo.class);
-////
-////        AccountInfo accountInfo = new AccountInfo();
-////        accountInfo.setBlockHeight(123);
-////        accountInfo.setBlockTimeStamp(new Date());
-////        accountInfo.setContractAddress("0xasjdahsjdajkshdjkahsdkjahsda");
-////        accountInfo.setDepotUpdatetime(new Date());
-////        accountInfo.setContractName("account");
-////        IndexResponse response = client.prepareIndex("bee","accountinfo").
-////                setSource(MAPPER.writeValueAsString(accountInfo), XContentType.JSON).get();
-//        System.out.println();
-//    }
 
 }

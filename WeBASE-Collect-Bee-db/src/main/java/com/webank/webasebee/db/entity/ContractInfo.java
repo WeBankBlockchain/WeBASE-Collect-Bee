@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,12 +32,14 @@ public class ContractInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "contract_id")
-    protected Long contractId;
+    @Column(name = "abi_hash")
+    protected Long abiHash;
 
+    @Lob
     @Column(name = "contractABI")
     private String contractABI;
 
+    @Lob
     @Column(name = "contractBinary")
     private String contractBinary;
 

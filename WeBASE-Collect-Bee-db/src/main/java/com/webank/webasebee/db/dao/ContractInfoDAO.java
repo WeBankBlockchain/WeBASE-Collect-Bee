@@ -29,10 +29,4 @@ public class ContractInfoDAO implements SaveInterface<ContractInfoBO>{
         save(contractInfo);
     }
 
-    public long saveAndObtainId(ContractInfoBO contractInfoBO) {
-        ContractInfo contractInfo = new ContractInfo();
-        BeanUtil.copyProperties(contractInfoBO, contractInfo, true);
-        contractInfoRepository.save(contractInfo);
-        return contractInfo.getContractId();
-    }
 }

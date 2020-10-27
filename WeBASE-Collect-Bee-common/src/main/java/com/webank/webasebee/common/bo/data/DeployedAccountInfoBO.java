@@ -24,7 +24,7 @@ public class DeployedAccountInfoBO {
 
     private Date blockTimeStamp;
 
-    private long contractId;
+    private long abiHash;
 
     private String txHash;
 

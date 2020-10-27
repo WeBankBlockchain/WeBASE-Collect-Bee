@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -21,8 +22,8 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-@Entity(name = "(tx_receipt_raw_data")
-@Table(name = "(tx_receipt_raw_data", indexes = { @Index(name = "block_hash", columnList = "block_hash"),
+@Entity(name = "tx_receipt_raw_data")
+@Table(name = "tx_receipt_raw_data", indexes = { @Index(name = "block_hash", columnList = "block_hash"),
         @Index(name = "block_timestamp", columnList = "block_timestamp") })
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
@@ -39,9 +40,6 @@ public class TxReceiptRawData extends IdEntity{
     /** @Fields txHash : transaction hash */
     @Column(name = "tx_hash")
     private String txHash;
-
-    @Column(name = "receipt_object")
-    private String receiptObject;
 
     /** @Fields blockTimeStamp : block timestamp */
     @Column(name = "block_timestamp")
@@ -65,9 +63,11 @@ public class TxReceiptRawData extends IdEntity{
     @Column(name = "contractAddress")
     private String contractAddress;
 
-    @Column(name = "logs")
+    @Lob
+    @Column(name = "logs", columnDefinition = "text")
     private String logs;
 
+    @Lob
     @Column(name = "logsBloom")
     private String logsBloom;
 
@@ -80,9 +80,11 @@ public class TxReceiptRawData extends IdEntity{
     @Column(name = "output")
     private String output;
 
+    @Lob
     @Column(name = "txProof")
     private String txProof;
 
+    @Lob
     @Column(name = "receiptProof")
     private String receiptProof;
 
