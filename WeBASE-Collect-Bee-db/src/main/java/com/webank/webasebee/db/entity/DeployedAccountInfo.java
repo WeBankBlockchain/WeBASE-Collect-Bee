@@ -21,8 +21,8 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-@Entity(name = "account_info")
-@Table(name = "account_info", indexes = { @Index(name = "block_height", columnList = "block_height"),
+@Entity(name = "deployed_account_info")
+@Table(name = "deployed_account_info", indexes = { @Index(name = "block_height", columnList = "block_height"),
         @Index(name = "contract_address", columnList = "contract_address"),
         @Index(name = "block_timestamp", columnList = "block_timestamp") })
 @ToString(callSuper = true)

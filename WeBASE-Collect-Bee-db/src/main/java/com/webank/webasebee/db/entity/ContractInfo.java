@@ -28,10 +28,8 @@ import lombok.experimental.Accessors;
 @Entity(name = "contract_info")
 @Table(name = "contract_info")
 @ToString(callSuper = true)
-public class ContractInfo {
+public class ContractInfo extends IdEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "abi_hash")
     protected Long abiHash;
 

@@ -20,5 +20,4 @@ public class BlockContractInfoBO {
     private Map<String, String> txHashContractAddressMapping;
 
     private List<DeployedAccountInfoBO> deployedAccountInfoBOS;
-//    private List<ContractInfoBO> contractInfoBOS;
 }
