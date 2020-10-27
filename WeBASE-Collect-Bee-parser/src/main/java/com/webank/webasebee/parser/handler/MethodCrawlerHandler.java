@@ -15,13 +15,18 @@
  */
 package com.webank.webasebee.parser.handler;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
+import com.webank.webasebee.common.bo.data.BlockMethodInfo;
+import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
+import com.webank.webasebee.common.bo.data.MethodBO;
+import com.webank.webasebee.common.bo.data.TxRawDataBO;
+import com.webank.webasebee.common.bo.data.TxReceiptRawDataBO;
+import com.webank.webasebee.common.tools.DateUtils;
+import com.webank.webasebee.common.tools.JacksonUtils;
+import com.webank.webasebee.extractor.ods.EthClient;
+import com.webank.webasebee.parser.service.MethodCrawlService;
+import com.webank.webasebee.parser.service.TransactionService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.sdk.client.protocol.model.JsonTransactionResponse;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
@@ -31,16 +36,12 @@ import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
-import com.webank.webasebee.common.bo.data.BlockMethodInfo;
-import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
-import com.webank.webasebee.common.bo.data.MethodBO;
-import com.webank.webasebee.common.tools.DateUtils;
-import com.webank.webasebee.extractor.ods.EthClient;
-import com.webank.webasebee.parser.service.MethodCrawlService;
-import com.webank.webasebee.parser.service.TransactionService;
-
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * MethodCrawlerHandler
@@ -65,6 +66,8 @@ public class MethodCrawlerHandler {
     public BlockMethodInfo crawl(Block block, Map<String, String> txHashContractAddressMapping) throws IOException {
         BlockMethodInfo blockMethodInfo = new BlockMethodInfo();
         List<BlockTxDetailInfoBO> blockTxDetailInfoList = new ArrayList<>();
+        List<TxRawDataBO> txRawDataBOList = new ArrayList<>();
+        List<TxReceiptRawDataBO> txReceiptRawDataBOList = new ArrayList<>();
         List<MethodBO> methodInfoList = new ArrayList();
         List<TransactionResult> transactionResults = block.getTransactions();
         Map<String, String> txHashContractNameMapping = new HashMap<>();
@@ -87,7 +90,11 @@ public class MethodCrawlerHandler {
                 // get block tx detail info
                 BlockTxDetailInfoBO blockTxDetailInfo =
                         getBlockTxDetailInfo(block, transaction, receipt, methodMetaInfo);
+                TxRawDataBO txRawDataBO = getTxRawDataBO(block, transaction, receipt);
+                TxReceiptRawDataBO txReceiptRawDataBO = getTxReceiptRawDataBO(block,receipt);
                 blockTxDetailInfoList.add(blockTxDetailInfo);
+                txRawDataBOList.add(txRawDataBO);
+                txReceiptRawDataBOList.add(txReceiptRawDataBO);
                 txHashContractNameMapping.putIfAbsent(blockTxDetailInfo.getTxHash(),
                         blockTxDetailInfo.getContractName());
                 if (!methodCrawlService
@@ -110,8 +117,11 @@ public class MethodCrawlerHandler {
 
             }
         }
-        blockMethodInfo.setBlockTxDetailInfoList(blockTxDetailInfoList).setMethodInfoList(methodInfoList)
-                .setTxHashContractNameMapping(txHashContractNameMapping);
+        blockMethodInfo.setBlockTxDetailInfoList(blockTxDetailInfoList)
+                .setMethodInfoList(methodInfoList)
+                .setTxHashContractNameMapping(txHashContractNameMapping)
+                .setTxRawDataBOList(txRawDataBOList)
+                .setTxReceiptRawDataBOList(txReceiptRawDataBOList);
         return blockMethodInfo;
 
     }
@@ -124,6 +134,45 @@ public class MethodCrawlerHandler {
                 .setTxFrom(transaction.getFrom()).setTxTo(transaction.getTo()).setTxHash(receipt.getTransactionHash())
                 .setBlockTimeStamp(DateUtils.hexStrToDate(block.getTimestamp()));
         return blockTxDetailInfo;
+    }
+
+    public TxRawDataBO getTxRawDataBO(Block block, JsonTransactionResponse transaction, TransactionReceipt receipt) {
+        TxRawDataBO txRawDataBO = new TxRawDataBO();
+        txRawDataBO.setBlockHash(receipt.getBlockHash())
+                .setBlockHeight(Long.parseLong(receipt.getBlockNumber()))
+                .setBlockTimeStamp(DateUtils.hexStrToDate(block.getTimestamp()))
+                .setTxHash(receipt.getTransactionHash())
+                .setTxIndex(transaction.getTransactionIndex())
+                .setFrom(transaction.getFrom())
+                .setGas(transaction.getGas())
+                .setGasPrice(transaction.getGasPrice())
+                .setInput(transaction.getInput())
+                .setNonce(transaction.getNonce())
+                .setTo(transaction.getTo())
+                .setValue(transaction.getValue());
+        return txRawDataBO;
+    }
+
+    public TxReceiptRawDataBO getTxReceiptRawDataBO(Block block, TransactionReceipt receipt) {
+        TxReceiptRawDataBO txReceiptRawDataBO = new TxReceiptRawDataBO();
+        txReceiptRawDataBO.setBlockHash(receipt.getBlockHash())
+                .setBlockHeight(Long.parseLong(receipt.getBlockNumber()))
+                .setBlockTimeStamp(DateUtils.hexStrToDate(block.getTimestamp()))
+                .setTxHash(receipt.getTransactionHash())
+                .setContractAddress(receipt.getContractAddress())
+                .setFrom(receipt.getFrom())
+                .setGasUsed(receipt.getGasUsed())
+                .setInput(receipt.getInput())
+                .setLogs(receipt.getLogsBloom())
+                .setMessage(receipt.getMessage())
+                .setOutput(receipt.getOutput())
+                .setLogsBloom(JacksonUtils.toJson(receipt.getLogsBloom()))
+                .setRoot(receipt.getRoot())
+                .setTo(receipt.getTo())
+                .setTxIndex(receipt.getTransactionIndex())
+                .setTxProof(JacksonUtils.toJson(receipt.getTxProof()))
+                .setReceiptProof(JacksonUtils.toJson(receipt.getReceiptProof()));
+        return txReceiptRawDataBO;
     }
 
 }

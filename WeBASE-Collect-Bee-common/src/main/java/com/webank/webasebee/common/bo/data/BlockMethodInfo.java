@@ -34,6 +34,10 @@ import lombok.experimental.Accessors;
 public class BlockMethodInfo {
     private List<BlockTxDetailInfoBO> blockTxDetailInfoList;
 
+    private List<TxRawDataBO> txRawDataBOList;
+
+    private List<TxReceiptRawDataBO> txReceiptRawDataBOList;
+
     private List<MethodBO> methodInfoList;
 
     private Map<String, String> txHashContractNameMapping;

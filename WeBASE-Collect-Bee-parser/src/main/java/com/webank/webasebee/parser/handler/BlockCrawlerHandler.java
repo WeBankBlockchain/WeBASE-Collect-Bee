@@ -15,12 +15,13 @@
  */
 package com.webank.webasebee.parser.handler;
 
-import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
-import org.springframework.stereotype.Service;
-
 import com.webank.webasebee.common.bo.data.BlockDetailInfoBO;
 import com.webank.webasebee.common.bo.data.BlockDetailInfoBO.Status;
+import com.webank.webasebee.common.bo.data.BlockRawDataBO;
 import com.webank.webasebee.common.tools.DateUtils;
+import com.webank.webasebee.common.tools.JacksonUtils;
+import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
+import org.springframework.stereotype.Service;
 
 /**
  * BlockCrawlerHandler is responsible for crawling block info.
@@ -50,5 +51,27 @@ public class BlockCrawlerHandler {
         blockDetailInfo.setBlockTimeStamp(DateUtils.hexStrToDate(block.getTimestamp()));
         blockDetailInfo.setStatus((short) Status.COMPLETED.ordinal());
         return blockDetailInfo;
+    }
+
+    public BlockRawDataBO handleBlockRawData(Block block) {
+        BlockRawDataBO blockRawDataBO = new BlockRawDataBO();
+        blockRawDataBO.setBlockHeight(block.getNumber().longValue());
+        blockRawDataBO.setBlockHash(block.getHash());
+        blockRawDataBO.setBlockTimeStamp(DateUtils.hexStrToDate(block.getTimestamp()));
+        blockRawDataBO.setDbHash(block.getDbHash());
+        blockRawDataBO.setExtraData(JacksonUtils.toJson(block.getExtraData()));
+        blockRawDataBO.setGasLimit(block.getGasLimit());
+        blockRawDataBO.setGasUsed(block.getGasUsed());
+        blockRawDataBO.setLogsBloom(block.getLogsBloom());
+        blockRawDataBO.setParentHash(block.getParentHash());
+        blockRawDataBO.setReceiptsRoot(block.getReceiptsRoot());
+        blockRawDataBO.setSealer(block.getSealer());
+        blockRawDataBO.setSealerList(JacksonUtils.toJson(block.getSealerList()));
+        blockRawDataBO.setSignatureList(JacksonUtils.toJson(block.getSignatureList()));
+        blockRawDataBO.setStateRoot(block.getStateRoot());
+        blockRawDataBO.setTransactionsRoot(block.getTransactionsRoot());
+        blockRawDataBO.setTransactionList(JacksonUtils.toJson(block.getTransactions()));
+        blockRawDataBO.setBlockObject(JacksonUtils.toJson(block));
+        return blockRawDataBO;
     }
 }

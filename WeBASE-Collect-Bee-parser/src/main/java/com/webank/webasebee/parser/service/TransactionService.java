@@ -83,7 +83,7 @@ public class TransactionService {
         }
         log.debug("Block{} contractAddress{} transactionInput: {}", transaction.getBlockNumber(), contractAddress,
                 transaction.getInput());
-        return Optional.of(contractEntry.getValue().getContractName());
+        return Optional.of(contractEntry.getValue().getContractInfoBO().getContractName());
     }
 
     public MethodMetaInfo getMethodMetaInfo(JsonTransactionResponse transaction, String contractName) {

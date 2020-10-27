@@ -18,15 +18,15 @@ package com.webank.webasebee.parser.facade;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import com.webank.webasebee.common.bo.data.BlockContractInfoBO;
+import com.webank.webasebee.parser.handler.ContractCrawlerHandler;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Stopwatch;
-import com.webank.webasebee.common.bo.data.BlockAccountsInfoBO;
 import com.webank.webasebee.common.bo.data.BlockInfoBO;
 import com.webank.webasebee.common.bo.data.BlockMethodInfo;
-import com.webank.webasebee.parser.handler.AccountCrawlerHandler;
 import com.webank.webasebee.parser.handler.BlockCrawlerHandler;
 import com.webank.webasebee.parser.handler.EventCrawlerHandler;
 import com.webank.webasebee.parser.handler.MethodCrawlerHandler;
@@ -45,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ParseFacade implements ParseInterface {
     @Autowired
-    private AccountCrawlerHandler accountCrawlerHandler;
+    private ContractCrawlerHandler contractCrawlerHandler;
     @Autowired
     private BlockCrawlerHandler blockCrawlerHandler;
     @Autowired
@@ -61,20 +61,23 @@ public class ParseFacade implements ParseInterface {
     public BlockInfoBO parse(Block block) throws IOException {
         BlockInfoBO blockInfo = new BlockInfoBO();
         Stopwatch st = Stopwatch.createStarted();
-        BlockAccountsInfoBO accountsBo = accountCrawlerHandler.crawl(block);
+        BlockContractInfoBO contractInfoBO = contractCrawlerHandler.crawl(block);
         log.debug("Block {} , Account crawler handle useTime {} ", block.getNumber(),
                 st.stop().elapsed(TimeUnit.MILLISECONDS));
         st.start();
         BlockMethodInfo blockMethodInfo =
-                methodCrawlerHandler.crawl(block, accountsBo.getTxHashContractAddressMapping());
+                methodCrawlerHandler.crawl(block, contractInfoBO.getTxHashContractAddressMapping());
         log.debug("Block {} , method crawler handle useTime {} ", block.getNumber(),
                 st.stop().elapsed(TimeUnit.MILLISECONDS));
         st.start();
-        blockInfo.setAccountInfoList(accountsBo.getAccounts())
+        blockInfo.setDeployedAccountInfoBOS(contractInfoBO.getDeployedAccountInfoBOS())
                 .setBlockDetailInfo(blockCrawlerHandler.handleBlockDetail(block))
+                .setBlockRawDataBO(blockCrawlerHandler.handleBlockRawData(block))
                 .setEventInfoList(eventCrawlHandler.crawl(block, blockMethodInfo.getTxHashContractNameMapping()))
                 .setMethodInfoList(blockMethodInfo.getMethodInfoList())
-                .setBlockTxDetailInfoList(blockMethodInfo.getBlockTxDetailInfoList());
+                .setBlockTxDetailInfoList(blockMethodInfo.getBlockTxDetailInfoList())
+                .setTxRawDataBOList(blockMethodInfo.getTxRawDataBOList())
+                .setTxReceiptRawDataBOList(blockMethodInfo.getTxReceiptRawDataBOList());
         log.debug("Block {} , event crawler handle useTime {} ", block.getNumber(),
                 st.stop().elapsed(TimeUnit.MILLISECONDS));
         return blockInfo;

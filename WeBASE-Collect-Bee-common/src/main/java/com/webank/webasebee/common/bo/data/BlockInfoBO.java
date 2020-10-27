@@ -33,7 +33,13 @@ import lombok.experimental.Accessors;
 public class BlockInfoBO {
     private BlockDetailInfoBO blockDetailInfo;
 
-    private List<AccountInfoBO> accountInfoList;
+    private BlockRawDataBO blockRawDataBO;
+
+    private List<TxRawDataBO> txRawDataBOList;
+
+    private List<DeployedAccountInfoBO> deployedAccountInfoBOS;
+
+    private List<TxReceiptRawDataBO> txReceiptRawDataBOList;
 
     private List<BlockTxDetailInfoBO> blockTxDetailInfoList;
 

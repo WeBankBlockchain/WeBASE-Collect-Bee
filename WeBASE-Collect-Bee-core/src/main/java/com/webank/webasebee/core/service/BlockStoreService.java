@@ -15,18 +15,12 @@
  */
 package com.webank.webasebee.core.service;
 
-import java.util.stream.Collectors;
-
+import com.webank.webasebee.common.bo.data.BlockInfoBO;
+import com.webank.webasebee.db.service.DataStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.webasebee.common.bo.data.BlockInfoBO;
-import com.webank.webasebee.common.bo.data.CommonBO;
-import com.webank.webasebee.common.tools.JacksonUtils;
-import com.webank.webasebee.db.dao.AccountInfoDAO;
-import com.webank.webasebee.db.dao.BlockCommonDAO;
-import com.webank.webasebee.db.dao.BlockDetailInfoDAO;
-import com.webank.webasebee.db.dao.BlockTxDetailInfoDAO;
+import java.util.List;
 
 /**
  * BlockStoreService
@@ -38,23 +32,14 @@ import com.webank.webasebee.db.dao.BlockTxDetailInfoDAO;
  */
 @Service
 public class BlockStoreService {
+
     @Autowired
-    private BlockDetailInfoDAO blockDetailInfoDao;
-    @Autowired
-    private AccountInfoDAO accountInfoDao;
-    @Autowired
-    private BlockTxDetailInfoDAO blockTxDetailInfoDao;
-    @Autowired
-    private BlockCommonDAO blockEventDao;
+    private List<DataStoreService> dataStoreServiceList;
 
     public void store(BlockInfoBO blockInfo) {
-        blockDetailInfoDao.save(blockInfo.getBlockDetailInfo());
-        accountInfoDao.save(blockInfo.getAccountInfoList());
-        blockTxDetailInfoDao.save(blockInfo.getBlockTxDetailInfoList());
-        blockEventDao.save(blockInfo.getEventInfoList().stream().map(e -> (CommonBO) e).collect(Collectors.toList()),
-                "event");
-        blockEventDao.save(blockInfo.getMethodInfoList().stream().map(e -> (CommonBO) e).collect(Collectors.toList()),
-                "method");
+        for (DataStoreService dataStoreService : dataStoreServiceList) {
+            dataStoreService.store(blockInfo);
+        }
     }
 
 }

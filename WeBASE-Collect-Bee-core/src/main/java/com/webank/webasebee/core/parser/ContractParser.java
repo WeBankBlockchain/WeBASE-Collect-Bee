@@ -15,11 +15,18 @@
  */
 package com.webank.webasebee.core.parser;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
+import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
+import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
+import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
+import com.webank.webasebee.common.bo.data.ContractInfoBO;
+import com.webank.webasebee.common.constants.AbiTypeConstants;
+import com.webank.webasebee.common.tools.ClazzScanUtils;
+import com.webank.webasebee.common.tools.MethodUtils;
+import com.webank.webasebee.core.config.SystemEnvironmentConfig;
+import com.webank.webasebee.db.dao.ContractInfoDAO;
+import com.webank.webasebee.db.dao.ESHandleDao;
+import lombok.extern.slf4j.Slf4j;
 import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition;
 import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition.NamedType;
 import org.fisco.bcos.sdk.client.Client;
@@ -29,16 +36,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.util.CollectionUtils;
 
-import com.google.common.collect.Lists;
-import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
-import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
-import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
-import com.webank.webasebee.common.constants.AbiTypeConstants;
-import com.webank.webasebee.common.tools.ClazzScanUtils;
-import com.webank.webasebee.common.tools.MethodUtils;
-import com.webank.webasebee.core.config.SystemEnvironmentConfig;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 
@@ -60,6 +61,10 @@ public class ContractParser {
     private SystemEnvironmentConfig systemEnvironmentConfig;
     @Autowired
     private Client client;
+    @Autowired
+    private ContractInfoDAO contractInfoDAO;
+    @Autowired
+    private ESHandleDao esHandleDao;
 
     /**
      * Parsing all contract java code files from contract path, and storage contract info into ContractMethodInfo
@@ -67,7 +72,7 @@ public class ContractParser {
      * 
      * @return List<ContractMethodInfo>
      */
-    public List<ContractMethodInfo> initContractMethodInfo() {
+    public List<ContractMethodInfo> initContractMethodInfo() throws Exception {
         List<ContractMethodInfo> contractMethodInfos = Lists.newArrayList();
         Set<Class<?>> clazzs = ClazzScanUtils.scan(systemEnvironmentConfig.getContractPath(),
                 systemEnvironmentConfig.getContractPackName());
@@ -85,16 +90,20 @@ public class ContractParser {
      * @param clazz: class object of contract java code file.
      * @return ContractMethodInfo
      */
-    public ContractMethodInfo parse(Class<?> clazz) {
+    public ContractMethodInfo parse(Class<?> clazz) throws Exception {
         List<ABIDefinition> abiDefinitions = MethodUtils.getContractAbiList(clazz);
         if (CollectionUtils.isEmpty(abiDefinitions)) {
             return null;
         }
         String className = clazz.getSimpleName();
         ContractMethodInfo contractMethodInfo = new ContractMethodInfo();
-        contractMethodInfo.setContractName(className);
-        contractMethodInfo.setContractBinary(MethodUtils.getClassField(clazz, "BINARY"));
-        contractMethodInfo.setContractABI(MethodUtils.getClassField(clazz, "ABI"));
+        ContractInfoBO contractInfoBO = new ContractInfoBO();
+        contractInfoBO.setContractName(className);
+        contractInfoBO.setContractBinary(MethodUtils.getClassField(clazz, "BINARY"));
+        contractInfoBO.setContractABI(MethodUtils.getClassField(clazz, "ABI"));
+        contractInfoBO.setContractId(contractInfoDAO.saveAndObtainId(contractInfoBO));
+        esHandleDao.saveContractInfo(contractInfoBO);
+        contractMethodInfo.setContractInfoBO(contractInfoBO);
         List<MethodMetaInfo> methodIdList = Lists.newArrayListWithExpectedSize(abiDefinitions.size());
         contractMethodInfo.setMethodMetaInfos(methodIdList);
 
@@ -133,7 +142,7 @@ public class ContractParser {
      * @return ContractMapsInfo
      */
     @Bean
-    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo() {
+    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo() throws Exception {
         List<ContractMethodInfo> contractMethodInfos = initContractMethodInfo();
         ContractMapsInfo contractMapsInfo = new ContractMapsInfo();
         Map<String, MethodMetaInfo> methodIdMap = new HashMap<>();
