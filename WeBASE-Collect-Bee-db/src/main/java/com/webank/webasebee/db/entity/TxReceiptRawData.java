@@ -64,7 +64,7 @@ public class TxReceiptRawData extends IdEntity{
     private String contractAddress;
 
     @Lob
-    @Column(name = "logs", columnDefinition = "text")
+    @Column(name = "logs")
     private String logs;
 
     @Lob
@@ -74,6 +74,7 @@ public class TxReceiptRawData extends IdEntity{
     @Column(name = "status")
     private String status;
 
+    @Lob
     @Column(name = "input")
     private String input;
 
