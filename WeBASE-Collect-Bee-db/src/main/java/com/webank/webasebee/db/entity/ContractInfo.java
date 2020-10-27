@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Data;
@@ -23,6 +24,7 @@ import lombok.experimental.Accessors;
  * @Description:
  * @date 2020/10/26
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
 @Entity(name = "contract_info")
