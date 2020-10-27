@@ -15,29 +15,37 @@
  */
 package com.webank.webasebee.core.parser;
 
-import com.google.common.collect.Lists;
-import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
-import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
-import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
-import com.webank.webasebee.common.bo.data.ContractInfoBO;
-import com.webank.webasebee.common.constants.AbiTypeConstants;
-import com.webank.webasebee.common.tools.ClazzScanUtils;
-import com.webank.webasebee.common.tools.MethodUtils;
-import com.webank.webasebee.core.config.SystemEnvironmentConfig;
-import lombok.extern.slf4j.Slf4j;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition;
 import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition.NamedType;
 import org.fisco.bcos.sdk.client.Client;
+import org.fisco.bcos.sdk.model.TransactionReceipt.Logs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Lists;
+import com.webank.webasebee.common.bo.contract.ContractDetail;
+import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
+import com.webank.webasebee.common.bo.contract.EventMetaInfo;
+import com.webank.webasebee.common.bo.contract.FieldVO;
+import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
+import com.webank.webasebee.common.bo.data.ContractInfoBO;
+import com.webank.webasebee.common.constants.AbiTypeConstants;
+import com.webank.webasebee.common.tools.ClazzScanUtils;
+import com.webank.webasebee.common.tools.JacksonUtils;
+import com.webank.webasebee.common.tools.MethodUtils;
+import com.webank.webasebee.core.config.SystemEnvironmentConfig;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -53,6 +61,7 @@ import java.util.Set;
 @Slf4j
 @DependsOn("cryptoKeyPair")
 public class ContractParser {
+    public static final String EVENT_RESPONSE = "EventResponse";
 
     /** @Fields monitorGeneratedConfig : monitor config params start with monitor in application.properties file */
     @Autowired
@@ -66,12 +75,15 @@ public class ContractParser {
      * 
      * @return List<ContractMethodInfo>
      */
-    public List<ContractMethodInfo> initContractMethodInfo() throws Exception {
-        List<ContractMethodInfo> contractMethodInfos = Lists.newArrayList();
+    @Bean
+    public List<ContractDetail> contractDetailList() throws Exception {
+        List<ContractDetail> contractMethodInfos = Lists.newArrayList();
         Set<Class<?>> clazzs = ClazzScanUtils.scan(systemEnvironmentConfig.getContractPath(),
                 systemEnvironmentConfig.getContractPackName());
         for (Class<?> clazz : clazzs) {
-            contractMethodInfos.add(parse(clazz));
+            ContractDetail detail = parse(clazz);
+            detail.setEventMetaInfos(parseToEventInfoList(clazz));
+            contractMethodInfos.add(detail);
         }
         return contractMethodInfos;
     }
@@ -84,13 +96,13 @@ public class ContractParser {
      * @param clazz: class object of contract java code file.
      * @return ContractMethodInfo
      */
-    public ContractMethodInfo parse(Class<?> clazz) throws Exception {
+    public ContractDetail parse(Class<?> clazz) throws Exception {
         List<ABIDefinition> abiDefinitions = MethodUtils.getContractAbiList(clazz);
         if (CollectionUtils.isEmpty(abiDefinitions)) {
             return null;
         }
         String className = clazz.getSimpleName();
-        ContractMethodInfo contractMethodInfo = new ContractMethodInfo();
+        ContractDetail contractMethodInfo = new ContractDetail();
         ContractInfoBO contractInfoBO = new ContractInfoBO();
         contractInfoBO.setContractName(className);
         contractInfoBO.setContractBinary(MethodUtils.getClassField(clazz, "BINARY"));
@@ -128,6 +140,42 @@ public class ContractParser {
         return contractMethodInfo;
     }
 
+    public List<EventMetaInfo> parseToEventInfoList(Class<?> clazz) {
+        Class<?>[] subClass = clazz.getClasses();
+        List<EventMetaInfo> lists = Lists.newArrayList();
+        for (Class<?> c : subClass) {
+            // filter web3sdk 2.0 embedded contract subclass EventValuesWithLog.
+            if (c.getSimpleName().equalsIgnoreCase("EventValuesWithLog")) {
+                continue;
+            }
+            EventMetaInfo event = new EventMetaInfo();
+            event.setEventName(StringUtils.substringBefore(c.getSimpleName(), EVENT_RESPONSE))
+                    .setContractName(clazz.getSimpleName());
+
+            Field[] fields = c.getFields();
+            List<FieldVO> fieldList = Lists.newArrayList();
+            for (Field f : fields) {
+                // web3sdk 2.0 has a Log type, skip it temporary
+                if (f.getType() == Logs.class) {
+                    continue;
+                }
+                FieldVO vo = new FieldVO();
+                String k = f.getName();
+                String javaType = cleanType(f.getGenericType().getTypeName());
+                // get the personal length
+                if (StringUtils.isEmpty(k) || StringUtils.isEmpty(javaType)) {
+                    continue;
+                }
+                vo.setJavaName(k).setJavaType(javaType).setJavaCapName(StringUtils.capitalize(k));
+                log.debug(JacksonUtils.toJson(vo));
+                fieldList.add(vo);
+            }
+            event.setList(fieldList);
+            lists.add(event);
+        }
+        return lists;
+    }
+
     /**
      * Translate all contract info of ContractMethodInfo's objects to methodIdMap and contractBinaryMap.
      * 
@@ -135,12 +183,13 @@ public class ContractParser {
      * @return ContractMapsInfo
      */
     @Bean
+    @DependsOn("contractDetailList")
     public ContractMapsInfo transContractMethodInfo2ContractMapsInfo() throws Exception {
-        List<ContractMethodInfo> contractMethodInfos = initContractMethodInfo();
+        List<ContractDetail> contractMethodInfos = contractDetailList();
         ContractMapsInfo contractMapsInfo = new ContractMapsInfo();
         Map<String, MethodMetaInfo> methodIdMap = new HashMap<>();
-        Map<String, ContractMethodInfo> contractBinaryMap = new HashMap<>();
-        for (ContractMethodInfo contractMethodInfo : contractMethodInfos) {
+        Map<String, ContractDetail> contractBinaryMap = new HashMap<>();
+        for (ContractDetail contractMethodInfo : contractMethodInfos) {
             for (MethodMetaInfo methodMetaInfo : contractMethodInfo.getMethodMetaInfos()) {
                 methodIdMap.put(methodMetaInfo.getMethodId(), methodMetaInfo);
                 contractBinaryMap.put(contractMethodInfo.getContractInfoBO().getContractBinary(), contractMethodInfo);
@@ -150,5 +199,20 @@ public class ContractParser {
         contractMapsInfo.setContractBinaryMap(contractBinaryMap);
         contractMapsInfo.setMethodIdMap(methodIdMap);
         return contractMapsInfo;
+    }
+
+    public String cleanType(String genericType) {
+        if ("byte[]".equals(genericType)) {
+            return genericType;
+        }
+        if ("java.util.List<byte[]>".equals(genericType)) {
+            return "List<byte[]>";
+        }
+        if (genericType.contains("<")) {
+            return StringUtils.substringAfterLast(StringUtils.substringBefore(genericType, "<"), ".") + "<"
+                    + StringUtils.substringAfterLast(StringUtils.substringAfter(genericType, "<"), ".");
+        } else {
+            return StringUtils.substringAfterLast(genericType, ".");
+        }
     }
 }

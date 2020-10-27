@@ -2,7 +2,7 @@ package com.webank.webasebee.db.dao;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
-import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
+import com.webank.webasebee.common.bo.contract.ContractDetail;
 import com.webank.webasebee.common.bo.data.DeployedAccountInfoBO;
 import com.webank.webasebee.db.entity.DeployedAccountInfo;
 import com.webank.webasebee.db.repository.DeployedAccountInfoRepository;
@@ -36,7 +36,7 @@ public class DeployedAccountInfoDAO implements SaveInterface<DeployedAccountInfo
     public void save(DeployedAccountInfoBO deployedAccountInfoBO) {
         DeployedAccountInfo deployedAccountInfo = new DeployedAccountInfo();
         BeanUtil.copyProperties(deployedAccountInfoBO, deployedAccountInfo, true);
-        ContractMethodInfo contractMethodInfo = contractMapsInfo.getContractBinaryMap().get(deployedAccountInfoBO.getBinary());
+        ContractDetail contractMethodInfo = contractMapsInfo.getContractBinaryMap().get(deployedAccountInfoBO.getBinary());
         deployedAccountInfo.setAbiHash(contractMethodInfo.getContractInfoBO().getAbiHash());
         save(deployedAccountInfo);
     }

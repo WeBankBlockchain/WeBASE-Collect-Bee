@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
-import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
+import com.webank.webasebee.common.bo.contract.ContractDetail;
 import com.webank.webasebee.common.constants.BinConstant;
 
 /**
@@ -47,10 +47,10 @@ public class ContractConstructorService {
      * @param input
      * @return Map.Entry<String,String>
      */
-    public Map.Entry<String, ContractMethodInfo> getConstructorNameByBinary(String input) {
+    public Map.Entry<String, ContractDetail> getConstructorNameByBinary(String input) {
 
-        Map<String, ContractMethodInfo> binaryMap = contractMapsInfo.getContractBinaryMap();
-        for (Map.Entry<String, ContractMethodInfo> entry : binaryMap.entrySet()) {
+        Map<String, ContractDetail> binaryMap = contractMapsInfo.getContractBinaryMap();
+        for (Map.Entry<String, ContractDetail> entry : binaryMap.entrySet()) {
             String key = entry.getKey();
             if (input.length() > BinConstant.META_DATA_HASH_LENGTH
                     && key.length() > BinConstant.META_DATA_HASH_LENGTH) {
@@ -71,10 +71,10 @@ public class ContractConstructorService {
      * @param input of tx
      * @return key:contract binary, value:contract name
      */
-    public Map.Entry<String, ContractMethodInfo> getConstructorNameByCode(String input) {
+    public Map.Entry<String, ContractDetail> getConstructorNameByCode(String input) {
 
-        Map<String, ContractMethodInfo> binaryMap = contractMapsInfo.getContractBinaryMap();
-        for (Map.Entry<String, ContractMethodInfo> entry : binaryMap.entrySet()) {
+        Map<String, ContractDetail> binaryMap = contractMapsInfo.getContractBinaryMap();
+        for (Map.Entry<String, ContractDetail> entry : binaryMap.entrySet()) {
             String key = entry.getKey();
             if (input.length() > BinConstant.META_DATA_HASH_LENGTH
                     && key.length() > BinConstant.META_DATA_HASH_LENGTH) {

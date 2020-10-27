@@ -1,6 +1,6 @@
 package com.webank.webasebee.parser.handler;
 
-import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
+import com.webank.webasebee.common.bo.contract.ContractDetail;
 import com.webank.webasebee.common.bo.data.BlockContractInfoBO;
 import com.webank.webasebee.common.bo.data.DeployedAccountInfoBO;
 import com.webank.webasebee.common.constants.ContractConstants;
@@ -75,7 +75,7 @@ public class ContractCrawlerHandler {
                 String contractAddress = receipt.getContractAddress();
                 String input = ethClient.getCodeByContractAddress(contractAddress);
                 log.debug("blockNumber: {}, input: {}", receipt.getBlockNumber(), input);
-                Map.Entry<String, ContractMethodInfo> entry = contractConstructorService.getConstructorNameByCode(input);
+                Map.Entry<String, ContractDetail> entry = contractConstructorService.getConstructorNameByCode(input);
                 if (entry == null) {
                     log.info("block:{} constructor binary can't find!", receipt.getBlockNumber());
                     return Optional.empty();

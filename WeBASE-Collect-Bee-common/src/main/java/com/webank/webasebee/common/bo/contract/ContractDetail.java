@@ -15,11 +15,12 @@
  */
 package com.webank.webasebee.common.bo.contract;
 
+import java.util.List;
+
 import com.webank.webasebee.common.bo.data.ContractInfoBO;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import java.util.List;
 
 /**
  * ContractMethodInfo
@@ -31,10 +32,12 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class ContractMethodInfo {
+public class ContractDetail {
 
 	private ContractInfoBO contractInfoBO;
 	
 	private List<MethodMetaInfo> methodMetaInfos;
+	
+	private List<EventMetaInfo> eventMetaInfos;
 	
 }

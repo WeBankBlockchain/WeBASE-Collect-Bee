@@ -36,6 +36,6 @@ public class ContractMapsInfo {
     private Map<String, MethodMetaInfo> methodIdMap;
     
     /** @Fields contractBinaryMap : use to storage contract binary map, key:contract binary, value:contract name */
-    private Map<String, ContractMethodInfo> contractBinaryMap;
+    private Map<String, ContractDetail> contractBinaryMap;
 
 }

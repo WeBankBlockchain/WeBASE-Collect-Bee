@@ -16,7 +16,7 @@
 package com.webank.webasebee.core.service;
 
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
-import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
+import com.webank.webasebee.common.bo.contract.ContractDetail;
 import com.webank.webasebee.common.bo.data.BlockInfoBO;
 import com.webank.webasebee.common.bo.data.ContractInfoBO;
 import com.webank.webasebee.db.service.DataStoreService;
@@ -53,8 +53,8 @@ public class BlockStoreService {
 
     @PostConstruct
     public void saveContractInfo() {
-        Map<String, ContractMethodInfo> contractMethodInfoMap =  contractMapsInfo.getContractBinaryMap();
-        for (Map.Entry<String, ContractMethodInfo> entry : contractMethodInfoMap.entrySet()){
+        Map<String, ContractDetail> contractMethodInfoMap =  contractMapsInfo.getContractBinaryMap();
+        for (Map.Entry<String, ContractDetail> entry : contractMethodInfoMap.entrySet()){
             ContractInfoBO contractInfoBO = entry.getValue().getContractInfoBO();
             for (DataStoreService storeService : dataStoreServiceList) {
                 storeService.storeContractInfo(contractInfoBO);

@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
-import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
+import com.webank.webasebee.common.bo.contract.ContractDetail;
 import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.constants.ContractConstants;
 import com.webank.webasebee.common.tools.JacksonUtils;
@@ -74,7 +74,7 @@ public class TransactionService {
         }
         String input = ethClient.getCodeByContractAddress(contractAddress);
         log.debug("code: {}", JacksonUtils.toJson(input));
-        Entry<String, ContractMethodInfo> contractEntry = contractConstructorService.getConstructorNameByCode(input);
+        Entry<String, ContractDetail> contractEntry = contractConstructorService.getConstructorNameByCode(input);
         if (contractEntry == null) {
             log.warn(
                     "block:{} constructor code can't be find, maybe the contract is not registered! See the DIR of contractPath.",
