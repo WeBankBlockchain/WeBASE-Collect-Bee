@@ -1,22 +1,22 @@
 package com.webank.webasebee.db.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.experimental.Accessors;
-import org.hibernate.annotations.UpdateTimestamp;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.Date;
+
+import org.hibernate.annotations.UpdateTimestamp;
+
+import lombok.Data;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 
 /**
  * @author wesleywang
@@ -44,7 +44,7 @@ public class ContractInfo {
     private String contractBinary;
 
     @Column(name = "version")
-    private int version;
+    private short version = 1;
 
     @Column(name = "contractName")
     private String contractName;

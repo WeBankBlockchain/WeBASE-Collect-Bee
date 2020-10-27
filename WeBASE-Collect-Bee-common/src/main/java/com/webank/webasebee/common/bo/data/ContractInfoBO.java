@@ -20,7 +20,7 @@ public class ContractInfoBO {
 
     private String contractABI;
 
-    private int version;
+    private short version;
 
     private long abiHash;
 

@@ -33,6 +33,7 @@ import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.Block;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionObject;
 import org.fisco.bcos.sdk.client.protocol.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
+import org.fisco.bcos.sdk.utils.Numeric;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -139,7 +140,7 @@ public class MethodCrawlerHandler {
     public TxRawDataBO getTxRawDataBO(Block block, JsonTransactionResponse transaction, TransactionReceipt receipt) {
         TxRawDataBO txRawDataBO = new TxRawDataBO();
         txRawDataBO.setBlockHash(receipt.getBlockHash())
-                .setBlockHeight(Long.parseLong(receipt.getBlockNumber()))
+                .setBlockHeight(Numeric.decodeQuantity((receipt.getBlockNumber())).longValue())
                 .setBlockTimeStamp(DateUtils.hexStrToDate(block.getTimestamp()))
                 .setTxHash(receipt.getTransactionHash())
                 .setTxIndex(transaction.getTransactionIndex())
@@ -156,7 +157,7 @@ public class MethodCrawlerHandler {
     public TxReceiptRawDataBO getTxReceiptRawDataBO(Block block, TransactionReceipt receipt) {
         TxReceiptRawDataBO txReceiptRawDataBO = new TxReceiptRawDataBO();
         txReceiptRawDataBO.setBlockHash(receipt.getBlockHash())
-                .setBlockHeight(Long.parseLong(receipt.getBlockNumber()))
+                .setBlockHeight(Numeric.decodeQuantity((receipt.getBlockNumber())).longValue())
                 .setBlockTimeStamp(DateUtils.hexStrToDate(block.getTimestamp()))
                 .setTxHash(receipt.getTransactionHash())
                 .setContractAddress(receipt.getContractAddress())
