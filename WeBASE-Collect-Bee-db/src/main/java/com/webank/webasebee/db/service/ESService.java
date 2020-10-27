@@ -40,6 +40,12 @@ public class ESService {
                 .execute().actionGet();
     }
 
+    public void createDocument(TransportClient client, String index, String type, String id, Object object) throws JsonProcessingException {
+        client.prepareIndex(index,type).
+                setId(id).
+                setSource(MAPPER.writeValueAsString(object), XContentType.JSON).get();
+    }
+
     public void createDocument(TransportClient client, String index, String type, Object object) throws JsonProcessingException {
         client.prepareIndex(index,type).
                 setSource(MAPPER.writeValueAsString(object), XContentType.JSON).get();

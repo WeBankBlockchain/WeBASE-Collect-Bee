@@ -82,46 +82,55 @@ public class ESHandleDao {
         }
     }
 
-
     public void saveBlockInfo(BlockInfoBO blockInfoBO) throws Exception {
         if (!esBeanConfig.isEsEnabled()) {
             return;
         }
         esService.createDocument(esBeanConfig.getClient(),
-                BLOCK_DETAIL, "_doc", blockInfoBO.getBlockDetailInfo());
+                BLOCK_DETAIL, "_doc", String.valueOf(blockInfoBO.getBlockDetailInfo().getBlockHeight()),
+                blockInfoBO.getBlockDetailInfo());
+
         esService.createDocument(esBeanConfig.getClient(),
-                BLOCK_RAW_DATA,"_doc",  blockInfoBO.getBlockRawDataBO());
+                BLOCK_RAW_DATA,"_doc", String.valueOf(blockInfoBO.getBlockRawDataBO().getBlockHeight()),
+                blockInfoBO.getBlockRawDataBO());
 
         for (TxRawDataBO txRawDataBO : blockInfoBO.getTxRawDataBOList()) {
             esService.createDocument(esBeanConfig.getClient(),
-                    TX_RAW_DATA,"_doc", txRawDataBO);
+                    TX_RAW_DATA,"_doc",
+                    txRawDataBO.getTxHash(), txRawDataBO);
         }
 
         for (DeployedAccountInfoBO deployedAccountInfoBO : blockInfoBO.getDeployedAccountInfoBOS()) {
             DeployedAccountInfo deployedAccountInfo = new DeployedAccountInfo();
             BeanUtil.copyProperties(deployedAccountInfoBO, deployedAccountInfo, true);
             esService.createDocument(esBeanConfig.getClient(),
-                    DEPLOY_ACCOUNT,"_doc", deployedAccountInfo);
+                    DEPLOY_ACCOUNT,"_doc",
+                    deployedAccountInfoBO.getContractAddress(),
+                    deployedAccountInfo);
         }
 
         for (TxReceiptRawDataBO txReceiptRawDataBO : blockInfoBO.getTxReceiptRawDataBOList()) {
             esService.createDocument(esBeanConfig.getClient(),
-                    TX_RECEIPT_RAW_DATA,"_doc",  txReceiptRawDataBO);
+                    TX_RECEIPT_RAW_DATA,"_doc",
+                    txReceiptRawDataBO.getTxHash(),
+                    txReceiptRawDataBO);
         }
 
         for (BlockTxDetailInfoBO blockTxDetailInfoBO : blockInfoBO.getBlockTxDetailInfoList()) {
             esService.createDocument(esBeanConfig.getClient(),
-                    BLOCK_TX_DETAIL,"_doc",  blockTxDetailInfoBO);
+                    BLOCK_TX_DETAIL,"_doc",
+                    blockTxDetailInfoBO.getTxHash(),
+                    blockTxDetailInfoBO);
         }
 
         for (EventBO eventBO : blockInfoBO.getEventInfoList()) {
             esService.createDocument(esBeanConfig.getClient(),
-                    EVENT, "_doc", eventBO);
+                    EVENT, "_doc", eventBO.getTxHash(), eventBO);
         }
 
         for (MethodBO methodBO : blockInfoBO.getMethodInfoList()) {
             esService.createDocument(esBeanConfig.getClient(),
-                    METHOD, "_doc",methodBO);
+                    METHOD, "_doc", methodBO.getTxHash(), methodBO);
         }
     }
 
