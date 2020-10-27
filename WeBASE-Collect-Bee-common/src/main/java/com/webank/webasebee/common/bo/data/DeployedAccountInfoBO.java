@@ -24,7 +24,7 @@ public class DeployedAccountInfoBO {
 
     private Date blockTimeStamp;
 
-    private long abiHash;
+    private String abiHash;
 
     private String txHash;
 

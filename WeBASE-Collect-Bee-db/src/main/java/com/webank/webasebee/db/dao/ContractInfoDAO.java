@@ -24,7 +24,11 @@ public class ContractInfoDAO implements SaveInterface<ContractInfoBO>{
 
     @Override
     public void save(ContractInfoBO contractInfoBO) {
-        ContractInfo contractInfo = new ContractInfo();
+        ContractInfo contractInfo = contractInfoRepository.findByAbiHash(contractInfoBO.getAbiHash());
+        if(contractInfo != null){
+            return;
+        }
+        contractInfo = new ContractInfo();
         BeanUtil.copyProperties(contractInfoBO, contractInfo, true);
         save(contractInfo);
     }

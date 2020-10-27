@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ContractInfoRepository extends JpaRepository<ContractInfo, Long>, JpaSpecificationExecutor<ContractInfo> {
 
+    ContractInfo findByAbiHash(String abiHash);
+
 }

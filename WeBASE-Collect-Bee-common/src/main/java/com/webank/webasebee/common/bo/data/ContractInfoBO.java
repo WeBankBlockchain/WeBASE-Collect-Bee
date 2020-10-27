@@ -22,7 +22,6 @@ public class ContractInfoBO {
 
     private short version;
 
-    private long abiHash;
-
+    private String abiHash;
 
 }

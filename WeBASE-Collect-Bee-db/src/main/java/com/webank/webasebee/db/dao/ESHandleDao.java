@@ -3,7 +3,8 @@ package com.webank.webasebee.db.dao;
 import cn.hutool.core.bean.BeanUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
-import com.webank.webasebee.common.bo.contract.ContractMethodInfo;
+import com.webank.webasebee.common.bo.contract.ContractDetail;
+import com.webank.webasebee.common.bo.contract.EventMetaInfo;
 import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
 import com.webank.webasebee.common.bo.data.BlockInfoBO;
 import com.webank.webasebee.common.bo.data.BlockTxDetailInfoBO;
@@ -37,7 +38,7 @@ public class ESHandleDao {
     @Autowired
     private ESBeanConfig esBeanConfig;
     @Autowired
-    private ContractMapsInfo contractMapsInfo;
+    private List<ContractDetail> contractDetails;
 
     public static final String BLOCK_DETAIL = "blockdetailinfo";
 
@@ -53,8 +54,13 @@ public class ESHandleDao {
 
     public static final String BLOCK_TX_DETAIL = "blocktxdetailinfo";
 
+    public static final String METHOD = "method";
+
+    public static final String EVENT = "event";
+
     @PostConstruct
     public void initIndex() throws Exception {
+
         TransportClient client = esBeanConfig.getClient();
         if (!esService.indexExists(client,BLOCK_DETAIL)){
             esService.createIndex(client,BLOCK_DETAIL);
@@ -77,15 +83,21 @@ public class ESHandleDao {
         if (!esService.indexExists(client,BLOCK_TX_DETAIL)){
             esService.createIndex(client,BLOCK_TX_DETAIL);
         }
-
-        Map<String, ContractMethodInfo> contractBinaryMap = contractMapsInfo.getContractBinaryMap();
-        for(Map.Entry<String,ContractMethodInfo> entry : contractBinaryMap.entrySet()) {
-            ContractMethodInfo methodInfo = entry.getValue();
-            List<MethodMetaInfo> methodMetaInfos = methodInfo.getMethodMetaInfos();
-            for (MethodMetaInfo methodMetaInfo : methodMetaInfos) {
-                String index = (methodInfo.getContractInfoBO().getContractName() + methodMetaInfo.getMethodName() +
-                        "method").toLowerCase();
+        for(ContractDetail contractDetail : contractDetails) {
+            for (MethodMetaInfo methodMetaInfo : contractDetail.getMethodMetaInfos()) {
+                String index = (contractDetail.getContractInfoBO().getContractName() + methodMetaInfo.getMethodName() +
+                        METHOD).toLowerCase();
+                if (!esService.indexExists(client,index)) {
+                    esService.createIndex(client, index);
+                }
+            }
+            for (EventMetaInfo eventMetaInfo : contractDetail.getEventMetaInfos()) {
+                String index = (contractDetail.getContractInfoBO().getContractName() + eventMetaInfo.getEventName() +
+                        EVENT).toLowerCase();
                 esService.createIndex(client, index);
+                if (!esService.indexExists(client,index)) {
+                    esService.createIndex(client, index);
+                }
             }
         }
     }
@@ -131,14 +143,16 @@ public class ESHandleDao {
                     blockTxDetailInfoBO);
         }
 
-//        for (EventBO eventBO : blockInfoBO.getEventInfoList()) {
-//            esService.createDocument(esBeanConfig.getClient(),
-//                    EVENT, "_doc", eventBO.getTxHash(), eventBO);
-//        }
+        for (EventBO eventBO : blockInfoBO.getEventInfoList()) {
+            esService.createDocument(esBeanConfig.getClient(),
+                    eventBO.getIdentifier().toLowerCase() + EVENT,
+                    "_doc", eventBO.getTxHash(), eventBO);
+        }
 
         for (MethodBO methodBO : blockInfoBO.getMethodInfoList()) {
             esService.createDocument(esBeanConfig.getClient(),
-                     methodBO.getIdentifier().toLowerCase(), "_doc", methodBO.getTxHash(), methodBO);
+                     methodBO.getIdentifier().toLowerCase() + METHOD,
+                    "_doc", methodBO.getTxHash(), methodBO);
         }
     }
 

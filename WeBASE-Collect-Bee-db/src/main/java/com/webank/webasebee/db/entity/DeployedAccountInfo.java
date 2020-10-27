@@ -46,7 +46,7 @@ public class DeployedAccountInfo extends IdEntity {
     private Date blockTimeStamp;
 
     @Column(name = "abi_hash")
-    private long abiHash;
+    private String abiHash;
 
     /** @Fields updatetime : depot update time */
     @UpdateTimestamp

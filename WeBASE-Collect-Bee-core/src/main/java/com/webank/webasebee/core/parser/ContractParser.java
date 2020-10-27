@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition;
 import org.fisco.bcos.sdk.abi.wrapper.ABIDefinition.NamedType;
 import org.fisco.bcos.sdk.client.Client;
+import org.fisco.bcos.sdk.crypto.hash.Keccak256;
 import org.fisco.bcos.sdk.model.TransactionReceipt.Logs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -107,7 +108,7 @@ public class ContractParser {
         contractInfoBO.setContractName(className);
         contractInfoBO.setContractBinary(MethodUtils.getClassField(clazz, "BINARY"));
         contractInfoBO.setContractABI(MethodUtils.getClassField(clazz, "ABI"));
-        contractInfoBO.setAbiHash(contractInfoBO.getContractABI().hashCode());
+        contractInfoBO.setAbiHash(new Keccak256().hash(contractInfoBO.getContractABI()));
         contractMethodInfo.setContractInfoBO(contractInfoBO);
         List<MethodMetaInfo> methodIdList = Lists.newArrayListWithExpectedSize(abiDefinitions.size());
         contractMethodInfo.setMethodMetaInfos(methodIdList);
