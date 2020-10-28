@@ -32,7 +32,7 @@ import lombok.experimental.Accessors;
 @ToString(callSuper = true)
 public class ContractInfo extends IdEntity{
 
-    @Column(name = "abi_hash")
+    @Column(name = "abi_hash", unique = true)
     protected String abiHash;
 
     @Lob

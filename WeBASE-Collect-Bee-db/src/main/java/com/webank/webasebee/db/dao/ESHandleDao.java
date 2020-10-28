@@ -94,7 +94,6 @@ public class ESHandleDao {
             for (EventMetaInfo eventMetaInfo : contractDetail.getEventMetaInfos()) {
                 String index = (contractDetail.getContractInfoBO().getContractName() + eventMetaInfo.getEventName() +
                         EVENT).toLowerCase();
-                esService.createIndex(client, index);
                 if (!esService.indexExists(client,index)) {
                     esService.createIndex(client, index);
                 }
