@@ -56,8 +56,7 @@ public class ESHandleDao {
     public static final String EVENT = "event";
 
     @PostConstruct
-    public void initIndex() throws Exception {
-
+    public void initIndex() {
         TransportClient client = esBeanConfig.getClient();
         if (!esService.indexExists(client,BLOCK_DETAIL)){
             esService.createIndex(client,BLOCK_DETAIL);
@@ -98,7 +97,7 @@ public class ESHandleDao {
         }
     }
 
-    public void saveBlockInfo(BlockInfoBO blockInfoBO) throws Exception {
+    public void saveBlockInfo(BlockInfoBO blockInfoBO) {
         if (!esBeanConfig.isEsEnabled()) {
             return;
         }
@@ -152,7 +151,7 @@ public class ESHandleDao {
         }
     }
 
-    public void saveContractInfo(ContractInfoBO contractInfoBO) throws Exception {
+    public void saveContractInfo(ContractInfoBO contractInfoBO) {
         if (!esBeanConfig.isEsEnabled()) {
             return;
         }

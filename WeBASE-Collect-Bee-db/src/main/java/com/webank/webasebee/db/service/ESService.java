@@ -2,6 +2,7 @@ package com.webank.webasebee.db.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
@@ -26,29 +27,46 @@ import java.util.Map;
  * @date 2020/10/23
  */
 @Service
+@Slf4j
 public class ESService {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public CreateIndexResponse createIndex(TransportClient client, String index) throws Exception{
-        return client.admin().indices().prepareCreate(index.toLowerCase()).get();
+    public void createIndex(TransportClient client, String index) {
+        try {
+            client.admin().indices().prepareCreate(index.toLowerCase()).get();
+        }catch (Exception e) {
+            log.error("ESService createIndex " + index +" failed， reason ：", e);
+        }
     }
 
-    public  void createMapping(TransportClient client, String index, String type, Map<String, Object> mappings) throws Exception{
-        client.admin().indices().preparePutMapping(index)
-                .setType(type).setSource(mappings)
-                .execute().actionGet();
+    public  void createMapping(TransportClient client, String index, String type, Map<String, Object> mappings) {
+        try {
+            client.admin().indices().preparePutMapping(index)
+                    .setType(type).setSource(mappings)
+                    .execute().actionGet();
+        }catch (Exception e) {
+            log.error("ESService createMapping failed ，index is " + index +" reason ：", e);
+        }
     }
 
-    public void createDocument(TransportClient client, String index, String type, String id, Object object) throws JsonProcessingException {
-        client.prepareIndex(index,type).
-                setId(id).
-                setSource(MAPPER.writeValueAsString(object), XContentType.JSON).get();
+    public void createDocument(TransportClient client, String index, String type, String id, Object object) {
+        try {
+            client.prepareIndex(index, type).
+                    setId(id).
+                    setSource(MAPPER.writeValueAsString(object), XContentType.JSON).get();
+        }catch (Exception e) {
+            log.error("ESService createDocument failed ，index is " + index +" reason ：", e);
+        }
     }
 
-    public void createDocument(TransportClient client, String index, String type, Object object) throws JsonProcessingException {
-        client.prepareIndex(index,type).
-                setSource(MAPPER.writeValueAsString(object), XContentType.JSON).get();
+    public void createDocument(TransportClient client, String index, String type, Object object) {
+        try {
+            client.prepareIndex(index, type).
+                    setSource(MAPPER.writeValueAsString(object), XContentType.JSON).get();
+        }catch (Exception e) {
+            log.error("ESService createDocument failed ，index is " + index +" reason ：", e);
+        }
     }
 
     public  List<SearchHit> queryString(TransportClient client, String index, String type, String queryString) {
@@ -95,10 +113,7 @@ public class ESService {
     public boolean indexExists(TransportClient client, String index){
         IndicesExistsRequest request = new IndicesExistsRequest(index);
         IndicesExistsResponse response = client.admin().indices().exists(request).actionGet();
-        if (response.isExists()) {
-            return true;
-        }
-        return false;
+        return response.isExists();
     }
 
 }
