@@ -5,6 +5,7 @@ import com.webank.webasebee.common.bo.data.ContractInfoBO;
 import com.webank.webasebee.db.dao.ESHandleDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
+@ConditionalOnProperty(name = "es.enabled", havingValue = "true")
 public class ESStoreService implements DataStoreService{
 
     @Autowired

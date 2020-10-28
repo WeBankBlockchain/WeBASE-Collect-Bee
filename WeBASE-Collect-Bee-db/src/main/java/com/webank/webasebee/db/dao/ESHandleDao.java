@@ -17,6 +17,7 @@ import com.webank.webasebee.db.entity.DeployedAccountInfo;
 import com.webank.webasebee.db.service.ESService;
 import org.elasticsearch.client.transport.TransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -28,6 +29,7 @@ import java.util.List;
  * @date 2020/10/26
  */
 @Component
+@ConditionalOnProperty(name = "es.enabled", havingValue = "true")
 public class ESHandleDao {
 
     @Autowired
@@ -98,9 +100,6 @@ public class ESHandleDao {
     }
 
     public void saveBlockInfo(BlockInfoBO blockInfoBO) {
-        if (!esBeanConfig.isEsEnabled()) {
-            return;
-        }
         esService.createDocument(esBeanConfig.getClient(),
                 BLOCK_DETAIL, "_doc", String.valueOf(blockInfoBO.getBlockDetailInfo().getBlockHeight()),
                 blockInfoBO.getBlockDetailInfo());
@@ -152,9 +151,6 @@ public class ESHandleDao {
     }
 
     public void saveContractInfo(ContractInfoBO contractInfoBO) {
-        if (!esBeanConfig.isEsEnabled()) {
-            return;
-        }
         esService.createDocument(esBeanConfig.getClient(),
                 CONTRACT_INFO, "_doc",contractInfoBO);
     }

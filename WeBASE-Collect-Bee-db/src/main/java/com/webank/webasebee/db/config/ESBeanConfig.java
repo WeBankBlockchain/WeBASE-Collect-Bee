@@ -8,6 +8,7 @@ import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -20,10 +21,9 @@ import java.net.InetAddress;
  */
 @Configuration
 @Data
+@ConditionalOnProperty(name = "es.enabled", havingValue = "true")
 public class ESBeanConfig {
 
-    @Value("${es.enabled}")
-    private boolean esEnabled;
     @Value("${es.clusterName}")
     private String clusterName;
     @Value("${es.ip}")
@@ -38,9 +38,6 @@ public class ESBeanConfig {
 
     @PostConstruct
     protected void init() throws Exception {
-        if (!isEsEnabled()) {
-            return;
-        }
         System.setProperty("es.set.netty.runtime.available.processors","false");
         Settings settings = Settings.builder()
                 .put("cluster.name", clusterName)
