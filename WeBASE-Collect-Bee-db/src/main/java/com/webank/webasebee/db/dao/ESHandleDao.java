@@ -1,8 +1,6 @@
 package com.webank.webasebee.db.dao;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.webank.webasebee.common.bo.contract.ContractMapsInfo;
 import com.webank.webasebee.common.bo.contract.ContractDetail;
 import com.webank.webasebee.common.bo.contract.EventMetaInfo;
 import com.webank.webasebee.common.bo.contract.MethodMetaInfo;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author wesleywang
@@ -162,6 +159,5 @@ public class ESHandleDao {
         esService.createDocument(esBeanConfig.getClient(),
                 CONTRACT_INFO, "_doc",contractInfoBO);
     }
-
 
 }

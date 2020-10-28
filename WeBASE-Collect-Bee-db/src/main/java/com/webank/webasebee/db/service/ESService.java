@@ -88,6 +88,9 @@ public class ESService {
         client.admin().indices().prepareDelete(index) .execute().actionGet();
     }
 
+    public void deleteDocumentById(TransportClient client, String index, String id){
+        client.prepareDelete(index,"_doc",id).get();
+    }
 
     public boolean indexExists(TransportClient client, String index){
         IndicesExistsRequest request = new IndicesExistsRequest(index);
