@@ -36,17 +36,17 @@ public class ContractInfo extends IdEntity{
     protected String abiHash;
 
     @Lob
-    @Column(name = "contractABI")
+    @Column(name = "contract_abi")
     private String contractABI;
 
     @Lob
-    @Column(name = "contractBinary")
+    @Column(name = "contract_binary")
     private String contractBinary;
 
     @Column(name = "version")
     private short version = 1;
 
-    @Column(name = "contractName")
+    @Column(name = "contract_name")
     private String contractName;
 
     /** @Fields updatetime : depot update time */
