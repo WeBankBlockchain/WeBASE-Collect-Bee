@@ -15,6 +15,8 @@
  */
 package com.webank.webasebee.core.parser;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,8 +67,13 @@ public class ContractParser {
      * object, and return ContractMethodInfo object list.
      * 
      * @return List<ContractMethodInfo>
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
      */
-    public List<ContractMethodInfo> initContractMethodInfo() {
+    public List<ContractMethodInfo> initContractMethodInfo() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         List<ContractMethodInfo> contractMethodInfos = Lists.newArrayList();
         Set<Class<?>> clazzs = ClazzScanUtils.scan(systemEnvironmentConfig.getContractPath(),
                 systemEnvironmentConfig.getContractPackName());
@@ -83,14 +90,21 @@ public class ContractParser {
      * 
      * @param clazz: class object of contract java code file.
      * @return ContractMethodInfo
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
      */
-    public ContractMethodInfo parse(Class<?> clazz) {
+    public ContractMethodInfo parse(Class<?> clazz) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         AbiDefinition[] abiDefinitions = MethodUtils.getContractAbiList(clazz);
         if (abiDefinitions == null || abiDefinitions.length == 0) {
             return null;
         }
         String className = clazz.getSimpleName();
-        String binary = MethodUtils.getContractBinary(clazz);
+        // get binary by crypto Type
+        Method method = clazz.getDeclaredMethod("getBinary");
+        String binary = (String) method.invoke(null);
         ContractMethodInfo contractMethodInfo = new ContractMethodInfo();
         contractMethodInfo.setContractName(className);
         contractMethodInfo.setContractBinary(binary);
@@ -133,9 +147,14 @@ public class ContractParser {
      * 
      * @param contractMethodInfos: contractMethodInfos contains methodIdMap, methodFiledsMap and contractBinaryMap.
      * @return ContractMapsInfo
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
      */
     @Bean
-    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo() {
+    public ContractMapsInfo transContractMethodInfo2ContractMapsInfo() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         List<ContractMethodInfo> contractMethodInfos = initContractMethodInfo();
         ContractMapsInfo contractMapsInfo = new ContractMapsInfo();
         Map<String, NameValueVO<String>> methodIdMap = new HashMap<>();
