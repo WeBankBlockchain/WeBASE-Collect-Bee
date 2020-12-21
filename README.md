@@ -17,7 +17,7 @@
 > -- 吴承恩
 
 
-WeBASE-Collect-Bee 是一个基于[FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS)平台的数据导出工具。
+WeBASE-Collect-Bee 是一个基于[FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS)平台的数据导出工具。目前本项目处于维护模式，新特性和新功能请移步：https://github.com/WeBankBlockchain/Data-Export
 
 数据导出组件WeBASE-Collect-Bee的目的在于降低获取区块链数据的开发门槛，提升研发效率。研发人员几乎不需要编写任何代码，只需要进行简单配置，就可以把数据导出到Mysql数据库。
 
